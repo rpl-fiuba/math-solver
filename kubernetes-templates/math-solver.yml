@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: math-solver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: math-solver
+  template:
+    metadata:
+      labels:
+        app: math-solver
+    spec:
+      containers:
+        - image: lorenzogl/math-solver:GIT_SHA_SECRET
+          imagePullPolicy: Always
+          name: math-solver
+          env:
+            - name: ENV_VAR_1
+              value: ENV_VAR_1_VALUE
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: math-solver
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - name: "math-solver"
+      port: 5000
+      targetPort: 5000
+  selector:
+    app: math-solver
