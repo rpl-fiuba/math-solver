@@ -86,6 +86,15 @@ def resolve(request: Request):
         return Response(response_data, status=status.HTTP_200_OK, content_type='application/json')
 
 
+@api_view(['GET'])
+def ping(request: Request):
+    if request.method == 'GET':
+        return Response("{\"status\": OK}", status=status.HTTP_200_OK, content_type='application/json')
+
+
 result_paths = [path('results/solve-derivative', solve_derivative)]
 result_paths += [path('results/solution-tree', calculate_solution_tree)]
 result_paths += [path('resolve', resolve)]
+result_paths += [path('ping', ping)]
+result_paths += [path('', ping)]
+
