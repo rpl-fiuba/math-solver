@@ -26,6 +26,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['math-solver', '127.0.0.1', 'localhost', 'math-solver.herokuapp.com', '10.124.0.26', 'learning.net.ar']
 
+ALLOWED_CIDR_NETS = ['10.124.0.0/14']
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -35,11 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
 ]
 
 MIDDLEWARE = [
+    'allow_cidr.middleware.AllowCIDRMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
