@@ -122,11 +122,12 @@ class ResultService:
                 problem_input: Expression,
                 solution_tree: SolutionTreeNode,
                 step_list: List[Expression],
-                current_expression: Expression):
+                current_expression: Expression,
+                type: str):
         if len(step_list) == 0:
             previous_step = problem_input
         else:
             previous_step = step_list[-1]
-        result, hints = solution_tree.validate_new_expression(current_expression, previous_step)
+        result, hints = solution_tree.validate_new_expression(current_expression, previous_step, type)
         hints = list(map(lambda hint_theorem_name: {'title': hint_theorem_name}, hints))
         return result, hints

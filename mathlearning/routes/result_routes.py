@@ -76,7 +76,7 @@ def resolve(request: Request):
                              body_variables if body_variables is not None else []))
         current_expression = Expression(body['current_expression']['expression'], variables)
 
-        (result, hints) = result_service.resolve(problem_input, solution_tree, step_list, current_expression)
+        (result, hints) = result_service.resolve(problem_input, solution_tree, step_list, current_expression, body["type"])
 
         logger.info('Returning the following response: {} {}'.format(result, json.dumps(hints)))
 

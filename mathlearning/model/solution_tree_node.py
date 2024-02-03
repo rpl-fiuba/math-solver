@@ -61,14 +61,14 @@ class SolutionTreeNode:
         # TODO: fix going backwards bug
         return self.contains(new_expression)
 
-    def validate_new_expression(self, new_expression, previous_step):
+    def validate_new_expression(self, new_expression, previous_step, type):
         hints = []
         is_valid = self.new_expression_is_valid(previous_step, new_expression)
 
         if not is_valid:
             hints = self.get_hints(previous_step)
             return 'invalid', hints
-        if self.is_a_result(new_expression):
+        if self.is_a_result(new_expression, type):
             return 'resolved', hints
 
         hints = self.get_hints(new_expression)
@@ -121,15 +121,17 @@ class SolutionTreeNode:
                 return True
         return False
 
-    def is_a_result(self, expression):
+    def is_a_result(self, expression, type):
         to_check = [self]
         is_contained = False
         while len(to_check) > 0:
             current = to_check.pop()
-            if current.expression.is_equivalent_to(expression):
+            if (type != 'factorisable' and current.expression.is_equivalent_to(expression)) or \
+                    (current.expression.is_equivalent_to(expression) and current.expression.matches_args_with(expression)):
                 is_contained = True
                 if not len(current.branches) == 0 and not current.is_pre_simplification_step():
                     return False
+
             for branch in current.branches:
                 to_check.append(branch)
 

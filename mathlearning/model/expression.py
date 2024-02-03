@@ -8,7 +8,7 @@ from sympy import Integral
 from sympy.core.function import Derivative, UndefinedFunction
 from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
-from sympy import factor
+from sympy import factor, sympify
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
@@ -16,9 +16,10 @@ from mathlearning.utils.list.non_commutative_group_transformer import NonCommuta
 from mathlearning.utils.latex_utils import clean_latex
 from typing import Union, List
 from sympy import integrate
+from mathlearning.utils.logger import Logger
 
 from mathlearning.utils.sympy_utils import SympyUtils
-
+logger = Logger.getLogger()
 sympy_classes = tuple(x[1] for x in inspect.getmembers(sympy, inspect.isclass))
 
 def is_sympy_exp(formula):
@@ -221,6 +222,10 @@ class Expression:
                     return True
 
         return False
+
+    def matches_args_with(self, expression):
+        return (len(self.sympy_expr.args) == len(sympify(str(expression.sympy_expr)).args)) and \
+               set(self.sympy_expr.args).issubset(sympify(str(expression.sympy_expr)).args)
 
     def contains_user_defined_funct(self) -> bool:
         if self.is_user_defined_func():
