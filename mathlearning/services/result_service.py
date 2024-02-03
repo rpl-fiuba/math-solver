@@ -21,7 +21,7 @@ class ResultService:
     def get_derivative_result(self, expression: Expression) -> Expression:
         return expression.solve_derivatives()
 
-    def solution_tree(self, expression: Expression) -> SolutionTreeNode:
+    def solution_tree(self, expression: Expression, type) -> SolutionTreeNode:
         logger.info("get solution tree for: " + expression.to_string())
         theorems=[]
         if expression.contains_derivative():
@@ -29,16 +29,24 @@ class ResultService:
         if expression.contains_integral():
             theorems += IntegrateTheorems.get_all()
 
-        return self.solution_tree_for(expression, theorems, Theorem('none', None, None, {}))
+        return self.solution_tree_for(expression, theorems, Theorem('none', None, None, {}), type)
 
-    def solution_tree_for(self, expression: Expression, theorems: List[Theorem], applied_theorem: Theorem):
+    def solution_tree_for(self, expression: Expression, theorems: List[Theorem], applied_theorem: Theorem, type):
 
         already_seen = set()
         subtrees = self.subtrees(expression, theorems, already_seen)
         already_seen |= subtrees[1]
         tree = SolutionTreeNode(expression, applied_theorem.name, subtrees[0])
 
-        # TODO: check if this si necessary
+        if type == "factorisable":
+            factor_expression = expression.factor()
+            tree.branches.append(
+                SolutionTreeNode(factor_expression,
+                                 'factor',
+                                 self.subtrees(factor_expression, theorems, already_seen)[0])
+            )
+            return tree
+
         simplified_expression = expression.simplify()
         if simplified_expression.sympy_expr != expression.sympy_expr:
             if simplified_expression.to_string() in already_seen:
@@ -53,6 +61,7 @@ class ResultService:
                                      'simplificacion',
                                      self.subtrees(simplified_expression, theorems, already_seen)[0])
                 )
+
         return tree
 
     # Returns the subtrees of a specific expression, if a expression is already in the tree the subtree is not going

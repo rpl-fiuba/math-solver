@@ -8,6 +8,7 @@ from sympy import Integral
 from sympy.core.function import Derivative, UndefinedFunction
 from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
+from sympy import factor
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
@@ -170,6 +171,10 @@ class Expression:
     def simplify(self) -> 'Expression':
         copy = self.get_copy()
         return Expression(simplify(copy.sympy_expr))
+
+    def factor(self) -> 'Expression':
+        copy = self.get_copy()
+        return Expression(factor(copy.sympy_expr))
 
     def is_user_defined_func(self) -> bool:
         return isinstance(self.sympy_expr.func, UndefinedFunction) and not self.is_derivative()

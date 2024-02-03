@@ -18,13 +18,17 @@ class EvaluateService:
     def evaluate_problem_input(self, expression: Expression, problem_type):
         logger.info("Starting problem input validation")
 
-        if problem_type != 'derivative' and problem_type != 'integral':
+        if problem_type != 'derivative' and problem_type != 'integral' and problem_type != 'factorisable':
             raise SuspiciousOperation('Invalid input type')
 
         try:
             if problem_type == 'derivative':
                 derivative = Derivative(expression.sympy_expr, 'x')
                 return Expression(derivative.doit()).solve_derivatives().to_latex_with_derivatives()
+            else:
+                if problem_type == 'factorisable':
+                    factorisable = expression.sympy_expr
+                    return latex(Expression(factorisable).factor())
 
             integral = Integral(expression.sympy_expr, x)
             return latex(integral.doit())

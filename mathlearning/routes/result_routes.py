@@ -35,7 +35,8 @@ def calculate_solution_tree(request: Request):
     if request.method == 'POST':
         body = json.loads(request.body)
         expression = Expression(body['problem_input']['expression'], body['problem_input']['variables'])
-        result = result_service.solution_tree(expression)
+        type = body['problem_input']['type']
+        result = result_service.solution_tree(expression, type)
         logger.info(f'tree')
         logger.info(f'{result.print_tree()}')
         result = result.to_json()

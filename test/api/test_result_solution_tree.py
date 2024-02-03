@@ -86,7 +86,6 @@ class SolutionTreeAPITest(APITestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(theorem_names, {RESOLVER_DERIV})
 
-
     def test_solution_tree_derivative_part(self):
         derivative_theorems = load_theorems()
         problem_input = {'expression': '\\frac{d(x)}{dx}', 'variables': []}
