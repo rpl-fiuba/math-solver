@@ -117,7 +117,7 @@ class SolutionTreeNode:
     def is_pre_simplification_step(self):
         if len(self.branches) == 1:
             branch = self.branches[0]
-            if branch.theorem_applied_name == 'simplificacion' and len(branch.branches) == 0:
+            if branch.theorem_applied_name in ['simplificacion', 'factor'] and len(branch.branches) == 0:
                 return True
         return False
 
