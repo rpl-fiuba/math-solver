@@ -1,6 +1,10 @@
+from sympy import S
+from sympy.calculus.util import continuous_domain
+
 from mathlearning.model.derivative.derivative_theorems import DerivativeTheorems
 
 from mathlearning.model.integral.integrate_theorems import IntegrateTheorems
+from mathlearning.model.problem_type import ProblemType
 from mathlearning.model.solution_tree_node import SolutionTreeNode
 from mathlearning.model.theorem import Theorem
 from mathlearning.services.step_service import StepService
@@ -38,12 +42,21 @@ class ResultService:
         already_seen |= subtrees[1]
         tree = SolutionTreeNode(expression, applied_theorem.name, subtrees[0])
 
-        if type == "factorisable":
+        if type == ProblemType.FACTORISABLE.value:
             factor_expression = expression.factor()
             tree.branches.append(
                 SolutionTreeNode(factor_expression,
                                  'factor',
                                  self.subtrees(factor_expression, theorems, already_seen)[0])
+            )
+            return tree
+
+        if type == ProblemType.DOMAIN_AND_IMAGE.value:
+            calculated_domain = continuous_domain(expression.sympy_expr, 'x', S.Reals)
+            tree.branches.append(
+                SolutionTreeNode(Expression(calculated_domain),
+                                 'domain',
+                                 self.subtrees(Expression(calculated_domain), theorems, already_seen)[0])
             )
             return tree
 
