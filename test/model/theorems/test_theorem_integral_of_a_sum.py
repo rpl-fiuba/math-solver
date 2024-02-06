@@ -1,7 +1,7 @@
 import unittest
 
 from mathlearning.model.expression import Expression
-from mathlearning.model.integrate_theorems import IntegrateTheorems
+from mathlearning.model.integral.integrate_theorems import IntegrateTheorems
 
 from test.model.theorems.test_utils import TestUtils
 

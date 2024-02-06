@@ -1,5 +1,5 @@
-from mathlearning.model.derivative_theorems import DerivativeTheorems
-from mathlearning.model.integrate_theorems import IntegrateTheorems
+from mathlearning.model.derivative.derivative_theorems import DerivativeTheorems
+from mathlearning.model.integral.integrate_theorems import IntegrateTheorems
 
 
 class Theorems:

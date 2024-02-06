@@ -1,6 +1,6 @@
-from mathlearning.model.integrate_by_parts import IntegrateByPartsTheorem, IntegrateByPartsApplyTheorem, \
+from mathlearning.model.integral.integrate_by_parts import IntegrateByPartsTheorem, IntegrateByPartsApplyTheorem, \
   IntegrateByPartsReplaceUVTheorem
-from mathlearning.model.integrate_by_substitution import IntegrateBySubstitutionDefineUAndDUTheorem, \
+from mathlearning.model.integral.integrate_by_substitution import IntegrateBySubstitutionDefineUAndDUTheorem, \
   IntegrateBySubstitutionReplaceUAndDUTheorem
 from mathlearning.model.theorem import Theorem
 

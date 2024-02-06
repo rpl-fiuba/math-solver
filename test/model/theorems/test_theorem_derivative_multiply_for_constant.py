@@ -1,6 +1,6 @@
 import unittest
 
-from mathlearning.model.derivative_theorems import DerivativeTheorems
+from mathlearning.model.derivative.derivative_theorems import DerivativeTheorems
 from mathlearning.model.expression import Expression
 
 theorem = DerivativeTheorems.derivative_multiply_for_constant()

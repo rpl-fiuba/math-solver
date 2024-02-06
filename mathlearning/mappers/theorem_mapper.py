@@ -1,4 +1,4 @@
-from mathlearning.model.integrate_by_parts import IntegrateByPartsTheorem, IntegrateByPartsApplyTheorem, \
+from mathlearning.model.integral.integrate_by_parts import IntegrateByPartsTheorem, IntegrateByPartsApplyTheorem, \
     IntegrateByPartsReplaceUVTheorem
 from mathlearning.model.theorem import Theorem
 from typing import List

@@ -1,6 +1,6 @@
-from mathlearning.model.derivative_theorems import DerivativeTheorems
+from mathlearning.model.derivative.derivative_theorems import DerivativeTheorems
 
-from mathlearning.model.integrate_theorems import IntegrateTheorems
+from mathlearning.model.integral.integrate_theorems import IntegrateTheorems
 from mathlearning.model.solution_tree_node import SolutionTreeNode
 from mathlearning.model.theorem import Theorem
 from mathlearning.services.step_service import StepService
