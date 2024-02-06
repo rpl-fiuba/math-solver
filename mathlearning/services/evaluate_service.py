@@ -1,3 +1,4 @@
+from mathlearning.model.problem_type import ProblemType
 from mathlearning.services.theorems_service import TheoremsService
 from mathlearning.utils.logger import Logger
 from sympy.core.function import Derivative
@@ -18,15 +19,15 @@ class EvaluateService:
     def evaluate_problem_input(self, expression: Expression, problem_type):
         logger.info("Starting problem input validation")
 
-        if problem_type != 'derivative' and problem_type != 'integral' and problem_type != 'factorisable':
+        if problem_type != ProblemType.DERIVATIVE and problem_type != ProblemType.INTEGRAL and problem_type != ProblemType.FACTORISABLE:
             raise SuspiciousOperation('Invalid input type')
 
         try:
-            if problem_type == 'derivative':
+            if problem_type == ProblemType.DERIVATIVE:
                 derivative = Derivative(expression.sympy_expr, 'x')
                 return Expression(derivative.doit()).solve_derivatives().to_latex_with_derivatives()
             else:
-                if problem_type == 'factorisable':
+                if problem_type == ProblemType.FACTORISABLE:
                     factorisable = expression.sympy_expr
                     return latex(Expression(factorisable).factor())
 

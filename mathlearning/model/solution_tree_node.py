@@ -1,3 +1,4 @@
+from mathlearning.model.problem_type import ProblemType
 from mathlearning.model.theorem import Theorem
 from mathlearning.utils.logger import Logger
 from mathlearning.model.expression import Expression
@@ -126,7 +127,7 @@ class SolutionTreeNode:
         is_contained = False
         while len(to_check) > 0:
             current = to_check.pop()
-            if (type != 'factorisable' and current.expression.is_equivalent_to(expression)) or \
+            if (type != ProblemType.FACTORISABLE and current.expression.is_equivalent_to(expression)) or \
                     (current.expression.is_equivalent_to(expression) and current.expression.matches_args_with(expression)):
                 is_contained = True
                 if not len(current.branches) == 0 and not current.is_pre_simplification_step():
