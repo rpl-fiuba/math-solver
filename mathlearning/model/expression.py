@@ -191,15 +191,19 @@ class Expression:
         # Inicializa la lista de inecuaciones resultantes
         inecuaciones = []
 
-        # Recorre las partes y construye inecuaciones
-        for i in range(0, len(partes)-1, 2):
-            inecuacion = partes[i] + partes[i + 1] + partes[i + 2]
-            inecuaciones.append(inecuacion)
+        if len(partes) > 3:
+            # Recorre las partes y construye inecuaciones
+            for i in range(0, len(partes)-1, 2):
+                inecuacion = partes[i] + partes[i + 1] + partes[i + 2]
+                inecuaciones.append(inecuacion)
 
-        x = symbols("x")
-        results = []
-        for i in inecuaciones:
-            results.append(solve_univariate_inequality(sympify(i), x))
+            x = symbols("x")
+            results = []
+            for i in inecuaciones:
+                results.append(solve_univariate_inequality(sympify(i), x))
+        else:
+            x = symbols("x")
+            results = solve_univariate_inequality(sympify(expr), x)
 
         return results
 
