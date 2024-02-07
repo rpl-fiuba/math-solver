@@ -9,6 +9,9 @@ from sympy.core.function import Derivative, UndefinedFunction
 from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
 from sympy import factor, sympify
+from sympy import symbols, solve_univariate_inequality, Eq, Abs
+import re
+from sympy import symbols, solve_univariate_inequality, sympify
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
@@ -176,6 +179,29 @@ class Expression:
     def factor(self) -> 'Expression':
         copy = self.get_copy()
         return Expression(factor(copy.sympy_expr))
+
+    def inequality(self, expr):
+        logger.info(f"expr {expr.replace('(', '').replace(')', '')}")
+        # Elimina espacios en blanco y divide la inecuación compuesta en partes
+        partes = re.split(r'([<>]=?|>=|<=)', expr.replace('(', '').replace(')', '').replace(" ", ""))
+
+        # Filtra elementos vacíos de la lista de partes
+        partes = list(filter(lambda x: x != '', partes))
+
+        # Inicializa la lista de inecuaciones resultantes
+        inecuaciones = []
+
+        # Recorre las partes y construye inecuaciones
+        for i in range(0, len(partes)-1, 2):
+            inecuacion = partes[i] + partes[i + 1] + partes[i + 2]
+            inecuaciones.append(inecuacion)
+
+        x = symbols("x")
+        results = []
+        for i in inecuaciones:
+            results.append(solve_univariate_inequality(sympify(i), x))
+
+        return results
 
     def is_user_defined_func(self) -> bool:
         return isinstance(self.sympy_expr.func, UndefinedFunction) and not self.is_derivative()

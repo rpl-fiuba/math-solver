@@ -30,10 +30,13 @@ class EvaluateService:
                 derivative = Derivative(expression.sympy_expr, 'x')
                 return Expression(derivative.doit()).solve_derivatives().to_latex_with_derivatives()
             elif problem_type == ProblemType.FACTORISABLE.value:
-                    factorisable = expression.sympy_expr
-                    return latex(Expression(factorisable).factor())
+                factorisable = expression.sympy_expr
+                return latex(Expression(factorisable).factor())
             elif problem_type == ProblemType.DOMAIN_AND_IMAGE.value:
                 return latex(continuous_domain(expression.sympy_expr, 'x', S.Reals))
+            elif problem_type == ProblemType.INEQUALITY.value:
+                inequality = expression.sympy_expr
+                return latex(Expression(inequality).inequality(str(expression)))
 
             integral = Integral(expression.sympy_expr, x)
             return latex(integral.doit())

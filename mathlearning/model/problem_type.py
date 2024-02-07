@@ -6,3 +6,4 @@ class ProblemType(Enum):
     INTEGRAL = 'integral'
     FACTORISABLE = 'factorisable'
     DOMAIN_AND_IMAGE = 'domain_and_image'
+    INEQUALITY = 'inequality'
