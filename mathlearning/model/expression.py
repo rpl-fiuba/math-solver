@@ -181,9 +181,11 @@ class Expression:
         return Expression(factor(copy.sympy_expr))
 
     def inequality(self, expr):
-        logger.info(f"expr {expr.replace('(', '').replace(')', '')}")
         # Elimina espacios en blanco y divide la inecuación compuesta en partes
-        partes = re.split(r'([<>]=?|>=|<=)', expr.replace('(', '').replace(')', '').replace(" ", ""))
+        if (not expr.__contains__("Abs")) and (expr.__contains__(") <") or expr.__contains__(") >")):
+            expr = expr.replace("(", "").replace(")", "")
+
+        partes = re.split(r'([<>]=?|>=|<=)', expr.replace(" ", ""))
 
         # Filtra elementos vacíos de la lista de partes
         partes = list(filter(lambda x: x != '', partes))
