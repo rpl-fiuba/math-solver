@@ -182,8 +182,8 @@ class Expression:
 
     def inequality(self, expr):
         # Elimina espacios en blanco y divide la inecuación compuesta en partes
-        if (not expr.__contains__("Abs")) and (expr.__contains__(") <") or expr.__contains__(") >")):
-            expr = expr.replace("(", "").replace(")", "")
+        if expr.__contains__(") <") or expr.__contains__(") >"):
+            expr = expr.replace(" ", "").replace(")<", "<").replace(")>", ">")[1:]
 
         partes = re.split(r'([<>]=?|>=|<=)', expr.replace(" ", ""))
 
