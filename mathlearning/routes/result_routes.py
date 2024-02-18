@@ -1,7 +1,13 @@
+from typing import re
+
+from sympy import S
+from sympy.calculus.util import continuous_domain
+
 from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.mappers.theorem_mapper import TheoremMapper
 from mathlearning.mappers.validate_mapper import ValidateMapper
 from mathlearning.model.expression_variable import ExpressionVariable
+from mathlearning.model.problem_type import ProblemType
 from mathlearning.services.result_service import ResultService
 from mathlearning.utils.logger import Logger
 from mathlearning.model.expression import Expression
@@ -34,6 +40,9 @@ def solve_derivative(request: Request):
 def calculate_solution_tree(request: Request):
     if request.method == 'POST':
         body = json.loads(request.body)
+        unparsed_expression = body['problem_input']['expression']
+        if type == ProblemType.DOMAIN_AND_IMAGE:
+            unparsed_expression = re.sub(r'Dom\((.*?)\)', r'\1', unparsed_expression)
         expression = Expression(body['problem_input']['expression'], body['problem_input']['variables'])
         type = body['type']
         result = result_service.solution_tree(expression, type)
@@ -75,8 +84,8 @@ def resolve(request: Request):
                                                                  Expression(variable['expression']['expression'])),
                              body_variables if body_variables is not None else []))
         current_expression = Expression(body['current_expression']['expression'], variables)
-
-        (result, hints) = result_service.resolve(problem_input, solution_tree, step_list, current_expression, body["type"])
+        problem_type = ProblemType(body["type"])
+        (result, hints) = result_service.resolve(problem_input, solution_tree, step_list, current_expression, problem_type)
 
         logger.info('Returning the following response: {} {}'.format(result, json.dumps(hints)))
 

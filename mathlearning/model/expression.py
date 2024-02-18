@@ -1,11 +1,13 @@
 import inspect
+import re
+
 import sympy
 import json
 from sympy import Symbol
 from sympy.parsing.latex import parse_latex
 from sympy.core.basic import preorder_traversal
 from sympy import Integral
-from sympy.core.function import Derivative, UndefinedFunction
+from sympy.core.function import Derivative, UndefinedFunction, Function
 from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
 from sympy import factor, sympify
@@ -13,6 +15,7 @@ from sympy import symbols, solve_univariate_inequality, Eq, Abs
 import re
 from sympy import symbols, solve_univariate_inequality, sympify
 
+from sympy.parsing.mathematica import parse_mathematica
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
 from mathlearning.utils.list.non_commutative_group_transformer import NonCommutativeGroupTransformer
@@ -24,16 +27,54 @@ from mathlearning.utils.logger import Logger
 from mathlearning.utils.sympy_utils import SympyUtils
 logger = Logger.getLogger()
 sympy_classes = tuple(x[1] for x in inspect.getmembers(sympy, inspect.isclass))
+interval_symbols = ['\cup', '\cap', ',']
+
+def parse_latex_interval(latex_interval):
+
+    # Split the string into parts
+    parts = latex_interval.split(" \cup ")
+
+    # Define lists to store the intervals
+    intervals = []
+
+    # Process each part to create intervals
+    for part in parts:
+        # Determine whether the interval is open or closed
+        left_open = part.startswith("(")
+        right_open = part.endswith(")")
+        # Remove whitespace and brackets
+        part = part.replace(" ", "").replace("[", "").replace("(", "").replace(")", "").replace("]", "").replace("\\infty", sympy.oo.__str__())
+        # Split into start and end
+        start, end = part.split(",")
+        # Evaluate start and end as expressions
+        start = sympify(start)
+        end = sympify(end)
+        # Create the interval
+        interval = sympy.Interval(start, end, left_open, right_open)
+        # Append to the list of intervals
+        intervals.append(interval)
+
+    return sympy.Union(*intervals)
+
+
+def contains_interval_symbol(formula):
+    for symbol in interval_symbols:
+        if symbol in formula:
+            return True
+    return False
 
 def is_sympy_exp(formula):
     return isinstance(formula, sympy_classes)
 
 def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
-        clean_formula = clean_latex(formula)
-        sympy_expr = parse_latex(clean_formula)
-        sympy_expr = sympy_expr.subs(simplify(parse_expr("e")), parse_expr("exp(1)"))
-        sympy_expr = sympy_expr.xreplace({parse_latex("\\ln(x)"): parse_expr('log(x,E)')})
+        if contains_interval_symbol(formula):
+            return parse_latex_interval(clean_latex(formula))
+        else:
+            clean_formula = clean_latex(formula)
+            sympy_expr = parse_latex(clean_formula) #todo form
+            sympy_expr = sympy_expr.subs(simplify(parse_expr("e")), parse_expr("exp(1)"))
+            sympy_expr = sympy_expr.xreplace({parse_latex("\\ln(x)"): parse_expr('log(x,E)')})
     elif is_sympy_exp(formula):
         sympy_expr = formula
     elif isinstance(formula, str):
@@ -158,6 +199,14 @@ class Expression:
 
     def is_derivative(self) -> bool:
         return isinstance(self.sympy_expr, Derivative)
+
+    def is_domain(self) -> bool:
+        return hasattr(self.sympy_expr.func, 'name') and self.sympy_expr.func.name == 'Dom'
+
+    def is_interval(self) -> bool:
+        return isinstance(self.sympy_expr, sympy.Union) or \
+               isinstance(self.sympy_expr, sympy.Intersection) or \
+               isinstance(self.sympy_expr, sympy.Interval)
 
     def is_integral(self) -> bool:
         return isinstance(self.sympy_expr, Integral)
@@ -357,11 +406,12 @@ class Expression:
     def get_simplifications(self) -> List['Expression']:
         simplifications = []
         posible_simplifications = [
-            Expression(sympy.expand(self.sympy_expr)),
             Expression(sympy.cancel(self.sympy_expr)),
             Expression(sympy.simplify(self.sympy_expr)),
             Expression(sympy.factor(self.sympy_expr))
         ]
+        if not self.is_interval():
+            posible_simplifications.append(Expression(sympy.expand(self.sympy_expr)))
 
         original_integral_amount = self.amount_of_integrals()
 

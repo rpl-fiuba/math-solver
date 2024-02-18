@@ -1,3 +1,4 @@
+from mathlearning.model.expression_comparator import ExpressionComparator
 from mathlearning.model.problem_type import ProblemType
 from mathlearning.model.theorem import Theorem
 from mathlearning.utils.logger import Logger
@@ -58,18 +59,18 @@ class SolutionTreeNode:
     def __str__(self):
         return self.expression.to_string() + self.theorem_applied_name
 
-    def new_expression_is_valid(self, previous_step, new_expression):
+    def new_expression_is_valid(self, previous_step, new_expression, problem_type: ProblemType):
         # TODO: fix going backwards bug
-        return self.contains(new_expression)
+        return self.contains(new_expression, problem_type)
 
-    def validate_new_expression(self, new_expression, previous_step, type):
+    def validate_new_expression(self, new_expression, previous_step, problem_type: ProblemType):
         hints = []
-        is_valid = self.new_expression_is_valid(previous_step, new_expression)
+        is_valid = self.new_expression_is_valid(previous_step, new_expression, problem_type)
 
         if not is_valid:
             hints = self.get_hints(previous_step)
             return 'invalid', hints
-        if self.is_a_result(new_expression, type):
+        if self.is_a_result(new_expression, problem_type):
             return 'resolved', hints
 
         hints = self.get_hints(new_expression)
@@ -94,20 +95,20 @@ class SolutionTreeNode:
             accum += branch.get_sub_trees_with_root(current_expression)
         return accum
 
-    def contains(self, expression):
+    def contains(self, expression, problem_type=ProblemType.DERIVATIVE):
         to_check = [self]
         already_checked = set()
         while len(to_check) > 0:
             current = to_check.pop()
             if current.expression.to_string() not in already_checked:
-                if current.expression.is_equivalent_to(expression) and \
+                if ExpressionComparator.is_equivalent_to(problem_type, current.expression, expression) and \
                         current.expression.compare_variables(expression.variables):
                     return True
 
                 current_replaced = current.expression.replace_variables()
                 expression_replaced = expression.replace_variables()
 
-                if current_replaced.is_equivalent_to(expression_replaced):
+                if ExpressionComparator.is_equivalent_to(problem_type, current_replaced, expression_replaced):
                     return True
 
                 for branch in current.branches:
@@ -122,17 +123,15 @@ class SolutionTreeNode:
                 return True
         return False
 
-    def is_a_result(self, expression, type):
+    def is_a_result(self, expression, type: ProblemType):
         to_check = [self]
         is_contained = False
         while len(to_check) > 0:
             current = to_check.pop()
-            if (type != ProblemType.FACTORISABLE and current.expression.is_equivalent_to(expression)) or \
-                    (current.expression.is_equivalent_to(expression) and current.expression.matches_args_with(expression)):
+            if(ExpressionComparator.is_a_result_of(type, current.expression, expression)):
                 is_contained = True
                 if not len(current.branches) == 0 and not current.is_pre_simplification_step():
                     return False
-
             for branch in current.branches:
                 to_check.append(branch)
 
