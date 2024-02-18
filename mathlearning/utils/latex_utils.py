@@ -6,7 +6,7 @@ def clean_latex(latex: str) -> str:
     clean = latex.replace("\\left(", "(")
     clean = clean.replace("left(", "(")
     clean = clean.replace("\\right)", ")")
-    clean = latex.replace("\\left|", "|")
+    clean = clean.replace("\\left|", "|")
     clean = clean.replace("left|", "|")
     clean = clean.replace("\\right|", "|")
     clean = clean.replace("\\cdot ", "*")
