@@ -15,7 +15,6 @@ from sympy import symbols, solve_univariate_inequality, Eq, Abs
 import re
 from sympy import symbols, solve_univariate_inequality, sympify
 
-from sympy.parsing.mathematica import parse_mathematica
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
 from mathlearning.utils.list.non_commutative_group_transformer import NonCommutativeGroupTransformer
