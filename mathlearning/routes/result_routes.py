@@ -1,5 +1,3 @@
-from typing import re
-
 from sympy import S
 from sympy.calculus.util import continuous_domain
 
