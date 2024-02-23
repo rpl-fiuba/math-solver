@@ -40,9 +40,6 @@ def solve_derivative(request: Request):
 def calculate_solution_tree(request: Request):
     if request.method == 'POST':
         body = json.loads(request.body)
-        unparsed_expression = body['problem_input']['expression']
-        if type == ProblemType.DOMAIN_AND_IMAGE:
-            unparsed_expression = re.sub(r'Dom\((.*?)\)', r'\1', unparsed_expression)
         expression = Expression(body['problem_input']['expression'], body['problem_input']['variables'])
         type = body['type']
         result = result_service.solution_tree(expression, type)
