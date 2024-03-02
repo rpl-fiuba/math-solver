@@ -48,7 +48,6 @@ def evaluate(request: Request):
         body = json.loads(request.body)
         (problem_input, problem_type) = validateMapper.parse_evaluate(body)
         expression = Expression(problem_input['expression'], problem_input['variables'])
-
         try:
             result = evaluate_service.evaluate_problem_input(expression, problem_type)
             data = { 'result': {'expression': result, 'variables': []}}
