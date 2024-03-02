@@ -23,8 +23,8 @@ class ExpressionComparator:
         both_are_domain = original_expression.is_domain() and new_expression.is_domain()
         neither_is_domain = not original_expression.is_domain() and not new_expression.is_domain()
         if both_are_domain:
-            original_inner_expression = Expression(make_sympy_expr(str(original_expression.sympy_expr.args[0]), False))
-            new_inner_expression = Expression(make_sympy_expr(str(new_expression.sympy_expr.args[0]), False))
+            original_inner_expression = original_expression.get_base_function_from_domain()
+            new_inner_expression = new_expression.get_base_function_from_domain()
             return original_inner_expression.is_equivalent_to(new_inner_expression)
         elif neither_is_domain:
             return original_expression.is_equivalent_to(new_expression)

@@ -210,6 +210,9 @@ class Expression:
     def is_integral(self) -> bool:
         return isinstance(self.sympy_expr, Integral)
 
+    def get_base_function_from_domain(self) -> 'Expression':
+        return Expression(make_sympy_expr(str(self.sympy_expr.args[0]), False))
+
     def apply_derivative(self) -> 'Expression':
         deriv = Derivative(self.sympy_expr.args[0], self.sympy_expr.args[1])
         return Expression(deriv.doit())
