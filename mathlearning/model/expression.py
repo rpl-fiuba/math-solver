@@ -230,11 +230,11 @@ class Expression:
 
     def inequality(self, expr):
         # Elimina espacios en blanco y divide la inecuación compuesta en partes
-        if (expr.__contains__(") <") or expr.__contains__(") >")) and (not expr.startswith("Abs")):
+        if (expr.__contains__(") <") or expr.__contains__(") >")) and \
+                (not expr.startswith("Abs") and not expr.startswith("(")):
             expr = expr.replace(" ", "").replace(")<", "<").replace(")>", ">")[1:]
         else:
-            if expr.startswith("Abs"):
-                expr = expr.replace(" ", "")
+            expr = expr.replace(" ", "")
         partes = re.split(r'([<>]=?|>=|<=)', expr.replace(" ", ""))
 
         # Filtra elementos vacíos de la lista de partes
