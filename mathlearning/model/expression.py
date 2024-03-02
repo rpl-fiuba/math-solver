@@ -244,6 +244,19 @@ class Expression:
         inecuaciones = []
 
         if len(partes) > 3:
+            if len(partes) == 5 and partes[0].startswith("("):
+                new_partes = []
+                try:
+                    number = int(partes[0][1:])
+                    expr = partes[2][:-1]
+                    new_partes.append(str(number))
+                    new_partes.append(str(partes[1]))
+                    new_partes.append(str(expr))
+                    new_partes.append(str(partes[3]))
+                    new_partes.append(str(partes[4]))
+                    partes = new_partes
+                except:
+                    continue_i = True
             # Recorre las partes y construye inecuaciones
             for i in range(0, len(partes)-1, 2):
                 inecuacion = partes[i] + partes[i + 1] + partes[i + 2]
