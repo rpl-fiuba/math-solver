@@ -51,7 +51,7 @@ class ResultService:
             )
             return tree
 
-        if type == ProblemType.DOMAIN_AND_IMAGE.value:
+        if type == ProblemType.DOMAIN.value:
             calculated_domain = continuous_domain(expression.get_base_function_from_domain().sympy_expr.factor(), 'x', S.Reals)
             tree.branches.append(
                 SolutionTreeNode(Expression(calculated_domain),

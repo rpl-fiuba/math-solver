@@ -5,5 +5,5 @@ class ProblemType(Enum):
     DERIVATIVE = 'derivative'
     INTEGRAL = 'integral'
     FACTORISABLE = 'factorisable'
-    DOMAIN_AND_IMAGE = 'domain_and_image'
+    DOMAIN = 'domain'
     INEQUALITY = 'inequality'

@@ -6,7 +6,7 @@ class ExpressionComparator:
 
     @staticmethod
     def is_equivalent_to(problem_type: ProblemType, original_expression: Expression, new_expression: Expression) -> bool:
-        if problem_type == ProblemType.DOMAIN_AND_IMAGE:
+        if problem_type == ProblemType.DOMAIN:
             return ExpressionComparator.__equivalent_for_domain__(original_expression, new_expression)
         else:
             return original_expression.is_equivalent_to(new_expression)
