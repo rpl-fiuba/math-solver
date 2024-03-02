@@ -31,7 +31,7 @@ interval_symbols = ['\cup', '\cap', ',']
 def parse_latex_interval(latex_interval):
 
     # Split the string into parts
-    parts = latex_interval.split(" \cup ")
+    parts = latex_interval.split("\cup")
 
     # Define lists to store the intervals
     intervals = []
@@ -64,6 +64,7 @@ def contains_interval_symbol(formula):
 
 def is_sympy_exp(formula):
     return isinstance(formula, sympy_classes)
+
 
 def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
