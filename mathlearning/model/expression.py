@@ -251,7 +251,10 @@ class Expression:
             if len(partes) == 5 and partes[0].startswith("("):
                 new_partes = []
                 try:
-                    number = int(partes[0][1:])
+                    number = ''
+                    some_number = int(simplify(partes[0][1:]))
+                    if some_number != None:
+                        number = partes[0][1:]
                     expr = partes[2][:-1]
                     new_partes.append(str(number))
                     new_partes.append(str(partes[1]))

@@ -9,7 +9,10 @@ class ExpressionComparator:
         if problem_type == ProblemType.DOMAIN:
             return ExpressionComparator.__equivalent_for_domain__(original_expression, new_expression)
         else:
-            return original_expression.is_equivalent_to(new_expression)
+            if problem_type == ProblemType.INEQUALITY:
+                return ExpressionComparator.is_equivalent_to_for_inequality(original_expression, new_expression)
+            else:
+                return original_expression.is_equivalent_to(new_expression)
 
     @staticmethod
     def is_a_result_of(problem_type: ProblemType, original_expression: Expression, new_expression: Expression) -> bool:
@@ -28,5 +31,17 @@ class ExpressionComparator:
             return original_inner_expression.is_equivalent_to(new_inner_expression)
         elif neither_is_domain:
             return original_expression.is_equivalent_to(new_expression)
+        else:
+            return False
+
+    @staticmethod
+    def is_equivalent_to_for_inequality(original_expression: Expression, new_expression: Expression) -> bool:
+        original_is_inequality = (str(original_expression).__contains__("<") or str(original_expression).__contains__(">")) and \
+                                 (not str(original_expression).__contains__("wedge"))
+        new_is_inequality = (str(new_expression).__contains__("<") or str(new_expression).__contains__(">")) and \
+                            (not str(new_expression).__contains__("wedge"))
+
+        if original_is_inequality and new_is_inequality:
+            return original_expression.inequality(str(original_expression)) == new_expression.inequality(str(new_expression))
         else:
             return False
