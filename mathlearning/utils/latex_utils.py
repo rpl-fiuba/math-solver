@@ -3,8 +3,10 @@ from sympy.core.numbers import Infinity
 
 
 def clean_latex(latex: str) -> str:
-    clean = latex.replace("\\left(", "(")
+    clean = latex.replace("\\left\\{", "{")
+    clean = clean.replace("\\left(", "(")
     clean = clean.replace("left(", "(")
+    clean = clean.replace("\\right\\}", "}")
     clean = clean.replace("\\right)", ")")
     clean = clean.replace("\\left|", "|")
     clean = clean.replace("left|", "|")

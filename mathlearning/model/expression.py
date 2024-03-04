@@ -1,17 +1,15 @@
 import inspect
-import re
 
 import sympy
 import json
-from sympy import Symbol
+from sympy import Symbol, S, FiniteSet, Complement, SymmetricDifference
 from sympy.parsing.latex import parse_latex
 from sympy.core.basic import preorder_traversal
 from sympy import Integral
-from sympy.core.function import Derivative, UndefinedFunction, Function
+from sympy.core.function import Derivative, UndefinedFunction
 from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
-from sympy import factor, sympify
-from sympy import symbols, solve_univariate_inequality, Eq, Abs
+from sympy import factor
 import re
 from sympy import symbols, solve_univariate_inequality, sympify
 
@@ -24,25 +22,40 @@ from sympy import integrate
 from mathlearning.utils.logger import Logger
 
 from mathlearning.utils.sympy_utils import SympyUtils
+
 logger = Logger.getLogger()
 sympy_classes = tuple(x[1] for x in inspect.getmembers(sympy, inspect.isclass))
-interval_symbols = ['\cup', '\cap', ',']
+interval_symbols = ['\cup', '\cap']
+set_symbols = ['\\mathbb{R}', '\\mathbb{Z}', '\\mathbb{o}']
+
+
+def parse_latex_set(latex_set):
+    pattern = r'\\mathbb{(R|Z)}-\{(\d+(?:,\d+)*)\}'
+    matches = re.findall(pattern, latex_set)
+    number_group, finite_set = matches[0]
+    numbers = finite_set.split(',')
+    return SymmetricDifference(FiniteSet(*numbers), get_number_group_symbol(number_group))
+
+
+def get_number_group_symbol(number_group):
+    if str(number_group) == 'R':
+        return S.Reals
+    elif str(number_group) == 'Z':
+        return S.Naturals
+
 
 def parse_latex_interval(latex_interval):
-
-    # Split the string into parts
     parts = latex_interval.split("\cup")
-
     # Define lists to store the intervals
     intervals = []
-
     # Process each part to create intervals
     for part in parts:
         # Determine whether the interval is open or closed
         left_open = part.startswith("(")
         right_open = part.endswith(")")
         # Remove whitespace and brackets
-        part = part.replace(" ", "").replace("[", "").replace("(", "").replace(")", "").replace("]", "").replace("\\infty", sympy.oo.__str__())
+        part = part.replace(" ", "").replace("[", "").replace("(", "").replace(")", "").replace("]", "").replace(
+            "\\infty", sympy.oo.__str__())
         # Split into start and end
         start, end = part.split(",")
         # Evaluate start and end as expressions
@@ -52,7 +65,6 @@ def parse_latex_interval(latex_interval):
         interval = sympy.Interval(start, end, left_open, right_open)
         # Append to the list of intervals
         intervals.append(interval)
-
     return sympy.Union(*intervals)
 
 
@@ -62,6 +74,14 @@ def contains_interval_symbol(formula):
             return True
     return False
 
+
+def contains_set_symbol(formula):
+    for symbol in set_symbols:
+        if symbol in formula:
+            return True
+    return False
+
+
 def is_sympy_exp(formula):
     return isinstance(formula, sympy_classes)
 
@@ -70,9 +90,11 @@ def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
         if contains_interval_symbol(formula):
             return parse_latex_interval(clean_latex(formula))
+        elif contains_set_symbol(formula):
+            return parse_latex_set(clean_latex(formula))
         else:
             clean_formula = clean_latex(formula)
-            sympy_expr = parse_latex(clean_formula) #todo form
+            sympy_expr = parse_latex(clean_formula)  # todo form
             sympy_expr = sympy_expr.subs(simplify(parse_expr("e")), parse_expr("exp(1)"))
             sympy_expr = sympy_expr.xreplace({parse_latex("\\ln(x)"): parse_expr('log(x,E)')})
     elif is_sympy_exp(formula):
@@ -82,6 +104,7 @@ def make_sympy_expr(formula, is_latex):
     else:
         raise (Exception("error while trying to create an Expression, unsuported formula type" + str(formula)))
     return sympy_expr
+
 
 def make_complete_sympy_expr(sympy_expr, variables):
     complete_sympy_expr = sympy_expr
@@ -123,7 +146,7 @@ class Expression:
         return True
 
     def get_copy(self) -> 'Expression':
-        return Expression(parse_expr(str(self.sympy_expr)),self.variables)
+        return Expression(parse_expr(str(self.sympy_expr)), self.variables)
 
     # Search and derivate expressions
     def solve_derivatives(self) -> 'Expression':
@@ -148,7 +171,6 @@ class Expression:
                 replacement = '\\frac{d(%s)}{d%s}' % (content, variable)
                 replacements.append({"derivative": expression.to_latex(), "replacement": replacement})
         return replacements
-
 
     # possibilities of solving just 1 derivative
     def derivatives_solving_possibilities(self) -> List['Expression']:
@@ -205,8 +227,8 @@ class Expression:
 
     def is_interval(self) -> bool:
         return isinstance(self.sympy_expr, sympy.Union) or \
-               isinstance(self.sympy_expr, sympy.Intersection) or \
-               isinstance(self.sympy_expr, sympy.Interval)
+            isinstance(self.sympy_expr, sympy.Intersection) or \
+            isinstance(self.sympy_expr, sympy.Interval)
 
     def is_integral(self) -> bool:
         return isinstance(self.sympy_expr, Integral)
@@ -265,7 +287,7 @@ class Expression:
                 except:
                     continue_i = True
             # Recorre las partes y construye inecuaciones
-            for i in range(0, len(partes)-1, 2):
+            for i in range(0, len(partes) - 1, 2):
                 inecuacion = partes[i] + partes[i + 1] + partes[i + 2]
                 inecuaciones.append(inecuacion)
 
@@ -300,7 +322,6 @@ class Expression:
     def to_latex(self) -> str:
         return sympy.latex(self.sympy_expr)
 
-
     def to_latex_with_derivatives(self) -> str:
         replacements = self.replace_derivatives_for_json()
         latex_exp = sympy.latex(self.sympy_expr)
@@ -327,7 +348,7 @@ class Expression:
 
     def matches_args_with(self, expression):
         return (len(self.sympy_expr.args) == len(sympify(str(expression.sympy_expr)).args)) and \
-               set(self.sympy_expr.args).issubset(sympify(str(expression.sympy_expr)).args)
+            set(self.sympy_expr.args).issubset(sympify(str(expression.sympy_expr)).args)
 
     def contains_user_defined_funct(self) -> bool:
         if self.is_user_defined_func():
@@ -452,7 +473,7 @@ class Expression:
             if len(self.variables) != len(other.variables):
                 return False
 
-            if len(self.variables) == 0 and len(other.variables) == 0: # TODO Lucas: add tests for it
+            if len(self.variables) == 0 and len(other.variables) == 0:  # TODO Lucas: add tests for it
                 return are_formulas_equals
 
             self_variables_set = set((x.tag, x.expression) for x in self.variables)
@@ -479,7 +500,7 @@ class Expression:
         while len(to_check) > 0:
             current = to_check.pop()
             current_level = current['level']
-            current_expression =  current['expression']
+            current_expression = current['expression']
             operator = current['expression'].sympy_expr.func
 
             if not isinstance(operator, UndefinedFunction) and not current_expression.is_constant() \
