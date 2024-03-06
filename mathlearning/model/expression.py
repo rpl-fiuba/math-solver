@@ -225,6 +225,9 @@ class Expression:
     def is_domain(self) -> bool:
         return hasattr(self.sympy_expr.func, 'name') and self.sympy_expr.func.name == 'Dom'
 
+    def is_image(self) -> bool:
+        return hasattr(self.sympy_expr.func, 'name') and self.sympy_expr.func.name == 'Img'
+
     def is_interval(self) -> bool:
         return isinstance(self.sympy_expr, sympy.Union) or \
             isinstance(self.sympy_expr, sympy.Intersection) or \
@@ -233,7 +236,10 @@ class Expression:
     def is_integral(self) -> bool:
         return isinstance(self.sympy_expr, Integral)
 
-    def get_base_function_from_domain(self) -> 'Expression':
+    # This method will remove the higher function call
+    # get_inner_function("Dom(1/3x)") --> 1/3x
+    # get_inner_function("Img(cos(3x))") --> cos(3x)
+    def get_inner_function(self) -> 'Expression':
         return Expression(make_sympy_expr(str(self.sympy_expr.args[0]), False))
 
     def apply_derivative(self) -> 'Expression':

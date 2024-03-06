@@ -1,4 +1,5 @@
-from sympy import S
+from sympy import S, imageset, Lambda
+from sympy.abc import x
 from sympy.calculus.util import continuous_domain
 
 from mathlearning.model.derivative.derivative_theorems import DerivativeTheorems
@@ -52,11 +53,20 @@ class ResultService:
             return tree
 
         if type == ProblemType.DOMAIN.value:
-            calculated_domain = continuous_domain(expression.get_base_function_from_domain().sympy_expr.factor(), 'x', S.Reals)
+            calculated_domain = continuous_domain(expression.get_inner_function().sympy_expr.factor(), 'x', S.Reals)
             tree.branches.append(
                 SolutionTreeNode(Expression(calculated_domain),
                                  'domain',
                                  self.subtrees(Expression(calculated_domain), theorems, already_seen)[0])
+            )
+            return tree
+
+        if type == ProblemType.IMAGE.value:
+            calculated_image = imageset(Lambda(x, expression.get_inner_function().sympy_expr.factor()), S.Reals)
+            tree.branches.append(
+                SolutionTreeNode(Expression(calculated_image),
+                                 'image',
+                                 self.subtrees(Expression(calculated_image), theorems, already_seen)[0])
             )
             return tree
 

@@ -7,3 +7,4 @@ class ProblemType(Enum):
     FACTORISABLE = 'factorisable'
     DOMAIN = 'domain'
     INEQUALITY = 'inequality'
+    IMAGE = 'image'

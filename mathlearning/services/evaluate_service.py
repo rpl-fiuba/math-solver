@@ -1,18 +1,13 @@
 from sympy.calculus.util import continuous_domain
 
 from mathlearning.model.problem_type import ProblemType
-from mathlearning.services.theorems_service import TheoremsService
 from mathlearning.utils.logger import Logger
 from sympy.core.function import Derivative
 from sympy.abc import x
-from typing import List
-from sympy import latex
+from sympy import latex, imageset, Lambda
 from sympy import Integral
 from sympy import S
 
-from sympy.printing.latex import LatexPrinter, print_latex
-from sympy.parsing.latex import parse_latex # TODO: cambiar por https://github.com/augustt198/latex2sympy
-from mathlearning.model.theorem import Theorem
 from mathlearning.model.expression import Expression
 from django.core.exceptions import SuspiciousOperation
 
@@ -34,6 +29,8 @@ class EvaluateService:
                 return latex(Expression(factorisable).factor())
             elif problem_type == ProblemType.DOMAIN.value:
                 return latex(continuous_domain(expression.sympy_expr.factor(), 'x', S.Reals))
+            elif problem_type == ProblemType.IMAGE.value:
+                return latex(imageset(Lambda(x, expression.sympy_expr.factor()), S.Reals))
             elif problem_type == ProblemType.INEQUALITY.value:
                 inequality = expression.sympy_expr
                 return latex(Expression(inequality).inequality(str(expression)))
