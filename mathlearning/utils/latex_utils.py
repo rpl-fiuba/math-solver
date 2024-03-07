@@ -18,6 +18,7 @@ def clean_latex(latex: str) -> str:
     clean = clean.replace(".", "*")
     clean = clean.replace("sen", "\\sin")
     clean = clean.replace("Dom", "\\Dom")
+    clean = clean.replace("Img", "\\Img")
     clean = clean.replace("\\ ", "")
     clean = clean.replace("\\le", "\\leq")
     clean = clean.replace("\\ge", "\\geq")
