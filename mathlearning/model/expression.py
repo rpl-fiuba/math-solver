@@ -2,7 +2,7 @@ import inspect
 
 import sympy
 import json
-from sympy import Symbol, S, FiniteSet, Complement, SymmetricDifference
+from sympy import Symbol, S, FiniteSet, SymmetricDifference
 from sympy.parsing.latex import parse_latex
 from sympy.core.basic import preorder_traversal
 from sympy import Integral
@@ -69,6 +69,32 @@ def parse_latex_interval(latex_interval):
 
 
 def contains_interval_symbol(formula):
+
+    valid_starts = ["[", "\\left[", "(", "\\left("]
+    valid_ends = [")", "\\right)", "]", "\\right]"]
+    expected_mids = [","]
+
+    has_valid_start = False
+    has_valid_end = False
+    has_expected_mids = False
+
+    for valid_start in valid_starts:
+        if formula.startswith(valid_start):
+            has_valid_start = True
+            break
+
+    for valid_end in valid_ends:
+        if formula.endswith(valid_end):
+            has_valid_end = True
+            break
+
+    for expected_mid in expected_mids:
+        if formula.count(expected_mid) == 1:
+            has_expected_mids = True
+            break
+
+    if has_valid_start and has_valid_end and has_expected_mids:
+        return True
     for symbol in interval_symbols:
         if symbol in formula:
             return True
