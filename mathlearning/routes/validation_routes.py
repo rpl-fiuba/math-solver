@@ -1,4 +1,5 @@
 from mathlearning.mappers.validate_mapper import ValidateMapper, ValidateMapperException
+from mathlearning.model.problem_type import ProblemType
 from mathlearning.services.step_service import StepService
 from mathlearning.services.evaluate_service import EvaluateService
 from mathlearning.utils.logger import Logger
@@ -47,8 +48,11 @@ def evaluate(request: Request):
     if request.method == 'POST':
         body = json.loads(request.body)
         (problem_input, problem_type) = validateMapper.parse_evaluate(body)
-        expression = Expression(problem_input['expression'], problem_input['variables'])
         try:
+            if problem_type == ProblemType.TRIGONOMETRY.value:
+                expression = Expression.build_area_expression(problem_input)
+            else:
+                expression = Expression(problem_input['expression'], problem_input['variables'])
             result = evaluate_service.evaluate_problem_input(expression, problem_type)
             data = { 'result': {'expression': result, 'variables': []}}
 

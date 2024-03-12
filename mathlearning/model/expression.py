@@ -1,5 +1,6 @@
 import inspect
 
+import math
 import sympy
 import json
 from sympy import Symbol, S, FiniteSet, SymmetricDifference
@@ -127,6 +128,8 @@ def make_sympy_expr(formula, is_latex):
         sympy_expr = formula
     elif isinstance(formula, str):
         sympy_expr = parse_expr(formula)
+    elif isinstance(formula, float) or isinstance(formula, int):
+        sympy_expr = parse_expr(str(formula))
     else:
         raise (Exception("error while trying to create an Expression, unsuported formula type" + str(formula)))
     return sympy_expr
@@ -241,6 +244,19 @@ class Expression:
             possibilities.append(expression_with_constant)
 
         return possibilities
+
+    @staticmethod
+    def build_area_expression(problem_input):
+        sides = problem_input["expression"]["sides"]
+        left_side = next((side["value"] for side in sides if side["label"] == "leftSide"), None)
+        right_side = next((side["value"] for side in sides if side["label"] == "rightSide"), None)
+        bottom_side = next((side["value"] for side in sides if side["label"] == "bottomSide"), None)
+        angles = problem_input["expression"]["angles"]
+        left_angle = next((angle["value"] for angle in angles if angle["label"] == "leftAngle"), None)
+        right_angle = next((angle["value"] for angle in angles if angle["label"] == "rightAngle"), None)
+        top_angle = next((angle["value"] for angle in angles if angle["label"] == "topAngle"), None)
+        height = math.sin((left_angle * math.pi) / 180) * left_side
+        return Expression(bottom_side * height / 2)
 
     def is_integral(self):
         return isinstance(self.sympy_expr, sympy.Integral)

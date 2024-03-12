@@ -8,3 +8,4 @@ class ProblemType(Enum):
     DOMAIN = 'domain'
     INEQUALITY = 'inequality'
     IMAGE = 'image'
+    TRIGONOMETRY = 'trigonometry'
