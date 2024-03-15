@@ -12,6 +12,8 @@ class ExpressionComparator:
             return ExpressionComparator.is_equivalent_to_for_inequality(original_expression, new_expression)
         elif problem_type == ProblemType.IMAGE:
             return ExpressionComparator.__equivalent_for_image__(original_expression, new_expression)
+        elif problem_type == ProblemType.TRIGONOMETRY:
+            return round(original_expression.sympy_expr, 3) == round(new_expression.sympy_expr, 3)
         else:
             return original_expression.is_equivalent_to(new_expression)
 
@@ -19,6 +21,8 @@ class ExpressionComparator:
     def is_a_result_of(problem_type: ProblemType, original_expression: Expression, new_expression: Expression) -> bool:
         if problem_type == ProblemType.FACTORISABLE:
             return original_expression.is_equivalent_to(new_expression) and original_expression.matches_args_with(new_expression)
+        elif problem_type == ProblemType.TRIGONOMETRY:
+            return round(original_expression.sympy_expr, 3) == round(new_expression.sympy_expr, 3)
         else:
             return original_expression.is_equivalent_to(new_expression)
 

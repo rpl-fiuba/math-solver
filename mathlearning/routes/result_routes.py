@@ -56,8 +56,13 @@ def calculate_solution_tree(request: Request):
 def resolve(request: Request):
     if request.method == 'POST':
         body = json.loads(request.body)
-
-        problem_input = Expression(body['problem_input']['expression'], body['problem_input']['variables'])
+        problem_type = ProblemType(body["type"])
+        expression_unparsed = body['current_expression']['expression']
+        if problem_type == ProblemType.TRIGONOMETRY:
+            problem_input = Expression("0")
+            expression_unparsed = float(expression_unparsed)
+        else:
+            problem_input = Expression(body['problem_input']['expression'], body['problem_input']['variables'])
         solution_tree = solutionTreeMapper.parse(body['math_tree'])
 
         step_list = []
@@ -81,12 +86,9 @@ def resolve(request: Request):
         variables = list(map(lambda variable: ExpressionVariable(variable['tag'],
                                                                  Expression(variable['expression']['expression'])),
                              body_variables if body_variables is not None else []))
-        current_expression = Expression(body['current_expression']['expression'], variables)
-        problem_type = ProblemType(body["type"])
+        current_expression = Expression(expression_unparsed, variables)
         (result, hints) = result_service.resolve(problem_input, solution_tree, step_list, current_expression, problem_type)
-
         logger.info('Returning the following response: {} {}'.format(result, json.dumps(hints)))
-
         response_data = {
             'exerciseStatus': result,
             'hints': hints
