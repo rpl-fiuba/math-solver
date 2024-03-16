@@ -12,7 +12,7 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
 from sympy import factor
 import re
-from sympy import symbols, solve_univariate_inequality, sympify
+from sympy import symbols, solve_univariate_inequality, sympify, oo, Interval, Union, Intersection
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
@@ -302,6 +302,63 @@ class Expression:
         copy = self.get_copy()
         return Expression(factor(copy.sympy_expr))
 
+    def aux_inequality(self, results):
+        x = symbols('x')
+        is_or = False
+        if str(results).__contains__("|"):
+            results_aux = str(results).replace("[","").replace("]","").strip().split("|")
+            results_1 = []
+            for j in results_aux:
+                results_1.append(eval(j))
+            results = results_1
+            is_or = True
+        final_result = []
+        for i in results:
+            if i:
+                if isinstance(i,tuple):
+                    final_result.append(aux_inequality(i))
+                else:
+                    inf_open = True
+                    sup_open = True
+                    if str(i.args[0]).__contains__("="):
+                        inf_open = False
+                    if str(i.args[1]).__contains__("="):
+                        sup_open = False
+
+                    # Si hay solución, se devuelve el intervalo de solución
+                    lim_inf = eval(str(i.args[0]).replace("<","").replace(">","").replace("=","").replace("x","").strip())
+                    lim_sup = eval(str(i.args[1]).replace("<","").replace(">","").replace("=","").replace("x","").strip())
+                    if lim_inf < lim_sup:
+                        inf = lim_inf
+                        sup = lim_sup
+                    else:
+                        inf = lim_sup
+                        sup = lim_inf
+                        if inf_open and not sup_open:
+                            sup_open = True
+                            inf_open = False
+                        elif not inf_open and sup_open:
+                            inf_open = True
+                            sup_open = False
+                    if inf_open and not sup_open:
+                        solucion_intervalo = Interval.Lopen(inf, sup)
+                    elif not inf_open and sup_open:
+                        solucion_intervalo = Interval.Ropen(inf, sup)
+                    elif inf_open and sup_open:
+                        solucion_intervalo = Interval.open(inf, sup)
+                    else:
+                        solucion_intervalo = Interval(inf, sup)
+                    final_result.append(solucion_intervalo)
+
+            else:
+                # Si no hay solución, se devuelve None
+                final_result.append(None)
+
+        if is_or:
+            return sympy.Union(*final_result)
+
+        return sympy.Intersection(*final_result)
+
     def inequality(self, expr):
         # Elimina espacios en blanco y divide la inecuación compuesta en partes
         if (expr.__contains__(") <") or expr.__contains__(") >")) and \
@@ -345,9 +402,8 @@ class Expression:
                 results.append(solve_univariate_inequality(sympify(i), x))
         else:
             x = symbols("x")
-            results = solve_univariate_inequality(sympify(expr), x)
-
-        return results
+            results = [solve_univariate_inequality(sympify(expr), x)]
+        return Expression(self.aux_inequality(results)).to_latex()
 
     def is_user_defined_func(self) -> bool:
         return isinstance(self.sympy_expr.func, UndefinedFunction) and not self.is_derivative()
