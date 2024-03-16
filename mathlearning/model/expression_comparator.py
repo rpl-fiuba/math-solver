@@ -52,18 +52,15 @@ class ExpressionComparator:
         else:
             return False
 
+
     @staticmethod
     def is_equivalent_to_for_inequality(original_expression: Expression, new_expression: Expression) -> bool:
-        original_is_inequality = str(original_expression).__contains__("<") or str(original_expression).__contains__(">")
-        new_is_inequality = str(new_expression).__contains__("<") or str(new_expression).__contains__(">")
+        original_is_inequality = (str(original_expression).__contains__("<") or str(original_expression).__contains__(">")) and \
+                                 (not str(original_expression).__contains__("wedge"))
+        new_is_inequality = (str(new_expression).__contains__("<") or str(new_expression).__contains__(">")) and \
+                            (not str(new_expression).__contains__("wedge"))
 
-        both_are_inequality = original_is_inequality and new_is_inequality
-        neither_is_inequality = not original_is_inequality and not new_is_inequality
-
-        if both_are_inequality:
+        if original_is_inequality and new_is_inequality:
             return original_expression.inequality(str(original_expression)) == new_expression.inequality(str(new_expression))
-        elif neither_is_inequality:
-            return original_expression.is_equivalent_to(new_expression)
         else:
             return False
-
