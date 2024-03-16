@@ -315,8 +315,8 @@ class Expression:
         final_result = []
         for i in results:
             if i:
-                if isinstance(i,tuple):
-                    final_result.append(aux_inequality(i))
+                if isinstance(i, tuple):
+                    final_result.append(self.aux_inequality(i))
                 else:
                     inf_open = True
                     sup_open = True
