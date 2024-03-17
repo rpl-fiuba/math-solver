@@ -403,7 +403,8 @@ class Expression:
         else:
             x = symbols("x")
             results = [solve_univariate_inequality(sympify(expr), x)]
-        return Expression(self.aux_inequality(results)).to_latex()
+        #return Expression(self.aux_inequality(results)).to_latex()
+        return self.aux_inequality(results)
 
     def is_user_defined_func(self) -> bool:
         return isinstance(self.sympy_expr.func, UndefinedFunction) and not self.is_derivative()
