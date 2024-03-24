@@ -73,7 +73,11 @@ class SolutionTreeNode:
         if self.is_a_result(new_expression, problem_type):
             return 'resolved', hints
 
-        hints = self.get_hints(new_expression)
+        if problem_type == ProblemType.INEQUALITY:
+            hints = []
+        else:
+            hints = self.get_hints(new_expression)
+
         return 'valid', hints
 
     def get_hints(self, current_expression) -> List[str]:
