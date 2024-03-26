@@ -68,7 +68,10 @@ class SolutionTreeNode:
         is_valid = self.new_expression_is_valid(previous_step, new_expression, problem_type)
 
         if not is_valid:
-            hints = self.get_hints(previous_step)
+            if problem_type == ProblemType.INEQUALITY:
+                hints = []
+            else:
+                hints = self.get_hints(previous_step)
             return 'invalid', hints
         if self.is_a_result(new_expression, problem_type):
             return 'resolved', hints
