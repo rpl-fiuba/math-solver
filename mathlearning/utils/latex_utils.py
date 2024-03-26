@@ -15,7 +15,7 @@ def clean_latex(latex: str) -> str:
     clean = clean.replace("left[", "[")
     clean = clean.replace("\\right]", "]")
     clean = clean.replace("\\cdot ", "*")
-    clean = clean.replace(".", "*")
+    # clean = clean.replace(".", "*")
     clean = clean.replace("sen", "\\sin")
     clean = clean.replace("Dom", "\\Dom")
     clean = clean.replace("Img", "\\Img")
