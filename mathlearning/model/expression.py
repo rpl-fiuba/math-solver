@@ -121,7 +121,19 @@ def make_sympy_expr(formula, is_latex):
             return parse_latex_set(clean_latex(formula))
         else:
             clean_formula = clean_latex(formula)
-            sympy_expr = parse_latex(clean_formula)  # todo form
+            if clean_formula.__contains__('{') and (clean_formula.__contains__('wedge') or clean_formula.__contains__('vee')):
+                new_formula = clean_formula.replace('{','').replace('}','')
+                or_values = new_formula.split('\\vee')
+                acc = ''
+                for i in or_values:
+                    and_values = i.split('\\wedge')
+                    for j in and_values:
+                        acc = acc + f'parse_latex(\'{str(j).strip()}\') & '
+                    acc = acc.strip()[:-1]
+                    acc = acc + '| '
+                sympy_expr = eval(acc.strip()[:-1])
+            else:
+                sympy_expr = parse_latex(clean_formula)  # todo form
             sympy_expr = sympy_expr.subs(simplify(parse_expr("e")), parse_expr("exp(1)"))
             sympy_expr = sympy_expr.xreplace({parse_latex("\\ln(x)"): parse_expr('log(x,E)')})
     elif is_sympy_exp(formula):
@@ -360,6 +372,31 @@ class Expression:
         return sympy.Intersection(*final_result)
 
     def inequality(self, expr):
+        if expr.__contains__("&") or expr.__contains__("|"):
+            # expr_replaced = expr.replace("\\wedge","&").replace("\\vee","|")
+            expr_new = expr.replace("(","").replace(")","").strip().split("|")
+            # expr_new = expr.split("|")
+            results = []
+            x = symbols("x")
+            for i in expr_new:
+                for j in i.split("&"):
+                    results.append(solve_univariate_inequality(sympify(j), x))
+                results.append('|')
+            results = results[:-1]
+
+            for idx,k in enumerate(results):
+                if k == '|':
+                    idx_pipe = idx
+            izq = []
+            der = []
+            for idx1,k1 in enumerate(results):
+                if idx1 < idx_pipe:
+                    izq.append(k1)
+                elif idx1 > idx_pipe:
+                    der.append(k1)
+
+            return sympy.Union(*[self.aux_inequality(izq),self.aux_inequality(der)])
+
         # Elimina espacios en blanco y divide la inecuación compuesta en partes
         if (expr.__contains__(") <") or expr.__contains__(") >")) and \
                 (not expr.startswith("Abs") and not expr.startswith("(")):
@@ -403,7 +440,6 @@ class Expression:
         else:
             x = symbols("x")
             results = [solve_univariate_inequality(sympify(expr), x)]
-        #return Expression(self.aux_inequality(results)).to_latex()
         return self.aux_inequality(results)
 
     def is_user_defined_func(self) -> bool:
