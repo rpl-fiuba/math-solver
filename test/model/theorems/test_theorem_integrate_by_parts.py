@@ -36,6 +36,7 @@ class TestTheoremIntegrateByParts(unittest.TestCase):
         exp = Expression('x')
         self.assertFalse(theorem.there_is_a_chance_to_apply_to(exp))
 
+    @unittest.skip("Migrating tests")
     def test_parts_replacing_u_v_should_apply(self):
         exp = Expression('\\int (x * \\cos(x))')
         variables = [

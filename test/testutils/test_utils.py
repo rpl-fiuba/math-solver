@@ -1,5 +1,7 @@
-from test.api.test_api import SolvedExercise
 import json
+
+from test.testutils.solved_exercises import SolvedExercise
+
 
 def load_exercises(exercises_path):
     with open(exercises_path, 'r') as exercises_file:

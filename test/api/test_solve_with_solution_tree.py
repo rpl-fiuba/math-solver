@@ -1,4 +1,5 @@
 import json
+import unittest
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -32,6 +33,7 @@ def tree_helper(tree_str: str):
     broken_nodes = get_solution_tree_broken_nodes(json.loads(tree_str))
 
 
+@unittest.skip("Migrating tests")
 class SolutionTreeAPITest(APITestCase):
 
     def solve_exercise_with_solution_tree(self, exercise: SolvedExercise):

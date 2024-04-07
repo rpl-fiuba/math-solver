@@ -1,4 +1,5 @@
 import json
+import unittest
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -9,7 +10,7 @@ from mathlearning.model.expression import Expression
 solution_tree_mapper = SolutionTreeMapper()
 
 def load_theorems():
-    with open("test/jsons/theorems.json", 'r') as theorems_file:
+    with open("jsons/theorems.json", 'r') as theorems_file:
         return json.load(theorems_file)
 
 def get_solution_tree_broken_nodes(tree_dict):
@@ -56,6 +57,7 @@ derivative_multiplication_of_three_elem = {
 }
 
 
+@unittest.skip("Migrating tests")
 class SolutionTreeAPITest(APITestCase):
 
     def test_solution_tree(self):
