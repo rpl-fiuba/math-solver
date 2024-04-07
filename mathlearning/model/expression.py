@@ -3,16 +3,18 @@ import inspect
 import math
 import sympy
 import json
-from sympy import Symbol, S, FiniteSet, SymmetricDifference
+from sympy import Symbol, S, FiniteSet, SymmetricDifference, imageset
+from sympy.calculus.util import continuous_domain
 from sympy.parsing.latex import parse_latex
 from sympy.core.basic import preorder_traversal
 from sympy import Integral
-from sympy.core.function import Derivative, UndefinedFunction
+from sympy.core.function import Derivative, UndefinedFunction, Lambda
 from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
 from sympy import factor
 import re
 from sympy import symbols, solve_univariate_inequality, sympify, oo, Interval, Union, Intersection
+from sympy.abc import x
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
@@ -486,6 +488,17 @@ class Expression:
                     return True
 
         return False
+
+    def has_same_domain_as(self, expression: 'Expression') -> bool:
+        self_domain = Expression(continuous_domain(self.sympy_expr, 'x', S.Reals))
+        other_expression_domain = Expression(continuous_domain(expression.sympy_expr, 'x', S.Reals))
+        return self_domain.is_equivalent_to(other_expression_domain)
+
+    def has_same_image_as(self, expression: 'Expression') -> bool:
+        self_image = Expression(imageset(Lambda(x, self.sympy_expr), S.Reals))
+        other_expression_image = Expression(imageset(Lambda(x, expression.sympy_expr), S.Reals))
+        return self_image.is_equivalent_to(other_expression_image)
+
 
     def matches_args_with(self, expression):
         return (len(self.sympy_expr.args) == len(sympify(str(expression.sympy_expr)).args)) and \

@@ -35,7 +35,7 @@ class ExpressionComparator:
         if both_are_domain:
             original_inner_expression = original_expression.get_inner_function()
             new_inner_expression = new_expression.get_inner_function()
-            return original_inner_expression.is_equivalent_to(new_inner_expression)
+            return original_inner_expression.is_equivalent_to(new_inner_expression) and original_inner_expression.has_same_domain_as(new_inner_expression)
         elif neither_is_domain:
             return original_expression.is_equivalent_to(new_expression)
         else:
@@ -48,7 +48,7 @@ class ExpressionComparator:
         if both_are_image:
             original_inner_expression = original_expression.get_inner_function()
             new_inner_expression = new_expression.get_inner_function()
-            return original_inner_expression.is_equivalent_to(new_inner_expression)
+            return original_inner_expression.has_same_image_as(new_inner_expression) and original_inner_expression.is_equivalent_to(new_inner_expression)
         elif neither_is_image:
             return original_expression.is_equivalent_to(new_expression)
         else:
