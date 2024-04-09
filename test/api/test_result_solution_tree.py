@@ -13,6 +13,11 @@ def load_theorems():
     with open("jsons/theorems.json", 'r') as theorems_file:
         return json.load(theorems_file)
 
+def load_theorems_from(json_path):
+    with open(json_path, 'r') as theorems_file:
+        return json.load(theorems_file)
+
+
 def get_solution_tree_broken_nodes(tree_dict):
     result = []
     for branch in tree_dict['branches']:

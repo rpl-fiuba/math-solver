@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.model.expression import Expression
 from mathlearning.model.theorem import Theorem
-from test.api.test_api import load_theorems
+from test.api.test_result_solution_tree import load_theorems_from
 from test.testutils.solved_exercises import SolvedExercises, SolvedExercise
 
 solution_tree_mapper = SolutionTreeMapper()
@@ -19,7 +19,7 @@ class SolutionTreeAPITest(APITestCase):
 
     def solve_exercise_with_solution_tree(self, exercise: SolvedExercise):
         # get solution tree
-        theorems = load_theorems("test/jsons/integrate_theorems.json")
+        theorems = load_theorems_from("test/jsons/integrate_theorems.json")
         data = {
             'problem_input': exercise.steps[0],
             'type': 'integrate',

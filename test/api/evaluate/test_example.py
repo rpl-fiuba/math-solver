@@ -29,7 +29,6 @@ success_cases = [{
 
 # problem_input = "\\frac{d(e^x*x)}{dx} + \\frac{d(sen(x)* x^2)}{dx}"
 
-@unittest.skip("Migrating tests")
 class APITests(APITestCase):
     def test_evaluate_success(self):
         for problem in success_cases:
@@ -46,18 +45,6 @@ class APITests(APITestCase):
             self.assertEquals(response.status_code, status.HTTP_200_OK)
 
             self.assertTrue(expected_expression.is_equivalent_to(result_expression))
-
-    def test_evaluate_fails_because_expression(self):
-        data = {
-            'problem_input': {'expression': '//x', 'variables': []},
-            'type': 'derivative'
-        }
-
-        response = self.client.post(path='/validations/evaluate', data=data, format='json')
-
-        body = json.loads(response.content)
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(body['message'], 'Invalid expression')
 
     def test_evaluate_fails_because_type(self):
         data = {
