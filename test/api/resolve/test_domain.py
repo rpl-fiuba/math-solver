@@ -63,8 +63,8 @@ class SolutionTreeAPITest(APITestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(result['exerciseStatus'], 'resolved')
 
-    def rational_domain_root_zero(self):
+    def test_rational_domain_root_zero(self):
         self.solve_exercise_with_solution_tree(DomainExercises.rational_domain_root_zero())
 
-    def rational_domain_root_moved(self):
+    def test_rational_domain_root_moved(self):
         self.solve_exercise_with_solution_tree(DomainExercises.rational_domain_root_moved())
