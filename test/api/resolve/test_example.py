@@ -7,9 +7,10 @@ from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.model.expression import Expression
 from mathlearning.model.theorem import Theorem
 from test.api.test_result_solution_tree import load_theorems_from
-from test.testutils.solved_exercises import SolvedExercises, SolvedExercise
+from test.testutils.solved_exercise import SolvedExercise
 
 solution_tree_mapper = SolutionTreeMapper()
+
 
 def theorem_to_json(theorem: Theorem):
     return theorem.to_json()
@@ -63,16 +64,14 @@ class SolutionTreeAPITest(APITestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(result['exerciseStatus'], 'resolved')
 
+    # def test_solution_tree_cases_sum_of_two_derivatives(self):
+    #    self.solve_exercise_with_solution_tree(DerivativeExercises.derivative_e_plus_sin())
 
+    # def test_solution_tree_cases_derivative_mult_of_three_elem(self):
+    #    self.solve_exercise_with_solution_tree(DerivativeExercises.derivative_mult_of_three_elem())
 
-    def test_solution_tree_cases_sum_of_two_derivatives(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_e_plus_sin())
+    # def test_solution_tree_cases_derivative_sin_divided_by_cos(self):
+    #    self.solve_exercise_with_solution_tree(DerivativeExercises.derivative_sin_divided_by_cos())
 
-    def test_solution_tree_cases_derivative_mult_of_three_elem(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_mult_of_three_elem())
-
-    def test_solution_tree_cases_derivative_sin_divided_by_cos(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_sin_divided_by_cos())
-
-    def test_solution_tree_cases_sum_derivative_x2_derivative_sum_x_cos(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.sum_derivative_x2_derivative_sum_x_cos())
+    # def test_solution_tree_cases_sum_derivative_x2_derivative_sum_x_cos(self):
+    #    self.solve_exercise_with_solution_tree(DerivativeExercises.sum_derivative_x2_derivative_sum_x_cos())

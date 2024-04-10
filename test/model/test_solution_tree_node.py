@@ -4,10 +4,10 @@ import unittest
 
 from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.model.expression import Expression
-from test.testutils.solved_exercises import SolvedExercises
+from test.testutils.derivative_solved_exercises import DerivativeExercises
 
 tree_byte_arr = ''  # TODO
-exercise = SolvedExercises.derivative_e_plus_sin()
+exercise = DerivativeExercises.derivative_e_plus_sin()
 #tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))
 
 

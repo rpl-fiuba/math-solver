@@ -54,8 +54,8 @@ def parse_latex_interval(latex_interval):
     # Process each part to create intervals
     for part in parts:
         # Determine whether the interval is open or closed
-        left_open = part.startswith("(")
-        right_open = part.endswith(")")
+        left_open = str.lstrip(part).startswith("(")
+        right_open = str.rstrip(part).endswith(")")
         # Remove whitespace and brackets
         part = part.replace(" ", "").replace("[", "").replace("(", "").replace(")", "").replace("]", "").replace(
             "\\infty", sympy.oo.__str__())

@@ -1,6 +1,6 @@
 import json
 
-from test.testutils.solved_exercises import SolvedExercise
+from test.testutils.solved_exercise import SolvedExercise
 
 
 def load_exercises(exercises_path):

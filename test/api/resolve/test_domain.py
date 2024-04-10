@@ -6,10 +6,11 @@ from rest_framework.test import APITestCase
 from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.model.expression import Expression
 from mathlearning.model.theorem import Theorem
-from test.api.test_result_solution_tree import load_theorems_from
-from test.testutils.solved_exercises import SolvedExercises, SolvedExercise
+from test.testutils.domain_solved_exercises import DomainExercises
+from test.testutils.solved_exercise import SolvedExercise
 
 solution_tree_mapper = SolutionTreeMapper()
+
 
 def theorem_to_json(theorem: Theorem):
     return theorem.to_json()
@@ -18,13 +19,12 @@ def theorem_to_json(theorem: Theorem):
 class SolutionTreeAPITest(APITestCase):
 
     def solve_exercise_with_solution_tree(self, exercise: SolvedExercise):
-        # get solution tree
-        theorems = load_theorems_from("test/jsons/integrate_theorems.json")
+
         data = {
             'problem_input': exercise.steps[0],
-            'type': 'integrate',
-            'theorems': theorems
+            'type': 'domain',
         }
+
         response = self.client.post(path='/results/solution-tree', data=data, format='json')
 
         tree_str = json.loads(response.content)
@@ -32,8 +32,8 @@ class SolutionTreeAPITest(APITestCase):
         resolve_data = {
             'problem_input': exercise.steps[0],
             'math_tree': tree_str,
-            'type': 'integrate',
-            'theorems': theorems
+            'type': 'domain',
+            'theorems': []
         }
 
         # all steps should be valid
@@ -42,7 +42,7 @@ class SolutionTreeAPITest(APITestCase):
             # remove problem_input
             previous_steps.pop()
             current_step = exercise.non_result_steps[i]
-            resolve_data['step_list'] = json.dumps(previous_steps)
+            resolve_data['step_list'] = previous_steps
             resolve_data['current_expression'] = current_step
             response = self.client.post(path='/resolve', data=resolve_data, format='json')
             result = json.loads(response.content)
@@ -54,7 +54,7 @@ class SolutionTreeAPITest(APITestCase):
             self.assertEquals(result['exerciseStatus'], 'valid')
 
         # the result should be resolved
-        resolve_data['step_list'] = json.dumps(exercise.steps)
+        resolve_data['step_list'] = exercise.steps
         resolve_data['current_expression'] = exercise.steps[-1]
 
         response = self.client.post(path='/resolve', data=resolve_data, format='json')
@@ -63,16 +63,8 @@ class SolutionTreeAPITest(APITestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(result['exerciseStatus'], 'resolved')
 
+    def rational_domain_root_zero(self):
+        self.solve_exercise_with_solution_tree(DomainExercises.rational_domain_root_zero())
 
-
-    def test_solution_tree_cases_sum_of_two_derivatives(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_e_plus_sin())
-
-    def test_solution_tree_cases_derivative_mult_of_three_elem(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_mult_of_three_elem())
-
-    def test_solution_tree_cases_derivative_sin_divided_by_cos(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_sin_divided_by_cos())
-
-    def test_solution_tree_cases_sum_derivative_x2_derivative_sum_x_cos(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.sum_derivative_x2_derivative_sum_x_cos())
+    def rational_domain_root_moved(self):
+        self.solve_exercise_with_solution_tree(DomainExercises.rational_domain_root_moved())

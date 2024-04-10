@@ -7,7 +7,9 @@ from rest_framework.test import APITestCase
 from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.model.expression import Expression
 from mathlearning.model.theorem import Theorem
-from test.testutils.solved_exercises import SolvedExercises, SolvedExercise
+from test.testutils.derivative_solved_exercises import DerivativeExercises
+from test.testutils.integral_solved_exercises import IntegralExercises
+from test.testutils.solved_exercise import SolvedExercise
 
 solution_tree_mapper = SolutionTreeMapper()
 
@@ -105,45 +107,45 @@ class SolutionTreeAPITest(APITestCase):
         self.assertEquals(result['exerciseStatus'], 'resolved')
 
     def test_solution_tree_cases_sum_of_two_derivatives(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_e_plus_sin())
+        self.solve_exercise_with_solution_tree(DerivativeExercises.derivative_e_plus_sin())
 
     def test_solution_tree_cases_derivative_mult_of_three_elem(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_mult_of_three_elem())
+        self.solve_exercise_with_solution_tree(DerivativeExercises.derivative_mult_of_three_elem())
 
     def test_solution_tree_cases_derivative_sin_divided_by_cos(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.derivative_sin_divided_by_cos())
+        self.solve_exercise_with_solution_tree(DerivativeExercises.derivative_sin_divided_by_cos())
 
     def test_solution_tree_cases_sum_derivative_x2_derivative_sum_x_cos(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.sum_derivative_x2_derivative_sum_x_cos())
+        self.solve_exercise_with_solution_tree(DerivativeExercises.sum_derivative_x2_derivative_sum_x_cos())
 
     def test_integral_solution_sum_of_two(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_add_x_cosx())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_add_x_cosx())
 
     def test_integral_solution_sum_of_two_x_x2(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_add_x_x2())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_add_x_x2())
 
     # INTEGRATE BY SUBSTITUTION EXERCISES
 
     def test_integral_substitution_division_of_polynomials(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_substitution_division_of_polynomials())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_substitution_division_of_polynomials())
 
     def test_integral_substitution_sin_with_polynomials(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_substitution_sin_with_polynomials())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_substitution_sin_with_polynomials())
 
     def test_integral_substitution_multiplication(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_substitution_multiplication())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_substitution_multiplication())
 
     # INTEGRATE BY PARTS EXERCISES
 
     def test_integral_solution_parts(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_parts_mult_x_cosx())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_parts_mult_x_cosx())
 
     def test_integral_parts_example_one(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_parts_example_one())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_parts_example_one())
 
     # TODO: analyze sqrt with by parts from sympy
     # def test_integral_parts_example_two(self):
     #     self.solve_exercise_with_solution_tree(SolvedExercises.integral_parts_example_two())
 
     def test_integral_parts_example_six(self):
-        self.solve_exercise_with_solution_tree(SolvedExercises.integral_parts_example_six())
+        self.solve_exercise_with_solution_tree(IntegralExercises.integral_parts_example_six())
