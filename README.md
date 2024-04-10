@@ -37,3 +37,23 @@ luego correr el siguiente comando para instalar las dependencias:
 por ultimo para iniciar la aplicacion django correr:
 
     $ python manage.py runserver 0.0.0.0:5000
+
+
+## Tests
+
+### Correr usando IntelliJ
+    Usar las run configurations creadas "Test All" / "Test Resolve" / "Test Evaluate"
+
+### Correr con la consola
+
+    Ejecutar un paquete el script de manage con el comando de tests y el paquete a evaluar como parametro
+    ./manage.py test test.api.evaluate
+
+    Ejecutar todos los tests
+    ./manage.py test
+
+### Agregar tests
+
+    Agregar clase al paquete de test.api.(evaluate/resolve) segun corresponda
+    La clase debe comenzar con el prefijo "test_" (ej: test_domain.py)
+    El metodo del test debe comenzar con el prefijo "test_" (ej: test_rational_domain_root_zero)
