@@ -7,8 +7,21 @@ from mathlearning.model.problem_type import ProblemType
 from test.testutils.solved_exercise import SolvedExercise
 
 
-def solve_exercise_with_solution_tree(self, kind: ProblemType, exercise: SolvedExercise):
+def run_entire_test_list(self, test_list, exercise_type):
+    for exercise in test_list:
+        data = {
+            'problem_input': exercise['problem_input'],
+            'type': exercise_type
+        }
 
+        response = self.client.post(path='/validations/evaluate', data=data, format='json')
+
+        body = json.loads(response.content)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(body['result']['expression'], exercise['problem_output'])
+
+
+def solve_exercise_with_solution_tree(self, kind: ProblemType, exercise: SolvedExercise):
     data = {
         'problem_input': exercise.steps[0],
         'type': kind.value,
@@ -52,6 +65,7 @@ def solve_exercise_with_solution_tree(self, kind: ProblemType, exercise: SolvedE
     self.assertEquals(response.status_code, status.HTTP_200_OK)
     self.assertEquals(result['exerciseStatus'], 'resolved')
 
+
 def load_exercises(exercises_path):
     with open(exercises_path, 'r') as exercises_file:
         exercises_json = json.load(exercises_file)
@@ -62,7 +76,7 @@ def load_exercises(exercises_path):
             exercises.append(exercise)
         return exercises
 
+
 def load_theorems():
     with open("test/jsons/theorems.json", 'r') as theorems_file:
         return json.load(theorems_file)
-

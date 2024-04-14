@@ -28,7 +28,7 @@ class EvaluateService:
                 factorisable = expression.sympy_expr
                 return latex(Expression(factorisable).factor())
             elif problem_type == ProblemType.DOMAIN.value:
-                return latex(continuous_domain(expression.sympy_expr, 'x', S.Reals))
+                return latex(continuous_domain(expression.sympy_expr, x, S.Reals))
             elif problem_type == ProblemType.IMAGE.value:
                 return latex(imageset(Lambda(x, expression.sympy_expr), S.Reals))
             elif problem_type == ProblemType.INEQUALITY.value:

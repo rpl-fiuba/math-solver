@@ -2,9 +2,11 @@ import json
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from mathlearning.model.problem_type import ProblemType
+from test.testutils.test_utils import run_entire_test_list
+
 
 class APITests(APITestCase):
-
     rational_domains = [
         {
             'problem_input': {'expression': 'x', 'variables': []},
@@ -24,16 +26,27 @@ class APITests(APITestCase):
         }
     ]
 
+    square_root_domains = [
+        {
+            'problem_input': {'expression': '\\sqrt{\\left(x\\right)}', 'variables': []},
+            'problem_output': '\\left[0, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '\\sqrt{\\left(5-x\\right)}', 'variables': []},
+            'problem_output': '\\left(-\\infty, 5\\right]'
+        },
+        {
+            'problem_input': {'expression': '\\sqrt{\\left(x^2\\right)}', 'variables': []},
+            'problem_output': '\\left(-\\infty, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '\\sqrt{\\left(1/x\\right)}', 'variables': []},
+            'problem_output': '\\left(0, \\infty\\right)'
+        }
+    ]
+
     def test_evaluate_rational_domains(self):
-        for exercise in self.rational_domains:
-            data = {
-                'problem_input': exercise['problem_input'],
-                'type': 'domain'
-            }
+        run_entire_test_list(self, test_list=self.rational_domains, exercise_type=ProblemType.DOMAIN.value)
 
-            response = self.client.post(path='/validations/evaluate', data=data, format='json')
-
-            body = json.loads(response.content)
-            self.assertEquals(response.status_code, status.HTTP_200_OK)
-            self.assertEquals(body['result']['expression'], exercise['problem_output'])
-
+    def test_evaluate_square_root_domains(self):
+        run_entire_test_list(self, test_list=self.square_root_domains, exercise_type=ProblemType.DOMAIN.value)

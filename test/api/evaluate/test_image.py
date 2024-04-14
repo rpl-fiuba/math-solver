@@ -2,6 +2,9 @@ import json
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from mathlearning.model.problem_type import ProblemType
+from test.testutils.test_utils import run_entire_test_list
+
 
 class APITests(APITestCase):
 
@@ -29,15 +32,5 @@ class APITests(APITestCase):
     ]
 
     def test_evaluate_simple_images(self):
-        for exercise in self.simple_images:
-            data = {
-                'problem_input': exercise['problem_input'],
-                'type': 'image'
-            }
-
-            response = self.client.post(path='/validations/evaluate', data=data, format='json')
-
-            body = json.loads(response.content)
-            self.assertEquals(response.status_code, status.HTTP_200_OK)
-            self.assertEquals(body['result']['expression'], exercise['problem_output'])
+        run_entire_test_list(self, test_list=self.simple_images, exercise_type=ProblemType.IMAGE.value)
 
