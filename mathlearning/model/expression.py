@@ -33,17 +33,20 @@ set_symbols = ['\\mathbb{R}', '\\mathbb{Z}', '\\mathbb{o}']
 
 
 def parse_latex_set(latex_set):
-    pattern = r'\\mathbb{(R|Z)}-\{(\d+(?:,\d+)*)\}'
-    matches = re.findall(pattern, latex_set)
-    number_group, finite_set = matches[0]
-    numbers = finite_set.split(',')
-    return SymmetricDifference(FiniteSet(*numbers), get_number_group_symbol(number_group))
+    if get_pure_set_symbol_if_match(latex_set) is None:
+        pattern = r'\\mathbb{(R|Z)}-\{(\d+(?:,\d+)*)\}'
+        matches = re.findall(pattern, latex_set)
+        number_group, finite_set = matches[0]
+        numbers = finite_set.split(',')
+        return SymmetricDifference(FiniteSet(*numbers), get_number_group_symbol(number_group))
+    else:
+        return get_number_group_symbol(get_pure_set_symbol_if_match(latex_set))
 
 
 def get_number_group_symbol(number_group):
-    if str(number_group) == 'R':
+    if str(number_group) == 'R' or str(number_group).strip() == '\\mathbb{R}':
         return S.Reals
-    elif str(number_group) == 'Z':
+    elif str(number_group) == 'Z' or str(number_group).strip() == '\\mathbb{Z}':
         return S.Naturals
 
 
@@ -72,7 +75,6 @@ def parse_latex_interval(latex_interval):
 
 
 def contains_interval_symbol(formula):
-
     valid_starts = ["[", "\\left[", "(", "\\left("]
     valid_ends = [")", "\\right)", "]", "\\right]"]
     expected_mids = [","]
@@ -111,6 +113,13 @@ def contains_set_symbol(formula):
     return False
 
 
+def get_pure_set_symbol_if_match(formula):
+    for symbol in set_symbols:
+        if symbol == formula.strip():
+            return symbol
+    return None
+
+
 def is_sympy_exp(formula):
     return isinstance(formula, sympy_classes)
 
@@ -123,8 +132,9 @@ def make_sympy_expr(formula, is_latex):
             return parse_latex_set(clean_latex(formula))
         else:
             clean_formula = clean_latex(formula)
-            if clean_formula.__contains__('{') and (clean_formula.__contains__('wedge') or clean_formula.__contains__('vee')):
-                new_formula = clean_formula.replace('{','').replace('}','')
+            if clean_formula.__contains__('{') and (
+                    clean_formula.__contains__('wedge') or clean_formula.__contains__('vee')):
+                new_formula = clean_formula.replace('{', '').replace('}', '')
                 or_values = new_formula.split('\\vee')
                 acc = ''
                 for i in or_values:
@@ -320,7 +330,7 @@ class Expression:
         x = symbols('x')
         is_or = False
         if str(results).__contains__("|"):
-            results_aux = str(results).replace("[","").replace("]","").strip().split("|")
+            results_aux = str(results).replace("[", "").replace("]", "").strip().split("|")
             results_1 = []
             for j in results_aux:
                 results_1.append(eval(j))
@@ -340,8 +350,10 @@ class Expression:
                         sup_open = False
 
                     # Si hay solución, se devuelve el intervalo de solución
-                    lim_inf = eval(str(i.args[0]).replace("<","").replace(">","").replace("=","").replace("x","").strip())
-                    lim_sup = eval(str(i.args[1]).replace("<","").replace(">","").replace("=","").replace("x","").strip())
+                    lim_inf = eval(
+                        str(i.args[0]).replace("<", "").replace(">", "").replace("=", "").replace("x", "").strip())
+                    lim_sup = eval(
+                        str(i.args[1]).replace("<", "").replace(">", "").replace("=", "").replace("x", "").strip())
                     if lim_inf < lim_sup:
                         inf = lim_inf
                         sup = lim_sup
@@ -376,7 +388,7 @@ class Expression:
     def inequality(self, expr):
         if expr.__contains__("&") or expr.__contains__("|"):
             # expr_replaced = expr.replace("\\wedge","&").replace("\\vee","|")
-            expr_new = expr.replace("(","").replace(")","").strip().split("|")
+            expr_new = expr.replace("(", "").replace(")", "").strip().split("|")
             # expr_new = expr.split("|")
             results = []
             x = symbols("x")
@@ -386,18 +398,18 @@ class Expression:
                 results.append('|')
             results = results[:-1]
 
-            for idx,k in enumerate(results):
+            for idx, k in enumerate(results):
                 if k == '|':
                     idx_pipe = idx
             izq = []
             der = []
-            for idx1,k1 in enumerate(results):
+            for idx1, k1 in enumerate(results):
                 if idx1 < idx_pipe:
                     izq.append(k1)
                 elif idx1 > idx_pipe:
                     der.append(k1)
 
-            return sympy.Union(*[self.aux_inequality(izq),self.aux_inequality(der)])
+            return sympy.Union(*[self.aux_inequality(izq), self.aux_inequality(der)])
 
         # Elimina espacios en blanco y divide la inecuación compuesta en partes
         if (expr.__contains__(") <") or expr.__contains__(") >")) and \
@@ -498,7 +510,6 @@ class Expression:
         self_image = Expression(imageset(Lambda(x, self.sympy_expr), S.Reals))
         other_expression_image = Expression(imageset(Lambda(x, expression.sympy_expr), S.Reals))
         return self_image.is_equivalent_to(other_expression_image)
-
 
     def matches_args_with(self, expression):
         return (len(self.sympy_expr.args) == len(sympify(str(expression.sympy_expr)).args)) and \
