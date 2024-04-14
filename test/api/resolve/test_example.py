@@ -5,9 +5,12 @@ from rest_framework.test import APITestCase
 
 from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.model.expression import Expression
+from mathlearning.model.problem_type import ProblemType
 from mathlearning.model.theorem import Theorem
 from test.api.test_result_solution_tree import load_theorems_from
+from test.testutils.derivative_solved_exercises import DerivativeExercises
 from test.testutils.solved_exercise import SolvedExercise
+from test.testutils.test_utils import solve_exercise_with_solution_tree
 
 solution_tree_mapper = SolutionTreeMapper()
 
