@@ -51,6 +51,24 @@ class APITests(APITestCase):
         {
             'problem_input': {'expression': '1/(x^2-1)', 'variables': []},
             'problem_output': '\\left(-\\infty, -1\\right) \\cup \\left(-1, 1\\right) \\cup \\left(1, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '(x-1)/(x-1)', 'variables': []},
+            'problem_output': '\\left(-\\infty, 1\\right) \\cup \\left(1, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '(x-1)/(x^2-1)', 'variables': []},
+            'problem_output': '\\left(-\\infty, -1\\right) \\cup \\left(-1, 1\\right) \\cup \\left(1, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '(x-3)/(x^2-1) * (x-1)/(x+3)', 'variables': []},
+            'problem_output': '\\left(-\\infty, -3\\right) \\cup \\left(-3, -1\\right) '
+                              '\\cup \\left(-1, 1\\right) \\cup \\left(1, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '(x-3)/(x^2-1) + (x-1)/(x+3)', 'variables': []},
+            'problem_output': '\\left(-\\infty, -3\\right) \\cup \\left(-3, -1\\right) '
+                              '\\cup \\left(-1, 1\\right) \\cup \\left(1, \\infty\\right)'
         }
     ]
 
