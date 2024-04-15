@@ -40,6 +40,10 @@ class APITests(APITestCase):
         {
             'problem_input': {'expression': '\\sqrt{\\left(1/x\\right)}', 'variables': []},
             'problem_output': '\\left(0, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '\\sqrt{\\left(3-x\\right)}/(x^2-25)', 'variables': []},
+            'problem_output': '\\left(-\\infty, -5\\right) \\cup \\left(-5, 3\\right]'
         }
     ]
 

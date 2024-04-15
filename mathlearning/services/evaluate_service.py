@@ -4,7 +4,7 @@ from mathlearning.model.problem_type import ProblemType
 from mathlearning.utils.logger import Logger
 from sympy.core.function import Derivative
 from sympy.abc import x
-from sympy import latex, imageset, Lambda, denom, Intersection, solveset
+from sympy import latex, imageset, Lambda, denom, Intersection, solveset, numer
 from sympy import Integral
 from sympy import S
 
@@ -28,11 +28,11 @@ class EvaluateService:
                 factorisable = expression.sympy_expr
                 return latex(Expression(factorisable).factor())
             elif problem_type == ProblemType.DOMAIN.value:
-                singularities = S.EmptySet
+                singularities_denominator = S.EmptySet
                 if denom(expression.sympy_expr) != 1:
-                    singularities = (Intersection(solveset(1 / expression.sympy_expr, x), S.Reals) +
-                                     solveset(denom(expression.sympy_expr), x, S.Reals))
-                return latex(continuous_domain(expression.sympy_expr, x, S.Reals) - singularities)
+                    singularities_denominator = solveset(denom(expression.sympy_expr), x, S.Reals)
+                domain_numerator = continuous_domain(numer(expression.sympy_expr), x, S.Reals)
+                return latex(domain_numerator - singularities_denominator)
             elif problem_type == ProblemType.IMAGE.value:
                 return latex(imageset(Lambda(x, expression.sympy_expr), S.Reals))
             elif problem_type == ProblemType.INEQUALITY.value:
