@@ -53,7 +53,7 @@ class ResultService:
             return tree
 
         if type == ProblemType.DOMAIN.value:
-            calculated_domain = continuous_domain(expression.get_inner_function().sympy_expr.factor(), 'x', S.Reals)
+            calculated_domain = continuous_domain(expression.get_inner_function().sympy_expr, x, S.Reals)
             tree.branches.append(
                 SolutionTreeNode(Expression(calculated_domain),
                                  'domain',
@@ -62,7 +62,7 @@ class ResultService:
             return tree
 
         if type == ProblemType.IMAGE.value:
-            calculated_image = imageset(Lambda(x, expression.get_inner_function().sympy_expr.factor()), S.Reals)
+            calculated_image = imageset(Lambda(x, expression.get_inner_function().sympy_expr), S.Reals)
             tree.branches.append(
                 SolutionTreeNode(Expression(calculated_image),
                                  'image',

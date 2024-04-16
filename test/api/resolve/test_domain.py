@@ -13,5 +13,8 @@ class SolutionTreeAPITest(APITestCase):
     def test_rational_domain_root_zero(self):
         solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.rational_domain_root_zero())
 
+    def test_square_root_domain(self):
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.square_root_domain())
+
     def test_rational_domain_root_moved(self):
         solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.rational_domain_root_moved())
