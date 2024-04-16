@@ -502,8 +502,8 @@ class Expression:
         return False
 
     def has_same_domain_as(self, expression: 'Expression') -> bool:
-        self_domain = Expression(continuous_domain(self.sympy_expr, 'x', S.Reals))
-        other_expression_domain = Expression(continuous_domain(expression.sympy_expr, 'x', S.Reals))
+        self_domain = Expression(continuous_domain(self.sympy_expr, x, S.Reals))
+        other_expression_domain = Expression(continuous_domain(expression.sympy_expr, x, S.Reals))
         return self_domain.is_equivalent_to(other_expression_domain)
 
     def has_same_image_as(self, expression: 'Expression') -> bool:
