@@ -151,7 +151,7 @@ def make_sympy_expr(formula, is_latex):
     elif is_sympy_exp(formula):
         sympy_expr = formula
     elif isinstance(formula, str):
-        sympy_expr = parse_expr(formula)
+        sympy_expr = parse_expr(formula, evaluate=False)
     elif isinstance(formula, float) or isinstance(formula, int):
         sympy_expr = parse_expr(str(formula))
     else:
