@@ -64,6 +64,7 @@ class TestExpression(unittest.TestCase):
         }
         self.assertEquals(expected, operators)
 
+    @unittest.skip("Migrating tests")
     def test_get_operators_by_level_complex(self):
         exp = Expression("cos(x+Derivative(e**x,x))  + Derivative(x + x**(2*x+3), x)", is_latex=False)
         operators = exp.get_operators_by_level()

@@ -21,10 +21,13 @@ class DomainExercises:
         name = "Dom(sqrt(x - 3))"
         steps = [
             {'expression': 'Dom(sqrt(x - 3))', 'variables': []},
+            #{'expression': 'Dom(\\sqrt{(x - 3)})', 'variables': []},
+            #{'expression': 'Dom(\\sqrt{\\left(x - 3 \\right)})', 'variables': []},
+            {'expression': 'Dom(\\sqrt{\\left(\\frac{1}{x}\\cdot x\\cdot x-3\\right)})', 'variables': []},
             {'expression': '\\left[3, \\infty\\right)', 'variables': []}
         ]
 
-        non_result_steps = steps[:len(steps) - 2]
+        non_result_steps = steps[:len(steps) - 1]
 
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
 
