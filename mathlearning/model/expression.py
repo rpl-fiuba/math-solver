@@ -13,7 +13,7 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
 from sympy import factor
 import re
-from sympy import symbols, solve_univariate_inequality, sympify, oo, Interval, Union, Intersection, solve, ln, Eq, log
+from sympy import symbols, solve_univariate_inequality, exp, sympify, oo, Interval, Union, Intersection, solve, ln, Eq, log
 from sympy.abc import x
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
