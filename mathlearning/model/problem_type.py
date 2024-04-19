@@ -9,3 +9,4 @@ class ProblemType(Enum):
     INEQUALITY = 'inequality'
     IMAGE = 'image'
     TRIGONOMETRY = 'trigonometry'
+    EXPONENTIAL = 'exponential'

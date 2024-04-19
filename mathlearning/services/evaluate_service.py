@@ -38,6 +38,9 @@ class EvaluateService:
             elif problem_type == ProblemType.INEQUALITY.value:
                 inequality = expression.sympy_expr
                 return latex(Expression(inequality).inequality(str(expression)))
+            elif problem_type == ProblemType.EXPONENTIAL.value:
+                exponential = expression.sympy_expr
+                return latex(Expression(exponential).equation_exp_ln(str(expression)))
 
             integral = Integral(expression.sympy_expr, x)
             return latex(integral.doit())

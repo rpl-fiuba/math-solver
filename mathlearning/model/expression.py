@@ -13,7 +13,7 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
 from sympy import factor
 import re
-from sympy import symbols, solve_univariate_inequality, sympify, oo, Interval, Union, Intersection
+from sympy import symbols, solve_univariate_inequality, sympify, oo, Interval, Union, Intersection, solve, ln, Eq, log
 from sympy.abc import x
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
@@ -346,6 +346,19 @@ class Expression:
     def factor(self) -> 'Expression':
         copy = self.get_copy()
         return Expression(factor(copy.sympy_expr))
+
+    def equation_exp_ln(self, ecuacion_str):
+        #expresion, constante = ecuacion_str.split('=')
+        #constante = float(constante)
+        x = symbols('x')
+        #soluciones = solve(eval(expresion) - constante, x)
+        soluciones = solve(eval(ecuacion_str), x)
+        # [x1, x2]
+        final_sol = []
+        for i in soluciones:
+            final_sol.append(symbols(f'x={i}'))
+        final = str(final_sol).replace("[","").replace("]","").replace(","," \\wedge")
+        return final
 
     def aux_inequality(self, results):
         x = symbols('x')
