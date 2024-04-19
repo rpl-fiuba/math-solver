@@ -134,3 +134,19 @@ class TestExpression(unittest.TestCase):
         self.assertTrue(Expression('x**2/2 + Integral(x**2,x) - Integral(cos(x),x) + c', is_latex=False) in result)
         self.assertTrue(Expression('Integral(x,x) + x**3/3 - Integral(cos(x),x) + c', is_latex=False) in result)
         self.assertTrue(Expression('Integral(x,x) + Integral(x**2,x) - sin(x) + c', is_latex=False) in result)
+
+    def test_domain_is_parsed_correctly(self):
+        expression = Expression('Dom(\\sqrt{\\left(3-x\\right)}/(x^2-25))')
+        self.assertEquals(expression.sympy_expr.name, 'Dom')
+        self.assertEquals(len(expression.sympy_expr.args), 1)
+        self.assertEquals(str(expression.sympy_expr.args[0]), 'sqrt(3 - x)/(x**2 - 25)')
+
+    def test_domain_intersection_is_parsed_correctly(self):
+        expression = Expression('Dom(\\sqrt{\\left(3-x\\right)}) \\cap Dom(1/(x^2-25))')
+        self.assertTrue(expression.is_intersection_of_domains)
+        self.assertEquals(len(expression.sympy_expr.args), 2)
+        self.assertEquals(str(expression.sympy_expr.args[0].name), 'Dom')
+        self.assertEquals(str(expression.sympy_expr.args[0]), 'Dom(sqrt(3 - x))')
+        self.assertEquals(str(expression.sympy_expr.args[1].name), 'Dom')
+        self.assertEquals(str(expression.sympy_expr.args[1]), 'Dom(1/(x**2 - 25))')
+

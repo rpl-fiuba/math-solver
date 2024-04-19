@@ -1,3 +1,5 @@
+import sympy
+
 from mathlearning.model.expression import Expression, make_sympy_expr
 from mathlearning.model.problem_type import ProblemType
 
@@ -25,6 +27,8 @@ class ExpressionComparator:
             return round(original_expression.sympy_expr, 3) == round(new_expression.sympy_expr, 3)
         elif problem_type == ProblemType.INEQUALITY:
             return ExpressionComparator.is_equivalent_to_for_inequality(original_expression,new_expression)
+        elif problem_type == ProblemType.DOMAIN:
+            return not new_expression.is_intersection_of_domains and original_expression.is_equivalent_to(new_expression)
         else:
             return original_expression.is_equivalent_to(new_expression)
 
@@ -36,6 +40,16 @@ class ExpressionComparator:
             original_inner_expression = original_expression.get_inner_function()
             new_inner_expression = new_expression.get_inner_function()
             return original_inner_expression.is_equivalent_to(new_inner_expression) and original_inner_expression.has_same_domain_as(new_inner_expression)
+        elif new_expression.is_intersection_of_domains and not original_expression.is_domain():
+            evaluated_domain = sympy.Reals
+            inner_domains_from_new_expression = new_expression.sympy_expr.args
+            for current_domain in inner_domains_from_new_expression:
+                if isinstance(current_domain, sympy.Interval) or isinstance(current_domain, sympy.Union):
+                    interval_from_current_domain = current_domain
+                else:
+                    interval_from_current_domain = Expression(current_domain).get_domain()
+                evaluated_domain = sympy.Intersection(evaluated_domain, interval_from_current_domain)
+            return original_expression.is_equivalent_to(Expression(evaluated_domain))
         elif neither_is_domain:
             return original_expression.is_equivalent_to(new_expression)
         else:

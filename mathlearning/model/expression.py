@@ -124,9 +124,29 @@ def is_sympy_exp(formula):
     return isinstance(formula, sympy_classes)
 
 
+def is_intersection_of_doms(formula):
+    return str(formula).__contains__("Dom(") and str(formula).__contains__("cap")
+
+
+def create_intersection_of_doms(formula):
+    domain_terms = formula.split("\\cap")
+    expression = None
+    for domain_term in domain_terms:
+        parsed_domain_term = Expression(domain_term.strip()).sympy_expr
+        if expression is None:
+            expression = parsed_domain_term
+        elif isinstance(expression, sympy.Mul):
+            expression = sympy.Mul(*expression.args, parsed_domain_term, evaluate=False)
+        else:
+            expression = sympy.Mul(expression, parsed_domain_term, evaluate=False)
+    return expression
+
+
 def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
-        if contains_interval_symbol(formula):
+        if is_intersection_of_doms(formula):
+            return create_intersection_of_doms(formula)
+        elif contains_interval_symbol(formula):
             return parse_latex_interval(clean_latex(formula))
         elif contains_set_symbol(formula):
             return parse_latex_set(clean_latex(formula))
@@ -172,6 +192,7 @@ class Expression:
 
     def __init__(self, formula: Union['Expression', str], variables: List['ExpressionVariable'] = [], is_latex=True):
         self.variables = variables
+        self.is_intersection_of_domains = is_intersection_of_doms(formula)
         self.commutative_group_transformer = CommutativeGroupTransformer()
         self.non_commutative_group_transformer = NonCommutativeGroupTransformer()
         self.commutative_list_size_transformer = ListSizeTransformer(CommutativeGroupTransformer())
@@ -485,6 +506,8 @@ class Expression:
         return latex_exp
 
     def is_equivalent_to(self, expression: 'Expression') -> bool:
+        if expression.is_intersection_of_domains:
+            return False
         if str(simplify(self.sympy_expr)) == str(simplify(expression.sympy_expr)) or \
                 self == expression:
             return True
@@ -502,9 +525,12 @@ class Expression:
         return False
 
     def has_same_domain_as(self, expression: 'Expression') -> bool:
-        self_domain = Expression(continuous_domain(self.sympy_expr, x, S.Reals))
-        other_expression_domain = Expression(continuous_domain(expression.sympy_expr, x, S.Reals))
+        self_domain = Expression(self.get_domain())
+        other_expression_domain = Expression(expression.get_domain())
         return self_domain.is_equivalent_to(other_expression_domain)
+
+    def get_domain(self) -> Interval:
+        return continuous_domain(self.sympy_expr, x, S.Reals)
 
     def has_same_image_as(self, expression: 'Expression') -> bool:
         self_image = Expression(imageset(Lambda(x, self.sympy_expr), S.Reals))

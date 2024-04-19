@@ -112,11 +112,11 @@ class SolutionTreeNode:
                         current.expression.compare_variables(expression.variables):
                     return True
 
-                current_replaced = current.expression.replace_variables()
-                expression_replaced = expression.replace_variables()
-
-                if ExpressionComparator.is_equivalent_to(problem_type, current_replaced, expression_replaced):
-                    return True
+                if problem_type in [ProblemType.INTEGRAL, ProblemType.DERIVATIVE]:
+                    current_replaced = current.expression.replace_variables()
+                    expression_replaced = expression.replace_variables()
+                    if ExpressionComparator.is_equivalent_to(problem_type, current_replaced, expression_replaced):
+                        return True
 
                 for branch in current.branches:
                     to_check.append(branch)
@@ -135,7 +135,7 @@ class SolutionTreeNode:
         is_contained = False
         while len(to_check) > 0:
             current = to_check.pop()
-            if(ExpressionComparator.is_a_result_of(type, current.expression, expression)):
+            if ExpressionComparator.is_a_result_of(type, current.expression, expression):
                 is_contained = True
                 if not len(current.branches) == 0 and not current.is_pre_simplification_step():
                     return False
