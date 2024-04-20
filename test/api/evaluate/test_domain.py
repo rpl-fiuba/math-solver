@@ -76,11 +76,30 @@ class APITests(APITestCase):
         }
     ]
 
+    mixed_domains = [
+        {
+            'problem_input': {'expression': '\\frac{1}{\\sqrt{\\left(x-5\\right)}}', 'variables': []},
+            'problem_output': '\\left(5, \\infty\\right)'
+        },
+        {
+            'problem_input': {'expression': '\\sqrt{\\left(7-x\\right)}\\cdot\\sqrt{\\left(x-5\\right)}', 'variables': []},
+            'problem_output': '\\left[5, 7\\right]'
+        },
+        {
+            'problem_input': {'expression': '\\sqrt{\\left(7-x\\right)}\\sqrt{\\left(x-7\\right)}', 'variables': []},
+            'problem_output': '\\left\\{7\\right\\}'
+        }
+
+    ]
+
     def test_evaluate_rational_domains(self):
-        run_entire_test_list(self, test_list=self.rational_domains, exercise_type=ProblemType.DOMAIN.value)
+       run_entire_test_list(self, test_list=self.rational_domains, exercise_type=ProblemType.DOMAIN.value)
 
     def test_evaluate_square_root_domains(self):
         run_entire_test_list(self, test_list=self.square_root_domains, exercise_type=ProblemType.DOMAIN.value)
 
     def test_evaluate_factorisable_domains(self):
         run_entire_test_list(self, test_list=self.factorisable_domains, exercise_type=ProblemType.DOMAIN.value)
+
+    def test_mixed_domains(self):
+        run_entire_test_list(self, test_list=self.mixed_domains, exercise_type=ProblemType.DOMAIN.value)

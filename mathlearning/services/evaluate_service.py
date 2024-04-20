@@ -28,11 +28,13 @@ class EvaluateService:
                 factorisable = expression.sympy_expr
                 return latex(Expression(factorisable).factor())
             elif problem_type == ProblemType.DOMAIN.value:
-                singularities_denominator = S.EmptySet
+                final_domain_denominator = S.Reals
                 if denom(expression.sympy_expr) != 1:
                     singularities_denominator = solveset(denom(expression.sympy_expr), x, S.Reals)
+                    domain_denominator = continuous_domain(denom(expression.sympy_expr), x, S.Reals)
+                    final_domain_denominator = domain_denominator - singularities_denominator
                 domain_numerator = continuous_domain(numer(expression.sympy_expr), x, S.Reals)
-                return latex(domain_numerator - singularities_denominator)
+                return latex(Intersection(domain_numerator, final_domain_denominator))
             elif problem_type == ProblemType.IMAGE.value:
                 return latex(imageset(Lambda(x, expression.sympy_expr), S.Reals))
             elif problem_type == ProblemType.INEQUALITY.value:
