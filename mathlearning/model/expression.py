@@ -13,7 +13,8 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy.simplify import simplify
 from sympy import factor
 import re
-from sympy import symbols, solve_univariate_inequality, exp, sympify, oo, Interval, Union, Intersection, solve, ln, Eq, log
+from sympy import symbols, solve_univariate_inequality, exp, sympify, oo, Interval, Union, Intersection, solve, ln, Eq, \
+    log
 from sympy.abc import x
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
@@ -60,18 +61,26 @@ def parse_latex_interval(latex_interval):
         left_open = str.lstrip(part).startswith("(")
         right_open = str.rstrip(part).endswith(")")
         # Remove whitespace and brackets
-        part = part.replace(" ", "").replace("[", "").replace("(", "").replace(")", "").replace("]", "").replace(
-            "\\infty", sympy.oo.__str__())
+        part = part.replace(" ", "").replace("[", "").replace("(", "").replace(")", "").replace("]", "")
         # Split into start and end
         start, end = part.split(",")
         # Evaluate start and end as expressions
-        start = sympify(start)
-        end = sympify(end)
+        start = parse_interval_edge(start)
+        end = parse_interval_edge(end)
         # Create the interval
         interval = sympy.Interval(start, end, left_open, right_open)
         # Append to the list of intervals
         intervals.append(interval)
     return sympy.Union(*intervals)
+
+
+def parse_interval_edge(edge):
+    if str(edge).strip() == '-\\infty':
+        return sympify("-" + sympy.oo.__str__())
+    elif is_sympy_exp(edge):
+        return sympify(edge)
+    else:
+        return parse_latex(edge)
 
 
 def contains_interval_symbol(formula):
@@ -348,16 +357,16 @@ class Expression:
         return Expression(factor(copy.sympy_expr))
 
     def equation_exp_ln(self, ecuacion_str):
-        #expresion, constante = ecuacion_str.split('=')
-        #constante = float(constante)
+        # expresion, constante = ecuacion_str.split('=')
+        # constante = float(constante)
         x = symbols('x')
-        #soluciones = solve(eval(expresion) - constante, x)
+        # soluciones = solve(eval(expresion) - constante, x)
         soluciones = solve(eval(ecuacion_str), x)
         # [x1, x2]
         final_sol = []
         for i in soluciones:
             final_sol.append(symbols(f'x={i}'))
-        final = str(final_sol).replace("[","").replace("]","").replace(","," \\wedge")
+        final = str(final_sol).replace("[", "").replace("]", "").replace(",", " \\wedge")
         return final
 
     def aux_inequality(self, results):

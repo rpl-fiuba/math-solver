@@ -34,3 +34,6 @@ class SolutionTreeAPITest(APITestCase):
     def test_domain_as_intersection_of_domains_and_intervals(self):
         solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.intermediate_results_mixing_domains_and_intervals())
 
+    def test_domain_with_rational_interval_borders(self):
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.domains_with_rational_interval_borders())
+
