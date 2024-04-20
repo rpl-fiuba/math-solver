@@ -221,3 +221,26 @@ class TestExpression(unittest.TestCase):
             expression_right_open.sympy_expr._eval_Eq(Interval.Ropen(sympy.Rational(-4, 3), sympy.Rational(4, 3))))
         self.assertTrue(expression_none_open.sympy_expr._eval_Eq(
             Interval(sympy.Rational(-4, 3), sympy.Rational(4, 3), False, False)))
+
+    def test_set_with_plain_numbers(self):
+        self.assertEquals(Expression('\\mathbb{o}').sympy_expr, sympy.EmptySet)
+        self.assertEquals(Expression('\\mathbb{R}').sympy_expr, sympy.Reals)
+        self.assertEquals(Expression('\\mathbb{R}-{1}').sympy_expr, sympy.SymmetricDifference(sympy.Reals, sympy.FiniteSet(1)))
+        self.assertEquals(Expression('\\mathbb{R}-{2,3,15,5}').sympy_expr, sympy.SymmetricDifference(sympy.Reals, sympy.FiniteSet(2,3,5,15)))
+
+    def test_set_with_expressions(self):
+        self.assertEquals(Expression('\\mathbb{R}-{\\sqrt{5}}').sympy_expr, sympy.SymmetricDifference(sympy.Reals, sympy.FiniteSet(sympy.sqrt(5))))
+        self.assertEquals(Expression('\\mathbb{R}-{\\sqrt{5}, 3, 0}').sympy_expr, sympy.SymmetricDifference(sympy.Reals, sympy.FiniteSet(sympy.sqrt(5), 0, 3)))
+        # TODO check test with rationals in the edges
+        #self.check_equality_with_substractions(Expression('\\mathbb{R}-{\\sqrt{5}, 15, \\frac{17}{3}}').sympy_expr,
+        #                                       sympy.SymmetricDifference(sympy.Reals, sympy.FiniteSet(sympy.sqrt(5), 15, sympy.Mul(17, sympy.Pow(3, -1)))))
+
+
+    #def check_equality_with_substractions(self, set_left, set_right):
+        #is_sub_set = set_left.is_subset(set_right)
+    #    difference_left = set_left - set_right
+    #    difference_right = set_right - set_right
+    #    self.assertEquals(difference_left, sympy.EmptySet)
+    #    self.assertEquals(difference_right, sympy.EmptySet)
+        #self.assertTrue(is_sub_set)
+

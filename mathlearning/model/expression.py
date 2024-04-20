@@ -35,11 +35,12 @@ set_symbols = ['\\mathbb{R}', '\\mathbb{Z}', '\\mathbb{o}']
 
 def parse_latex_set(latex_set):
     if get_pure_set_symbol_if_match(latex_set) is None:
-        pattern = r'\\mathbb{(R|Z)}-\{(\d+(?:,\d+)*)\}'
+        pattern = r'\\mathbb{(R|Z)}-\{([^}]+(?:\}.*)?)\}'
         matches = re.findall(pattern, latex_set)
         number_group, finite_set = matches[0]
-        numbers = finite_set.split(',')
-        return SymmetricDifference(FiniteSet(*numbers), get_number_group_symbol(number_group))
+        unparsed_symbols = finite_set.split(',')
+        parsed_symbols = list(map(parse_latex, unparsed_symbols))
+        return SymmetricDifference(FiniteSet(*parsed_symbols), get_number_group_symbol(number_group))
     else:
         return get_number_group_symbol(get_pure_set_symbol_if_match(latex_set))
 
@@ -49,6 +50,8 @@ def get_number_group_symbol(number_group):
         return S.Reals
     elif str(number_group) == 'Z' or str(number_group).strip() == '\\mathbb{Z}':
         return S.Naturals
+    elif str(number_group) == 'O' or str(number_group).strip() == '\\mathbb{o}':
+        return S.EmptySet
 
 
 def parse_latex_interval(latex_interval):
