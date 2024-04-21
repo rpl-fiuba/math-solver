@@ -136,28 +136,28 @@ def is_sympy_exp(formula):
     return isinstance(formula, sympy_classes)
 
 
-def is_intersection_of_doms(formula):
-    return str(formula).__contains__("Dom(") and str(formula).__contains__("cap")
+def is_intersection_of_intervals(formula):
+    return str(formula).__contains__("cap")
 
 
-def create_intersection_of_doms(formula):
-    domain_terms = formula.split("\\cap")
+def create_intersection_of_intervals(formula):
+    interval_terms = formula.split("\\cap")
     expression = None
-    for domain_term in domain_terms:
-        parsed_domain_term = Expression(domain_term.strip()).sympy_expr
+    for interval_term in interval_terms:
+        parsed_term = Expression(interval_term.strip()).sympy_expr
         if expression is None:
-            expression = parsed_domain_term
+            expression = parsed_term
         elif isinstance(expression, sympy.Mul):
-            expression = sympy.Mul(*expression.args, parsed_domain_term, evaluate=False)
+            expression = sympy.Mul(*expression.args, parsed_term, evaluate=False)
         else:
-            expression = sympy.Mul(expression, parsed_domain_term, evaluate=False)
+            expression = sympy.Mul(expression, parsed_term, evaluate=False)
     return expression
 
 
 def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
-        if is_intersection_of_doms(formula):
-            return create_intersection_of_doms(formula)
+        if is_intersection_of_intervals(formula):
+            return create_intersection_of_intervals(formula)
         elif contains_interval_symbol(formula):
             return parse_latex_interval(clean_latex(formula))
         elif contains_set_symbol(formula):
@@ -204,7 +204,7 @@ class Expression:
 
     def __init__(self, formula: Union['Expression', str], variables: List['ExpressionVariable'] = [], is_latex=True):
         self.variables = variables
-        self.is_intersection_of_domains = is_intersection_of_doms(formula)
+        self.is_intersection_of_domains = is_intersection_of_intervals(formula)
         self.commutative_group_transformer = CommutativeGroupTransformer()
         self.non_commutative_group_transformer = NonCommutativeGroupTransformer()
         self.commutative_list_size_transformer = ListSizeTransformer(CommutativeGroupTransformer())

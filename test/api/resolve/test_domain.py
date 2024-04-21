@@ -20,20 +20,33 @@ class SolutionTreeAPITest(APITestCase):
         solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.rational_domain_root_moved())
 
     def test_domain_as_intersection_of_domains(self):
-        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.intermediate_results_as_intersection_of_domains())
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.intermediate_results_as_intersection_of_domains())
 
     def test_domain_as_intersection_of_three_domains(self):
-        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.intermediate_results_as_intersection_of_three_domains())
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.intermediate_results_as_intersection_of_three_domains())
 
     def test_domain_as_intersection_of_domains_with_combinations_inside(self):
-        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.intermediate_results_as_intersection_of_domains_combined_inside())
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.intermediate_results_as_intersection_of_domains_combined_inside())
 
     def test_domain_as_intersection_of_domains_from_sum_of_terms(self):
-        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.intermediate_results_as_intersection_of_domains_in_sum_of_terms())
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.intermediate_results_as_intersection_of_domains_in_sum_of_terms())
 
     def test_domain_as_intersection_of_domains_and_intervals(self):
-        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.intermediate_results_mixing_domains_and_intervals())
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.intermediate_results_mixing_domains_and_intervals())
 
     def test_domain_with_rational_interval_borders(self):
-        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN, DomainExercises.domains_with_rational_interval_borders())
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.domain_with_rational_interval_borders())
 
+    def test_domain_with_squared_root_interval_borders(self):
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.domains_with_squared_root_interval_borders())
+
+    def test_domain_intersection_with_rational_interval_borders(self):
+        solve_exercise_with_solution_tree(self, ProblemType.DOMAIN,
+                                          DomainExercises.domain_intersection_with_rational_interval_borders())
