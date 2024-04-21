@@ -176,14 +176,26 @@ def make_sympy_expr(formula, is_latex):
                     acc = acc.strip()[:-1]
                     acc = acc + '| '
                 sympy_expr = eval(acc.strip()[:-1])
+            elif clean_formula.__contains__('\\wedge') and clean_formula.__contains__('='):
+                acc = ''
+                for i in clean_formula.split("\\wedge"):
+                    acc = acc + f'parse_latex(\'{str(i).strip()}\') + '
+                acc = acc.strip()[:-1]
+                sympy_expr = eval(acc.strip())
             else:
-                sympy_expr = parse_latex(clean_formula)  # todo form
+                if str(clean_formula).__contains__("Eq") and str(clean_formula).__contains__("*"):
+                    sympy_expr = parse_expr(formula)
+                else:
+                    sympy_expr = parse_latex(clean_formula)  # todo form
             sympy_expr = sympy_expr.subs(simplify(parse_expr("e")), parse_expr("exp(1)"))
             sympy_expr = sympy_expr.xreplace({parse_latex("\\ln(x)"): parse_expr('log(x,E)')})
     elif is_sympy_exp(formula):
         sympy_expr = formula
     elif isinstance(formula, str):
-        sympy_expr = parse_expr(formula, evaluate=False)
+        evaluate = False
+        if formula.__contains__("Eq"):
+            evaluate = True
+        sympy_expr = parse_expr(formula, evaluate=evaluate)
     elif isinstance(formula, float) or isinstance(formula, int):
         sympy_expr = parse_expr(str(formula))
     else:
@@ -360,10 +372,7 @@ class Expression:
         return Expression(factor(copy.sympy_expr))
 
     def equation_exp_ln(self, ecuacion_str):
-        # expresion, constante = ecuacion_str.split('=')
-        # constante = float(constante)
         x = symbols('x')
-        # soluciones = solve(eval(expresion) - constante, x)
         soluciones = solve(eval(ecuacion_str), x)
         # [x1, x2]
         final_sol = []

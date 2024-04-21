@@ -4,6 +4,9 @@ mathlearning/.idea/*
 bin/
 share/
 
+# virtualenv
+my_env/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

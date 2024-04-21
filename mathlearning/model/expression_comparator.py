@@ -16,6 +16,8 @@ class ExpressionComparator:
             return ExpressionComparator.__equivalent_for_image__(original_expression, new_expression)
         elif problem_type == ProblemType.TRIGONOMETRY:
             return round(original_expression.sympy_expr, 3) == round(new_expression.sympy_expr, 3)
+        elif problem_type == ProblemType.EXPONENTIAL:
+            return ExpressionComparator.is_equivalent_to_for_exp(original_expression, new_expression)
         else:
             return original_expression.is_equivalent_to(new_expression)
 
@@ -29,6 +31,8 @@ class ExpressionComparator:
             return ExpressionComparator.is_equivalent_to_for_inequality(original_expression,new_expression)
         elif problem_type == ProblemType.DOMAIN:
             return not new_expression.is_intersection_of_domains and original_expression.is_equivalent_to(new_expression)
+        elif problem_type == ProblemType.EXPONENTIAL:
+            return ExpressionComparator.is_equivalent_to_for_exp(original_expression,new_expression)
         else:
             return original_expression.is_equivalent_to(new_expression)
 
@@ -79,6 +83,21 @@ class ExpressionComparator:
         if both_are_inequality:
             return original_expression.inequality(str(original_expression)) == new_expression.inequality(str(new_expression))
         elif neither_is_inequality:
+            return original_expression.is_equivalent_to(new_expression)
+        else:
+            return False
+
+    @staticmethod
+    def is_equivalent_to_for_exp(original_expression: Expression, new_expression: Expression) -> bool:
+        original_is_equation = str(original_expression).__contains__("+") and str(original_expression).__contains__("*")
+        new_is_equation = str(new_expression).__contains__("+") and str(new_expression).__contains__("*")
+
+        both_are_equation = original_is_equation and new_is_equation
+        neither_is_equation = not original_is_equation and not new_is_equation
+
+        if both_are_equation:
+            return original_expression.equation_exp_ln(str(original_expression)) == new_expression.equation_exp_ln(str(new_expression))
+        elif neither_is_equation:
             return original_expression.is_equivalent_to(new_expression)
         else:
             return False

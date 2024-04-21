@@ -79,6 +79,15 @@ class ResultService:
             )
             return tree
 
+        if type == ProblemType.EXPONENTIAL.value:
+            calculated_exp = expression.equation_exp_ln(str(expression))
+            tree.branches.append(
+                SolutionTreeNode(Expression(calculated_exp),
+                                 'exponential',
+                                 self.subtrees(Expression(calculated_exp), theorems, already_seen)[0])
+            )
+            return tree
+
         simplified_expression = expression.simplify()
         if simplified_expression.sympy_expr != expression.sympy_expr:
             if simplified_expression.to_string() in already_seen:
