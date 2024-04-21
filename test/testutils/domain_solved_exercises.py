@@ -55,6 +55,7 @@ class DomainExercises:
                 'expression': 'Dom(\\sqrt{\\left(3-x\\right)}) \\cap \\left(-\\infty, -5\\right) \\cup \\left(-5, 5\\right) \\cup \\left(5, \\infty\\right)',
                 'variables': []},
             {'expression': '\\left(-\\infty,3\\right] \\cap\\left(\\left(-\\infty, -5\\right)\\cup\\left(-5,\\infty\\right)\\right)', 'variables': []},
+            {'expression': '(-\\infty,3]\\ \\cap\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ (-\\infty,-5)\\ \\ \\ \\ \\ \\ \\ \\ \\cup\\ \\ \\ \\ \\ \\ \\ \\ (-5,5)\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\cup\\ (5,\\infty)', 'variables': []},
             {'expression': '\\left(-\\infty,3\\right] \\cap \\mathbb{R}-{-5}}', 'variables': []},
             {'expression': '\\left(-\\infty, -5\\right) \\cup \\left(-5, 3\\right]', 'variables': []}
         ]

@@ -238,7 +238,6 @@ class TestExpression(unittest.TestCase):
         # TODO check test with rationals in the edges
         # self.check_equality_with_substractions(Expression('\\mathbb{R}-{\\sqrt{5}, 15, \\frac{17}{3}}').sympy_expr,
         #                                       sympy.SymmetricDifference(sympy.Reals, sympy.FiniteSet(sympy.sqrt(5), 15, sympy.Mul(17, sympy.Pow(3, -1)))))
-
     # def check_equality_with_substractions(self, set_left, set_right):
     # is_sub_set = set_left.is_subset(set_right)
     #    difference_left = set_left - set_right
@@ -246,3 +245,13 @@ class TestExpression(unittest.TestCase):
     #    self.assertEquals(difference_left, sympy.EmptySet)
     #    self.assertEquals(difference_right, sympy.EmptySet)
     # self.assertTrue(is_sub_set)
+
+    def test_whitespaces_in_intervals(self):
+        expression_unparsed = '(-\\infty,3]\\ \\cap\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ (-\\infty,-5)\\ \\ \\ \\ \\ \\ \\ \\ \\cup\\ \\ \\ \\ \\ \\ \\ \\ (-5,5)\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\cup\\ (5,\\infty)'
+        self.assertEquals(len(Expression(expression_unparsed).sympy_expr.args), 2)
+        self.assertEquals(Expression(expression_unparsed).sympy_expr.args[0], Interval.Lopen(-sympy.oo, 3))
+        self.assertEquals(len(Expression(expression_unparsed).sympy_expr.args[1].args), 3)
+        self.assertTrue(Expression(expression_unparsed).sympy_expr.args[1].args[0]._eval_Eq(Interval.open(-sympy.oo, -5)))
+        self.assertTrue(Expression(expression_unparsed).sympy_expr.args[1].args[1]._eval_Eq(Interval.open(-5, 5)))
+        self.assertTrue(Expression(expression_unparsed).sympy_expr.args[1].args[2]._eval_Eq(Interval.open(5, sympy.oo)))
+

@@ -144,7 +144,7 @@ def create_intersection_of_intervals(formula):
     interval_terms = formula.split("\\cap")
     expression = None
     for interval_term in interval_terms:
-        parsed_term = Expression(interval_term.strip()).sympy_expr
+        parsed_term = Expression(interval_term.replace("\\ ", "").strip()).sympy_expr
         if expression is None:
             expression = parsed_term
         elif isinstance(expression, sympy.Mul):
