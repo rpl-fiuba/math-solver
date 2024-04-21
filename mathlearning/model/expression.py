@@ -14,7 +14,7 @@ from sympy.simplify import simplify
 from sympy import factor
 import re
 from sympy import symbols, solve_univariate_inequality, exp, sympify, oo, Interval, Union, Intersection, solve, ln, Eq, \
-    log
+    log, E
 from sympy.abc import x
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
@@ -176,9 +176,9 @@ def make_sympy_expr(formula, is_latex):
                     acc = acc.strip()[:-1]
                     acc = acc + '| '
                 sympy_expr = eval(acc.strip()[:-1])
-            elif clean_formula.__contains__('\\wedge') and clean_formula.__contains__('='):
+            elif clean_formula.__contains__('\\vee') and clean_formula.__contains__('='):
                 acc = ''
-                for i in clean_formula.split("\\wedge"):
+                for i in clean_formula.split("\\vee"):
                     acc = acc + f'parse_latex(\'{str(i).strip()}\') + '
                 acc = acc.strip()[:-1]
                 sympy_expr = eval(acc.strip())
@@ -378,7 +378,7 @@ class Expression:
         final_sol = []
         for i in soluciones:
             final_sol.append(symbols(f'x={i}'))
-        final = str(final_sol).replace("[", "").replace("]", "").replace(",", " \\wedge")
+        final = str(final_sol).replace("[", "").replace("]", "").replace(",", " \\vee")
         return final
 
     def aux_inequality(self, results):
