@@ -179,7 +179,7 @@ def make_sympy_expr(formula, is_latex):
             elif clean_formula.__contains__('\\vee') and clean_formula.__contains__('='):
                 acc = ''
                 for i in clean_formula.split("\\vee"):
-                    acc = acc + f'parse_latex(\'{str(i).strip()}\') + '
+                    acc = acc + f'parse_latex(\'{str(i).strip()}\') & '
                 acc = acc.strip()[:-1]
                 sympy_expr = eval(acc.strip())
             else:
@@ -196,7 +196,16 @@ def make_sympy_expr(formula, is_latex):
         evaluate = False
         if formula.__contains__("Eq"):
             evaluate = True
-        sympy_expr = parse_expr(formula, evaluate=evaluate)
+            if formula.__contains__("+") and not formula.__contains__("*"):
+                acc = ''
+                for i in formula.split("+"):
+                    acc = acc + f'parse_expr(\'{str(i).strip()}\', evaluate={evaluate}) & '
+                acc = acc.strip()[:-1]
+                sympy_expr = eval(acc.strip())
+            else:
+                sympy_expr = parse_expr(formula, evaluate=evaluate)
+        else:
+            sympy_expr = parse_expr(formula, evaluate=evaluate)
     elif isinstance(formula, float) or isinstance(formula, int):
         sympy_expr = parse_expr(str(formula))
     else:
