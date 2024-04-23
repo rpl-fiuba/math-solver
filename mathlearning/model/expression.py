@@ -183,7 +183,8 @@ def make_sympy_expr(formula, is_latex):
                 acc = acc.strip()[:-1]
                 sympy_expr = eval(acc.strip())
             else:
-                if str(clean_formula).__contains__("Eq") and str(clean_formula).__contains__("*"):
+                if str(clean_formula).__contains__("Eq") and str(clean_formula).__contains__("*") and \
+                        (not str(clean_formula).__contains__("leq") or not str(clean_formula).__contains__("geq")):
                     sympy_expr = parse_expr(formula)
                 else:
                     sympy_expr = parse_latex(clean_formula)  # todo form
@@ -572,8 +573,8 @@ class Expression:
         return self_image.is_equivalent_to(other_expression_image)
 
     def matches_args_with(self, expression):
-        return (len(self.sympy_expr.args) == len(sympify(str(expression.sympy_expr)).args)) and \
-            set(self.sympy_expr.args).issubset(sympify(str(expression.sympy_expr)).args)
+        return (len(sympify(self).args) == len(sympify(expression).args)) and \
+            set(sympify(self).args).issubset(sympify(expression).args)
 
     def contains_user_defined_funct(self) -> bool:
         if self.is_user_defined_func():
