@@ -687,7 +687,7 @@ class Expression:
             Expression(sympy.simplify(self.sympy_expr)),
             Expression(sympy.factor(self.sympy_expr))
         ]
-        if not self.is_interval():
+        if not self.is_interval() and not str(self).__contains__("&"):
             posible_simplifications.append(Expression(sympy.expand(self.sympy_expr)))
 
         original_integral_amount = self.amount_of_integrals()

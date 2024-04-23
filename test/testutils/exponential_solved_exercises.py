@@ -9,6 +9,8 @@ class ExponentialExercises:
         steps = [
             {'expression': '\\ln\\left(x^2 + 4x + 4\\right) = 0', 'variables': []},
             {'expression': '\\ln\\left((x+3)*(x+1) + 1\\right) = 0', 'variables': []},
+            {'expression': 'x^2+4x+4=1', 'variables': []},
+            {'expression': '(x+3)*(x+1)=0', 'variables': []},
             {'expression': 'x=-1 \\vee x=-3', 'variables': []}
         ]
 
