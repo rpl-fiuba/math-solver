@@ -71,7 +71,7 @@ class ResultService:
             return tree
 
         if type == ProblemType.INEQUALITY.value:
-            calculated_inequality = expression.inequality(str(expression))
+            calculated_inequality = expression.solve_inequality()
             tree.branches.append(
                 SolutionTreeNode(Expression(calculated_inequality),
                                  'inequality',

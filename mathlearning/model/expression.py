@@ -3,6 +3,8 @@ import inspect
 import math
 import sympy
 import json
+
+from regex import regex
 from sympy import Symbol, S, FiniteSet, SymmetricDifference, imageset
 from sympy.calculus.util import continuous_domain
 from sympy.parsing.latex import parse_latex
@@ -20,7 +22,8 @@ from sympy.abc import x
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
 from mathlearning.utils.list.commutative_group_transformer import CommutativeGroupTransformer
 from mathlearning.utils.list.non_commutative_group_transformer import NonCommutativeGroupTransformer
-from mathlearning.utils.latex_utils import clean_latex
+from mathlearning.utils.latex_utils import clean_latex, find_outermost_brackets, extract_inequality_sides, \
+    clean_outermost_brackets_if_irrelevant
 from typing import Union, List
 from sympy import integrate
 from mathlearning.utils.logger import Logger
@@ -154,6 +157,65 @@ def create_intersection_of_intervals(formula):
     return expression
 
 
+def is_inequality(formula):
+    return str(formula).__contains__("<") or str(formula).__contains__(">") or str(formula).__contains__(
+        "\\leq") or str(formula).__contains__("\\geq")
+
+
+or_separator = "\\vee"
+and_separator = "\\wedge"
+placeholder_prefix = "HOLDER_NUMBER_"
+
+
+def parse_inequality(raw_expression):
+    raw_expression = clean_outermost_brackets_if_irrelevant(raw_expression)
+    if or_separator in raw_expression or and_separator in raw_expression:
+        outermost_brackets_map = {}
+        outermost_brackets = find_outermost_brackets(raw_expression)
+        for idx, expression in enumerate(outermost_brackets):
+            placeholder_key = placeholder_prefix + str(idx)
+            outermost_brackets_map[placeholder_key] = expression
+            raw_expression = raw_expression.replace(expression, placeholder_key)
+        if or_separator in raw_expression and and_separator in raw_expression:
+            raise (
+                        "Invalid expression, only " + or_separator + " or " + and_separator + " are allowed inside same bracket level")
+        elif or_separator in raw_expression:
+            return parse_inner_inequalities(raw_expression, or_separator, outermost_brackets_map)
+        elif and_separator in raw_expression:
+            return parse_inner_inequalities(raw_expression, and_separator, outermost_brackets_map)
+        else:
+            return parse_inner_inequalities(raw_expression, and_separator, outermost_brackets_map)
+    else:
+        return parse_inner_inequalities(raw_expression, and_separator, {})
+
+
+def parse_inner_inequalities(inner_expression_without_outmost_brackets, separator, outmost_brackets_map):
+    inner_expressions = inner_expression_without_outmost_brackets.split(separator)
+    final_expression = None
+    for sub_expression in inner_expressions:
+        sub_expression = sub_expression.strip()
+        if sub_expression in outmost_brackets_map:
+            sub_expression_parsed = parse_inequality(outmost_brackets_map[sub_expression])
+        else:
+            if len(extract_inequality_sides(sub_expression)) > 1:
+                left_and_right_inequalities = extract_inequality_sides(sub_expression)
+                left_parsed = parse_latex(left_and_right_inequalities[0])
+                right_parsed = parse_latex(left_and_right_inequalities[1])
+                sub_expression_parsed = sympy.And(left_parsed, right_parsed)
+            else:
+                sub_expression_parsed = parse_latex(sub_expression)
+        if final_expression is None:
+            final_expression = sub_expression_parsed
+        else:
+            if separator == or_separator:
+                final_expression = sympy.Or(final_expression, sub_expression_parsed)
+            elif separator == and_separator:
+                final_expression = sympy.And(final_expression, sub_expression_parsed)
+            else:
+                raise Exception("Invalid separator: " + separator)
+    return final_expression
+
+
 def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
         if is_intersection_of_intervals(formula):
@@ -164,24 +226,8 @@ def make_sympy_expr(formula, is_latex):
             return parse_latex_set(clean_latex(formula))
         else:
             clean_formula = clean_latex(formula)
-            if clean_formula.__contains__('{') and (
-                    clean_formula.__contains__('wedge') or clean_formula.__contains__('vee')):
-                new_formula = clean_formula.replace('{', '').replace('}', '')
-                or_values = new_formula.split('\\vee')
-                acc = ''
-                for i in or_values:
-                    and_values = i.split('\\wedge')
-                    for j in and_values:
-                        acc = acc + f'parse_latex(\'{str(j).strip()}\') & '
-                    acc = acc.strip()[:-1]
-                    acc = acc + '| '
-                sympy_expr = eval(acc.strip()[:-1])
-            elif clean_formula.__contains__('\\vee') and clean_formula.__contains__('='):
-                acc = ''
-                for i in clean_formula.split("\\vee"):
-                    acc = acc + f'parse_latex(\'{str(i).strip()}\') & '
-                acc = acc.strip()[:-1]
-                sympy_expr = eval(acc.strip())
+            if is_inequality(clean_formula):
+                return parse_inequality(clean_formula)
             else:
                 if str(clean_formula).__contains__("Eq") and str(clean_formula).__contains__("*") and \
                         (not str(clean_formula).__contains__("leq") or not str(clean_formula).__contains__("geq")):
@@ -391,135 +437,60 @@ class Expression:
         final = str(final_sol).replace("[", "").replace("]", "").replace(",", " \\vee")
         return final
 
-    def aux_inequality(self, results):
-        x = symbols('x')
-        is_or = False
-        if str(results).__contains__("|"):
-            results_aux = str(results).replace("[", "").replace("]", "").strip().split("|")
-            results_1 = []
-            for j in results_aux:
-                results_1.append(eval(j))
-            results = results_1
-            is_or = True
-        final_result = []
-        for i in results:
-            if i:
-                if isinstance(i, tuple):
-                    final_result.append(self.aux_inequality(i))
-                else:
-                    inf_open = True
-                    sup_open = True
-                    if str(i.args[0]).__contains__("="):
-                        inf_open = False
-                    if str(i.args[1]).__contains__("="):
-                        sup_open = False
+    def is_direct_comparsion(self, condition):
+        return isinstance(condition, sympy.LessThan) or isinstance(condition, sympy.StrictLessThan) or isinstance(
+            condition, sympy.GreaterThan) or isinstance(condition, sympy.StrictGreaterThan)
 
-                    # Si hay solución, se devuelve el intervalo de solución
-                    lim_inf = eval(
-                        str(i.args[0]).replace("<", "").replace(">", "").replace("=", "").replace("x", "").strip())
-                    lim_sup = eval(
-                        str(i.args[1]).replace("<", "").replace(">", "").replace("=", "").replace("x", "").strip())
-                    if lim_inf < lim_sup:
-                        inf = lim_inf
-                        sup = lim_sup
-                    else:
-                        inf = lim_sup
-                        sup = lim_inf
-                        if inf_open and not sup_open:
-                            sup_open = True
-                            inf_open = False
-                        elif not inf_open and sup_open:
-                            inf_open = True
-                            sup_open = False
-                    if inf_open and not sup_open:
-                        solucion_intervalo = Interval.Lopen(inf, sup)
-                    elif not inf_open and sup_open:
-                        solucion_intervalo = Interval.Ropen(inf, sup)
-                    elif inf_open and sup_open:
-                        solucion_intervalo = Interval.open(inf, sup)
-                    else:
-                        solucion_intervalo = Interval(inf, sup)
-                    final_result.append(solucion_intervalo)
+    def solve_direct_comparison(self, direct_comparsion):
+        return sympy.solve_univariate_inequality(direct_comparsion, x, relational=False)
 
+    def solve_and(self, and_condition):
+        result_interval = sympy.Reals
+        for inner_condition in and_condition.args:
+            if isinstance(inner_condition, tuple):
+                partial_result_interval = self.solve_auxiliar_inequality(*inner_condition)
+            elif isinstance(inner_condition, list):
+                partial_result_interval = self.solve_auxiliar_inequality(inner_condition)
             else:
-                # Si no hay solución, se devuelve None
-                final_result.append(None)
+                partial_result_interval = self.solve_auxiliar_inequality([inner_condition])
+            result_interval = sympy.Intersection(result_interval, partial_result_interval)
+        return result_interval
 
-        if is_or:
-            return sympy.Union(*final_result)
+    def solve_or(self, or_condition):
+        result_interval = sympy.EmptySet
+        for inner_condition in or_condition.args:
+            if isinstance(inner_condition, tuple):
+                partial_result_interval = self.solve_auxiliar_inequality(*inner_condition)
+            elif isinstance(inner_condition, list):
+                partial_result_interval = self.solve_auxiliar_inequality(inner_condition)
+            else:
+                partial_result_interval = self.solve_auxiliar_inequality([inner_condition])
+            result_interval = sympy.Union(result_interval, partial_result_interval)
+        return result_interval
 
-        return sympy.Intersection(*final_result)
-
-    def inequality(self, expr):
-        if expr.__contains__("&") or expr.__contains__("|"):
-            # expr_replaced = expr.replace("\\wedge","&").replace("\\vee","|")
-            expr_new = expr.replace("(", "").replace(")", "").strip().split("|")
-            # expr_new = expr.split("|")
-            results = []
-            x = symbols("x")
-            for i in expr_new:
-                for j in i.split("&"):
-                    results.append(solve_univariate_inequality(sympify(j), x))
-                results.append('|')
-            results = results[:-1]
-
-            for idx, k in enumerate(results):
-                if k == '|':
-                    idx_pipe = idx
-            izq = []
-            der = []
-            for idx1, k1 in enumerate(results):
-                if idx1 < idx_pipe:
-                    izq.append(k1)
-                elif idx1 > idx_pipe:
-                    der.append(k1)
-
-            return sympy.Union(*[self.aux_inequality(izq), self.aux_inequality(der)])
-
-        # Elimina espacios en blanco y divide la inecuación compuesta en partes
-        if (expr.__contains__(") <") or expr.__contains__(") >")) and \
-                (not expr.startswith("Abs") and not expr.startswith("(")):
-            expr = expr.replace(" ", "").replace(")<", "<").replace(")>", ">")[1:]
+    def solve_inequality(self):
+        if isinstance(self.sympy_expr, sympy.And):
+            return self.solve_and(self.sympy_expr)
+        elif isinstance(self.sympy_expr, sympy.Or):
+            return self.solve_or(self.sympy_expr)
+        elif self.is_direct_comparsion(self.sympy_expr):
+            return self.solve_direct_comparison(self.sympy_expr)
         else:
-            expr = expr.replace(" ", "")
-        partes = re.split(r'([<>]=?|>=|<=)', expr.replace(" ", ""))
+            raise Exception("Error while solving condition", str(self.sympy_expr))
 
-        # Filtra elementos vacíos de la lista de partes
-        partes = list(filter(lambda x: x != '', partes))
-
-        # Inicializa la lista de inecuaciones resultantes
-        inecuaciones = []
-
-        if len(partes) > 3:
-            if len(partes) == 5 and partes[0].startswith("("):
-                new_partes = []
-                try:
-                    number = ''
-                    some_number = int(simplify(partes[0][1:]))
-                    if some_number != None:
-                        number = partes[0][1:]
-                    expr = partes[2][:-1]
-                    new_partes.append(str(number))
-                    new_partes.append(str(partes[1]))
-                    new_partes.append(str(expr))
-                    new_partes.append(str(partes[3]))
-                    new_partes.append(str(partes[4]))
-                    partes = new_partes
-                except:
-                    continue_i = True
-            # Recorre las partes y construye inecuaciones
-            for i in range(0, len(partes) - 1, 2):
-                inecuacion = partes[i] + partes[i + 1] + partes[i + 2]
-                inecuaciones.append(inecuacion)
-
-            x = symbols("x")
-            results = []
-            for i in inecuaciones:
-                results.append(solve_univariate_inequality(sympify(i), x))
-        else:
-            x = symbols("x")
-            results = [solve_univariate_inequality(sympify(expr), x)]
-        return self.aux_inequality(results)
+    def solve_auxiliar_inequality(self, condition_list):
+        result_interval = sympy.Reals
+        for condition in condition_list:
+            if isinstance(condition, sympy.And):
+                partial_result_interval = self.solve_and(condition)
+            elif isinstance(condition, sympy.Or):
+                partial_result_interval = self.solve_or(condition)
+            elif self.is_direct_comparsion(condition):
+                partial_result_interval = self.solve_direct_comparison(condition)
+            else:
+                raise Exception("Error while solving condition", str(condition))
+            result_interval = sympy.Intersection(result_interval, partial_result_interval)
+        return result_interval
 
     def is_user_defined_func(self) -> bool:
         return isinstance(self.sympy_expr.func, UndefinedFunction) and not self.is_derivative()

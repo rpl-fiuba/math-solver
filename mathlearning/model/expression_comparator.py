@@ -81,7 +81,8 @@ class ExpressionComparator:
         neither_is_inequality = not original_is_inequality and not new_is_inequality
 
         if both_are_inequality:
-            return original_expression.inequality(str(original_expression)) == new_expression.inequality(str(new_expression))
+            result_for_new_inequality = new_expression.solve_inequality()
+            return original_expression.solve_inequality() == result_for_new_inequality
         elif neither_is_inequality:
             return original_expression.is_equivalent_to(new_expression)
         else:

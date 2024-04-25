@@ -8,6 +8,8 @@ from sympy import latex, imageset, Lambda, denom, Intersection, solveset, numer
 from sympy import Integral
 from sympy import S
 
+import sympy
+
 from mathlearning.model.expression import Expression
 from django.core.exceptions import SuspiciousOperation
 
@@ -38,8 +40,7 @@ class EvaluateService:
             elif problem_type == ProblemType.IMAGE.value:
                 return latex(imageset(Lambda(x, expression.sympy_expr), S.Reals))
             elif problem_type == ProblemType.INEQUALITY.value:
-                inequality = expression.sympy_expr
-                return latex(Expression(inequality).inequality(str(expression)))
+                return latex(expression.solve_inequality())
             elif problem_type == ProblemType.EXPONENTIAL.value:
                 exponential = expression.sympy_expr
                 return latex(Expression(exponential).equation_exp_ln(str(expression)))

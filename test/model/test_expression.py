@@ -1,9 +1,10 @@
 import unittest
-
 import sympy
 from sympy import Add, Derivative, Pow, Mul, cos, Interval
 
 from mathlearning.model.expression import Expression
+from mathlearning.utils.latex_utils import find_outermost_brackets
+from sympy.parsing.latex import parse_latex
 
 
 class TestExpression(unittest.TestCase):
@@ -238,6 +239,7 @@ class TestExpression(unittest.TestCase):
         # TODO check test with rationals in the edges
         # self.check_equality_with_substractions(Expression('\\mathbb{R}-{\\sqrt{5}, 15, \\frac{17}{3}}').sympy_expr,
         #                                       sympy.SymmetricDifference(sympy.Reals, sympy.FiniteSet(sympy.sqrt(5), 15, sympy.Mul(17, sympy.Pow(3, -1)))))
+
     # def check_equality_with_substractions(self, set_left, set_right):
     # is_sub_set = set_left.is_subset(set_right)
     #    difference_left = set_left - set_right
@@ -251,7 +253,202 @@ class TestExpression(unittest.TestCase):
         self.assertEquals(len(Expression(expression_unparsed).sympy_expr.args), 2)
         self.assertEquals(Expression(expression_unparsed).sympy_expr.args[0], Interval.Lopen(-sympy.oo, 3))
         self.assertEquals(len(Expression(expression_unparsed).sympy_expr.args[1].args), 3)
-        self.assertTrue(Expression(expression_unparsed).sympy_expr.args[1].args[0]._eval_Eq(Interval.open(-sympy.oo, -5)))
+        self.assertTrue(
+            Expression(expression_unparsed).sympy_expr.args[1].args[0]._eval_Eq(Interval.open(-sympy.oo, -5)))
         self.assertTrue(Expression(expression_unparsed).sympy_expr.args[1].args[1]._eval_Eq(Interval.open(-5, 5)))
         self.assertTrue(Expression(expression_unparsed).sympy_expr.args[1].args[2]._eval_Eq(Interval.open(5, sympy.oo)))
 
+    def test_correct_parsing_of_inequality_without_vee_inside(self):
+        expression_unparsed = '[[x\\ge1 \\wedge |x-2|\\ge3] \\vee [x\\le1 \\wedge |x-2|\\le3]]'
+        expression_parsed = Expression(expression_unparsed)
+        self.assertTrue(isinstance(expression_parsed.sympy_expr, sympy.Or))
+        self.assertEquals(len(expression_parsed.sympy_expr.args), 2)
+        self.assertTrue(isinstance(expression_parsed.sympy_expr.args[0], sympy.And))
+        self.assertEquals(str(expression_parsed.sympy_expr.args[0]), '(x >= 1) & (Abs(x - 2) >= 3)')
+        self.assertTrue(isinstance(expression_parsed.sympy_expr.args[1], sympy.And))
+        self.assertEquals(str(expression_parsed.sympy_expr.args[1]), '(x <= 1) & (Abs(x - 2) <= 3)')
+
+    # def test_correct_parsing_of_inequality_with_vee_inside(self):
+    #    expression_unparsed = '{x\\ge1 \\wedge {x-2\\ge3 \\vee x-2\\le-3}} \\vee {x\\le1 \\wedge |x-2|\\le3}'
+    #    expression_parsed = Expression(expression_unparsed)
+    #    # Example usage
+    #    expr_str = 'x<1 \\wedge [x<2 \\vee [x<2 \\wedge x<3] \\vee x>5] \\wedge x<3'
+    #    find_outermost_brackets(expr_str)
+    #    self.assertTrue(isinstance(expression_parsed.sympy_expr, sympy.Or))
+    #    self.assertEquals(len(expression_parsed.sympy_expr.args), 2)
+
+    def test_obfuscate_expression_between_top_level_brackets(self):
+        expr_str = '[x<2 \\vee [x<2 \\wedge x<3] \\vee x>5] \\vee [x<17]'
+        expressions_in_top_level_brackets = find_outermost_brackets(expr_str)
+        self.assertEqual(len(expressions_in_top_level_brackets), 2)
+        self.assertEqual(expressions_in_top_level_brackets[0], '[x<2 \\vee [x<2 \\wedge x<3] \\vee x>5]')
+        self.assertEqual(expressions_in_top_level_brackets[1], '[x<17]')
+
+    def test_find_top_level_brackets(self):
+        expr_str = '[x<2 \\vee [x<2 \\wedge x<3] \\vee x>5] \\vee [x<17]'
+        expressions_in_top_level_brackets = find_outermost_brackets(expr_str)
+        self.assertEqual(len(expressions_in_top_level_brackets), 2)
+        self.assertEqual(expressions_in_top_level_brackets[0], '[x<2 \\vee [x<2 \\wedge x<3] \\vee x>5]')
+        self.assertEqual(expressions_in_top_level_brackets[1], '[x<17]')
+
+        expr_str = 'x<2 \\vee [x<2 \\wedge x<3] \\vee x>5'
+        expressions_in_top_level_brackets = find_outermost_brackets(expr_str)
+        self.assertEqual(len(expressions_in_top_level_brackets), 1)
+        self.assertEqual(expressions_in_top_level_brackets[0], '[x<2 \\wedge x<3]')
+
+        expr_str = '[x<2 \\wedge x<3 \\vee x>5]'
+        expressions_in_top_level_brackets = find_outermost_brackets(expr_str)
+        self.assertEqual(len(expressions_in_top_level_brackets), 1)
+        self.assertEqual(expressions_in_top_level_brackets[0], '[x<2 \\wedge x<3 \\vee x>5]')
+
+        expr_str = 'x<2 \\wedge x<3 \\vee x>5'
+        expressions_in_top_level_brackets = find_outermost_brackets(expr_str)
+        self.assertEqual(len(expressions_in_top_level_brackets), 0)
+
+    def test_parsing_inside_brackets_and(self):
+        and_expression_1 = '[x<1]'
+        and_expression_2 = '[x<1 \\wedge x<2]'
+        and_expression_3 = '[x\\le8 \\wedge x<1 \\wedge x\\ge3]'
+        self.assertEqual(Expression(and_expression_1).sympy_expr, parse_latex('x<1'))
+        self.assertEqual(Expression(and_expression_2).sympy_expr, sympy.And(parse_latex('x<1'), parse_latex('x<2')))
+        self.assertEqual(Expression(and_expression_3).sympy_expr,
+                         sympy.And(parse_latex('x\\leq8'), parse_latex('x<1'), parse_latex('x\\geq3')))
+
+    def test_parsing_inside_brackets_or(self):
+        or_expression_1 = '[x<1]'
+        or_expression_2 = '[x<1  \\vee  x<2]'
+        or_expression_3 = '[x\\le8    \\vee   x<1    \\vee   x\\ge3]'
+        self.assertEqual(Expression(or_expression_1).sympy_expr, parse_latex('x<1'))
+        self.assertEqual(Expression(or_expression_2).sympy_expr, sympy.Or(parse_latex('x<1'), parse_latex('x<2')))
+        self.assertEqual(Expression(or_expression_3).sympy_expr,
+                         sympy.Or(parse_latex('x\\leq8'), parse_latex('x<1'), parse_latex('x\\geq3')))
+
+    def test_parsing_inside_brackets_or_nested(self):
+        or_expression_1 = '[x<1 \\vee [  x<2  \\vee  x<3  ] \\vee [x<5]]'
+        self.assertEqual(Expression(or_expression_1).sympy_expr,
+                         sympy.Or(parse_latex('x<1'), parse_latex('x<2'), parse_latex('x<5'), parse_latex('x<3')))
+
+        or_expression_2 = '[x<1 \\vee [x>2 \\vee x<3] \\vee [x<5 \\vee x\\le7]]'
+        self.assertEqual(Expression(or_expression_2).sympy_expr,
+                         sympy.Or(parse_latex('x<1'), parse_latex('x>2'), parse_latex('x<3'), parse_latex('x<5'),
+                                  parse_latex('x\\leq7')))
+
+        or_expression_3 = '[[x<2 \\vee x<3] \\vee [x<5 \\vee x>-18]]'
+        self.assertEqual(Expression(or_expression_3).sympy_expr,
+                         sympy.Or(parse_latex('x<2'), parse_latex('x<3'), parse_latex('x<5'), parse_latex('x>-18')))
+
+        or_expression_4 = '[[x<2 \\vee    x<3]   \\vee [x<5 \\vee   [  x>-18 \\vee x>23]]]'
+        self.assertEqual(Expression(or_expression_4).sympy_expr,
+                         sympy.Or(parse_latex('x<2'), parse_latex('x<3'), parse_latex('x<5'), parse_latex('x>-18'),
+                                  parse_latex('x>23')))
+
+    def test_parsing_inside_brackets_and_nested(self):
+        AND_expression_1 = '[x<1 \\wedge [  x<2  \\wedge  x<3  ] \\wedge [x<5]]'
+        self.assertEqual(Expression(AND_expression_1).sympy_expr,
+                         sympy.And(parse_latex('x<1'), parse_latex('x<2'), parse_latex('x<5'), parse_latex('x<3')))
+
+        AND_expression_2 = '[x<1 \\wedge [x>2 \\wedge x<3] \\wedge [x<5 \\wedge x\\le7]]'
+        self.assertEqual(Expression(AND_expression_2).sympy_expr,
+                         sympy.And(parse_latex('x<1'), parse_latex('x>2'), parse_latex('x<3'), parse_latex('x<5'),
+                                   parse_latex('x\\leq7')))
+
+        AND_expression_3 = '[[x<2 \\wedge x<3] \\wedge [x<5 \\wedge x>-18]]'
+        self.assertEqual(Expression(AND_expression_3).sympy_expr,
+                         sympy.And(parse_latex('x<2'), parse_latex('x<3'), parse_latex('x<5'), parse_latex('x>-18')))
+
+        AND_expression_4 = '[[x<2 \\wedge    x<3]   \\wedge [x<5 \\wedge   [  x>-18 \\wedge x>23]]]'
+        self.assertEqual(Expression(AND_expression_4).sympy_expr,
+                         sympy.And(parse_latex('x<2'), parse_latex('x<3'), parse_latex('x<5'), parse_latex('x>-18'),
+                                   parse_latex('x>23')))
+
+    def test_parsing_inside_brackets_ors_with_and_nested(self):
+        expression_1 = '[[x<1 \\vee x<2] \\wedge [x<3 \\wedge x>-5]]'
+        self.assertEqual(Expression(expression_1).sympy_expr,
+                         sympy.And(
+                             sympy.Or(parse_latex('x<1'), parse_latex('x<2')),
+                             sympy.And(parse_latex('x<3'), parse_latex('x>-5')))
+                         )
+
+        expression_2 = '[[x<1 \\vee x<2] \\wedge [x<3 \\wedge [x>-5 \\vee x<-17]]]'
+        self.assertEqual(Expression(expression_2).sympy_expr,
+                         sympy.And(
+                             sympy.Or(parse_latex('x<1'), parse_latex('x<2')),
+                             sympy.And(
+                                 parse_latex('x<3'),
+                                 sympy.Or(parse_latex('x>-5'), parse_latex('x<-17'))))
+                         )
+
+    def test_parsing_inside_with_abs(self):
+        expression = '[|x-1|<1 \\vee x>-59]'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.Or(parse_latex('x>-59'), parse_latex('|x-1|<1')))
+        self.assertEqual(Expression(expression).sympy_expr, sympy.Or(parse_latex('|x-1|<1'), parse_latex('x>-59')))
+
+        expression = '[|x-1|<1 \\vee |6-x|>2]'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.Or(parse_latex('|6-x|>2'), parse_latex('|x-1|<1')))
+
+        expression = '[[|x-1|<1 \\wedge |10-x|<2] \\vee |6-x|>2]'
+        self.assertEqual(Expression(expression).sympy_expr,
+                         sympy.Or(parse_latex('|6-x|>2'),
+                                  sympy.And(parse_latex('|x-1|<1'), parse_latex('|10-x|<2'))))
+
+        expression = '[[|x-1|<1 \\wedge |10-x|<2] \\wedge [|6-x|>2 \\vee 8x\\le25]]'
+        self.assertEqual(Expression(expression).sympy_expr,
+                         sympy.And(sympy.Or(parse_latex('|6-x|>2'), parse_latex('8x\\leq25')),
+                                   sympy.And(parse_latex('|x-1|<1'), parse_latex('|10-x|<2'))))
+
+    def test_simple_inequalities(self):
+        expression = 'x<1'
+        self.assertEqual(Expression(expression).sympy_expr, parse_latex('x<1'))
+
+        expression = '1<x'
+        self.assertEqual(Expression(expression).sympy_expr, parse_latex('1<x'))
+
+        expression = '1\\lex'
+        self.assertEqual(Expression(expression).sympy_expr, parse_latex('1 \\leq x'))
+
+
+        expression = '[x<1]'
+        self.assertEqual(Expression(expression).sympy_expr, parse_latex('x<1'))
+
+        expression = 'x<1 \\wedge x>0'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.And(parse_latex('x<1'), parse_latex('x>0')))
+
+        expression = '[x<1 \\wedge x>0]'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.And(parse_latex('x<1'), parse_latex('x>0')))
+
+        expression = '[[x<1] \\wedge [x>0]]'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.And(parse_latex('x<1'), parse_latex('x>0')))
+
+    def test_parsing_inside_bounded_both_sides(self):
+        expression = '0<x<5'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.And(parse_latex('0<x'), parse_latex('x<5')))
+
+        expression = '6<x\\le15'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.And(parse_latex('6<x'), parse_latex('x\\leq15')))
+
+        expression = '-6\\le x\\le22'
+        self.assertEqual(Expression(expression).sympy_expr,
+                         sympy.And(parse_latex('-6\\leq x'), parse_latex('x\\leq22')))
+
+        expression = '30 \\ge x \\ge 12'
+        self.assertEqual(Expression(expression).sympy_expr,
+                         sympy.And(parse_latex('30\\geq x'), parse_latex('x \\geq 12')))
+
+        expression = '0<|x-1|<5'
+        self.assertEqual(Expression(expression).sympy_expr, sympy.And(parse_latex('0<|x-1|'), parse_latex('|x-1|<5')))
+
+        expression = '[3<x<7 \\vee -2<|x-1|<7]'
+        self.assertEqual(Expression(expression).sympy_expr,
+                         sympy.Or(
+                             sympy.And(parse_latex('3<x'), parse_latex('x<7')),
+                             sympy.And(parse_latex('-2<|x-1|'), parse_latex('|x-1|<7'))
+                         )
+                         )
+
+        expression = '[[3<x<7 \\vee -2\\le|x-1|<7] \\wedge [x>0]]'
+        self.assertEqual(Expression(expression).sympy_expr,
+                         sympy.And(sympy.Or(
+                             sympy.And(parse_latex('3<x'), parse_latex('x<7')),
+                             sympy.And(parse_latex('-2\\leq|x-1|'), parse_latex('|x-1|<7'))
+                         ), parse_latex('x>0')
+                         ))
