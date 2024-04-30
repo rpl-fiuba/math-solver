@@ -74,6 +74,8 @@ class InequalityExercises:
             {'expression': '[x-1>0 \\vee x-1<0] \\wedge |x-1|<2', 'variables': []},
             {'expression': '[x-1>0 \\vee x-1<0] \\wedge [x-1<2 \\wedge x-1>-2]', 'variables': []},
             {'expression': '[x-1>0 \\vee x-1<0] \\wedge x-1<2 \\wedge x-1>-2', 'variables': []},
+            {'expression': '[x-1>0 \\vee x-1<0] \\wedge -2<x-1<2', 'variables': []},
+            {'expression': '[x>1 \\vee x<1] \\wedge -1<x<3', 'variables': []},
             #{'expression': '\\left(-8, \\infty) \\cap \\left(-\\infty, 26\\right)', 'variables': []}, todo add parser from domain/image intersection of domains
             {'expression': '\\left(-1, 1\\right) \\cup \\left(1, 3\\right)', 'variables': []}
         ]
