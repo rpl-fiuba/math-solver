@@ -28,7 +28,7 @@ class EvaluateService:
                 return Expression(derivative.doit()).solve_derivatives().to_latex_with_derivatives()
             elif problem_type == ProblemType.FACTORISABLE.value:
                 factorisable = expression.sympy_expr
-                return latex(Expression(factorisable).factor())
+                return latex(Expression(factorisable).factor().sympy_expr)
             elif problem_type == ProblemType.DOMAIN.value:
                 final_domain_denominator = S.Reals
                 if denom(expression.sympy_expr) != 1:

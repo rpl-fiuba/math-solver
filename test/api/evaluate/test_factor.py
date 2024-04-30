@@ -8,15 +8,15 @@ class APITests(APITestCase):
     expressions = [
         {
             'problem_input': {'expression': '\\frac{(3x+12)}{(x^2-3x)}\\cdot\\frac{(x-3)^2}{(x^3-16x)}', 'variables': []},
-            'problem_output': '3*(x - 3)/(x**2*(x - 4))'
+            'problem_output': '\\frac{3 \\left(x - 3\\right)}{x^{2} \\left(x - 4\\right)}'
         },
         {
             'problem_input': {'expression': 'x^2-1', 'variables': []},
-            'problem_output': '(x - 1)*(x + 1)'
+            'problem_output': '\\left(x - 1\\right) \\left(x + 1\\right)'
         },
         {
             'problem_input': {'expression': 'x^2+2x+1', 'variables': []},
-            'problem_output': '(x + 1)**2'
+            'problem_output': '\\left(x + 1\\right)^{2}'
         }
     ]
 
