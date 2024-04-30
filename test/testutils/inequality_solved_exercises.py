@@ -61,3 +61,23 @@ class InequalityExercises:
         non_result_steps = steps[:len(steps) - 1]
 
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+
+    @staticmethod
+    def double_limited_abs_inequality() -> SolvedExercise:
+        name = "0<|x-1|<2"
+        steps = [
+            {'expression': '0<|x-1|<2', 'variables': []},
+            {'expression': '0<|x-1| \\wedge |x-1|<2', 'variables': []},
+            {'expression': '|x-1|>0 \\wedge |x-1|<2', 'variables': []},
+            {'expression': '|x-1|>0 \\wedge |x-1|<2', 'variables': []},
+            {'expression': '[[x-1>0 \\vee x-1<0] \\wedge |x-1|<2]', 'variables': []},
+            {'expression': '[x-1>0 \\vee x-1<0] \\wedge |x-1|<2', 'variables': []},
+            {'expression': '[x-1>0 \\vee x-1<0] \\wedge [x-1<2 \\wedge x-1>-2]', 'variables': []},
+            {'expression': '[x-1>0 \\vee x-1<0] \\wedge x-1<2 \\wedge x-1>-2', 'variables': []},
+            #{'expression': '\\left(-8, \\infty) \\cap \\left(-\\infty, 26\\right)', 'variables': []}, todo add parser from domain/image intersection of domains
+            {'expression': '\\left(-1, 1\\right) \\cup \\left(1, 3\\right)', 'variables': []}
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)

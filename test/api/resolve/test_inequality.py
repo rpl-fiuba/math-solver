@@ -20,3 +20,6 @@ class SolutionTreeAPITest(APITestCase):
     def test_single_abs_less_than_without_including_edge(self):
         solve_exercise_with_solution_tree(self, ProblemType.INEQUALITY, InequalityExercises.single_abs_less_than_without_including_edge())
 
+    def test_double_limited_abs_inequality(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INEQUALITY, InequalityExercises.double_limited_abs_inequality())
+

@@ -51,7 +51,7 @@ def solve_exercise_with_solution_tree(self, kind: ProblemType, exercise: SolvedE
         if result['exerciseStatus'] == 'resolved':
             print(Expression(current_step).to_string())
         if result['exerciseStatus'] == 'invalid':
-            print(Expression(current_step).to_string())
+            print(str(current_step))
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(result['exerciseStatus'], 'valid')
 
