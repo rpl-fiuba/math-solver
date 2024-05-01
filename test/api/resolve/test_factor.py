@@ -25,3 +25,6 @@ class SolutionTreeAPITest(APITestCase):
     def test_square_dif_2(self):
         solve_exercise_with_solution_tree(self, ProblemType.FACTORISABLE, FactorExercises.square_dif_2())
 
+    def test_expression_with_x_y(self):
+        solve_exercise_with_solution_tree(self, ProblemType.FACTORISABLE, FactorExercises.expression_with_x_y())
+

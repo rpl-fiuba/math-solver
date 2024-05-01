@@ -25,6 +25,10 @@ class APITests(APITestCase):
         {
             'problem_input': {'expression': 'x^4-9x^2', 'variables': []},
             'problem_output': 'x^{2} \\left(x - 3\\right) \\left(x + 3\\right)'
+        },
+        {
+            'problem_input': {'expression': '7x^3y^2+28x^2y^3+28xy^4', 'variables': []},
+            'problem_output': '7 x y^{2} \\left(x + 2 y\\right)^{2}'
         }
     ]
 
