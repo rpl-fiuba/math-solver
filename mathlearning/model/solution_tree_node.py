@@ -74,7 +74,10 @@ class SolutionTreeNode:
                 hints = self.get_hints(previous_step)
             return 'invalid', hints
         if self.is_a_result(new_expression, problem_type):
-            return 'resolved', hints
+            if self.expression.is_equal_to(new_expression):
+                return 'valid', hints
+            else:
+                return 'resolved', hints
 
         if problem_type == ProblemType.INEQUALITY:
             hints = []

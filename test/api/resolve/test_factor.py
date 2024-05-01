@@ -19,3 +19,9 @@ class SolutionTreeAPITest(APITestCase):
     def test_square_binomial(self):
         solve_exercise_with_solution_tree(self, ProblemType.FACTORISABLE, FactorExercises.square_binomial())
 
+    def test_cube_expression(self):
+        solve_exercise_with_solution_tree(self, ProblemType.FACTORISABLE, FactorExercises.cube_expression())
+
+    def test_square_dif_2(self):
+        solve_exercise_with_solution_tree(self, ProblemType.FACTORISABLE, FactorExercises.square_dif_2())
+

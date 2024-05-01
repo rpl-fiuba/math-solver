@@ -17,6 +17,14 @@ class APITests(APITestCase):
         {
             'problem_input': {'expression': 'x^2+2x+1', 'variables': []},
             'problem_output': '\\left(x + 1\\right)^{2}'
+        },
+        {
+            'problem_input': {'expression': 'x^3+x^2-2x', 'variables': []},
+            'problem_output': 'x \\left(x - 1\\right) \\left(x + 2\\right)'
+        },
+        {
+            'problem_input': {'expression': 'x^4-9x^2', 'variables': []},
+            'problem_output': 'x^{2} \\left(x - 3\\right) \\left(x + 3\\right)'
         }
     ]
 

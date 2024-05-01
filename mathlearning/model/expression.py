@@ -427,6 +427,9 @@ class Expression:
         copy = self.get_copy()
         return Expression(factor(copy.sympy_expr))
 
+    def is_equal_to(self, expression):
+        return sympify(self) == sympify(expression)
+
     def equation_exp_ln(self, ecuacion_str):
         x = symbols('x')
         soluciones = solve(eval(ecuacion_str), x)
