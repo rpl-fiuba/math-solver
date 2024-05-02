@@ -31,4 +31,18 @@ class ExponentialExercises:
 
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
 
+    @staticmethod
+    def ln_with_square() -> SolvedExercise:
+        name = "ln(x^2+1)=0"
+        steps = [
+            {'expression': '\\ln\\left(x^2 + 1\\right) = 0', 'variables': []},
+            {'expression': 'x^2 + 1 = 1', 'variables': []},
+            {'expression': 'x^2 = 0', 'variables': []},
+            {'expression': 'x = 0', 'variables': []},
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+
 
