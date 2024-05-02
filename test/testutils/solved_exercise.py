@@ -3,13 +3,14 @@ from mathlearning.model.expression import Expression
 
 class SolvedExercise:
     def __init__(self, name: str, steps: list, result: str, non_result_steps: list,
-                 result_non_latex: str = None, steps_non_latex: list = None):
+                 result_non_latex: str = None, steps_non_latex: list = None, invalid_steps: list = None):
         self.name = name
         self.steps = steps
         self.result = result
         self.result_non_latex = result_non_latex
         self.steps_non_latex = steps_non_latex
         self.non_result_steps = non_result_steps
+        self.invalid_steps = invalid_steps if invalid_steps is not None else list()
 
     def get_results_as_expressions(self):
         return list(

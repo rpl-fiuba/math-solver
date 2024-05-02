@@ -38,9 +38,14 @@ class InequalityExercises:
             {'expression': '\\left(-\\infty, -5] \\cup \\left[15, \\infty\\right)', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': '[|x-5|\\ge5]', 'variables': []},
+            {'expression': '[|x-5|\\le10]', 'variables': []},
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
 
     @staticmethod
@@ -58,9 +63,15 @@ class InequalityExercises:
             {'expression': '\\left(-8, 26\\right)', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': '[|x-9|\\le17]', 'variables': []},
+            {'expression': '[x-9<17]', 'variables': []},
+        ]
+
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def double_limited_abs_inequality() -> SolvedExercise:

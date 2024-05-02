@@ -55,6 +55,18 @@ def solve_exercise_with_solution_tree(self, kind: ProblemType, exercise: SolvedE
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(result['exerciseStatus'], 'valid')
 
+    for invalid_step in exercise.invalid_steps:
+        resolve_data['step_list'] = []
+        resolve_data['current_expression'] = invalid_step
+        response = self.client.post(path='/resolve', data=resolve_data, format='json')
+        result = json.loads(response.content)
+        if result['exerciseStatus'] == 'resolved':
+            print("Expected invalid result but got resolved", Expression(invalid_step).to_string())
+        if result['exerciseStatus'] == 'valid':
+            print("Expected invalid result but got valid", str(invalid_step))
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(result['exerciseStatus'], 'invalid')
+
     # the result should be resolved
     resolve_data['step_list'] = exercise.steps
     resolve_data['current_expression'] = exercise.steps[-1]
