@@ -11,10 +11,10 @@ solution_tree_mapper = SolutionTreeMapper()
 class SolutionTreeAPITest(APITestCase):
 
     def test_ln_expression(self):
-       solve_exercise_with_solution_tree(self, ProblemType.EXPONENTIAL, ExponentialExercises.ln_expression())
+        solve_exercise_with_solution_tree(self, ProblemType.EXPONENTIAL, ExponentialExercises.ln_expression())
 
     def test_exp_expression(self):
-       solve_exercise_with_solution_tree(self, ProblemType.EXPONENTIAL, ExponentialExercises.exp_expression())
+        solve_exercise_with_solution_tree(self, ProblemType.EXPONENTIAL, ExponentialExercises.exp_expression())
 
     def test_ln_with_square(self):
         solve_exercise_with_solution_tree(self, ProblemType.EXPONENTIAL, ExponentialExercises.ln_with_square())

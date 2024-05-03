@@ -456,4 +456,4 @@ class TestExpression(unittest.TestCase):
     def test_resolve_exponential(self):
         exp = Expression("x=-1 \\vee x=-3")
         x = sympy.symbols('x')
-        self.assertEqual(exp, Expression(sympy.Eq(x, -1) | sympy.Eq(x, -3)))
+        self.assertEqual(exp.sympy_expr, 'Eq(x, -1) | Eq(x, -3)')

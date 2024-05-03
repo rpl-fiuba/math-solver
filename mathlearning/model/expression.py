@@ -228,9 +228,14 @@ def parse_latex_exp_results(formula):
     result = []
     x = symbols("x")
     for i in list_eq:
-        result.append(Eq(x, eval(i.strip().split("=")[1])))
+        result.append(Eq(x, eval(i.strip().replace('\\','').split("=")[1])))
 
-    return str(sympy.Or(*result))
+    result_str = ''
+    for j in result:
+        result_str = result_str + f' {j} |'
+    result_final = result_str[:-1].strip()
+
+    return result_final
 
 
 def make_sympy_expr(formula, is_latex):

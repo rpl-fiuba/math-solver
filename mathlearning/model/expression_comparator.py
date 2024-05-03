@@ -90,10 +90,11 @@ class ExpressionComparator:
 
     @staticmethod
     def is_equivalent_to_for_exp(original_expression: Expression, new_expression: Expression) -> bool:
-        original_is_equation = (str(original_expression).__contains__("+") and str(original_expression).__contains__("*"))\
-                                or str(original_expression).__contains__("**")
-        new_is_equation = (str(new_expression).__contains__("+") and str(new_expression).__contains__("*")) \
-                          or str(new_expression).__contains__("**")
+        original_is_equation = (str(original_expression).__contains__("+") and str(original_expression).__contains__("*") and \
+                                str(original_expression).__contains__("Eq"))\
+                                or (str(original_expression).__contains__("**") and str(original_expression).__contains__("Eq"))
+        new_is_equation = (str(new_expression).__contains__("+") and str(new_expression).__contains__("*") and str(new_expression).__contains__("Eq")) \
+                          or (str(new_expression).__contains__("**") and str(new_expression).__contains__("Eq"))
 
         both_are_equation = original_is_equation and new_is_equation
         neither_is_equation = not original_is_equation and not new_is_equation
