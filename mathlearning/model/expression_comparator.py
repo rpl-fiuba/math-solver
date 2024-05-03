@@ -111,8 +111,14 @@ class ExpressionComparator:
             elif not str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
                 return original_expression == new_expression
             else:
-                results_original = str(original_expression).strip().split("\\vee")
-                results_new = str(new_expression).split("\\vee")
+                results_original = []
+                results_new = []
+
+                for i in str(original_expression).strip().split("\\vee"):
+                    results_original.append(i.strip())
+                for j in str(new_expression).split("\\vee"):
+                    results_new.append(j.strip())
+
                 if len(results_original) == len(results_new) and \
                         set(results_original).issubset(results_new):
                     return True
