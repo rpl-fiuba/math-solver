@@ -13,9 +13,14 @@ class FactorExercises:
             {'expression': '\\frac{3(x-3)}{x^2(x-4)}', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': '\\frac{(x-3)}{3x^2(x-4)}', 'variables': []},
+            {'expression': '\\frac{3\\cdot(x+4)}{x}\\cdot\\frac{(x-3)^2}{x\\cdot(x^2-16)}', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def square_dif() -> SolvedExercise:
@@ -26,9 +31,14 @@ class FactorExercises:
             {'expression': '(x-1)\\cdot(x+1)', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': 'x^2', 'variables': []},
+            {'expression': '(x-1)\\cdot(x-1)', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def square_binomial() -> SolvedExercise:
@@ -39,9 +49,14 @@ class FactorExercises:
             {'expression': '(x+1)^2', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': '(x-1)^2', 'variables': []},
+            {'expression': 'x^2+2x+2', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def cube_expression() -> SolvedExercise:
@@ -54,9 +69,14 @@ class FactorExercises:
             {'expression': 'x\\cdot(x-1)\\cdot(x+2)', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': 'x^3+x^2-2', 'variables': []},
+            {'expression': 'x\\cdot(x+1)\\cdot(x+2)', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def square_dif_2() -> SolvedExercise:
@@ -68,9 +88,15 @@ class FactorExercises:
             {'expression': 'x^2\\cdot(x-3)\\cdot(x+3)', 'variables': []},
         ]
 
+        invalid_steps = [
+            {'expression': 'x^4-9x', 'variables': []},
+            {'expression': '(x^2-3)\\cdot(x^2+3)', 'variables': []},
+            {'expression': 'x^2\\cdot(x-3)\\cdot(x-3)', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def expression_with_x_y() -> SolvedExercise:
@@ -84,7 +110,13 @@ class FactorExercises:
             {'expression': '7xy^2\\cdot(x+2y)^2', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': '7x^3y^2+28x^2y^3+28xy^3', 'variables': []},
+            {'expression': '8\\cdot(x^3y^2+4x^2y^3+4xy^4)', 'variables': []},
+            {'expression': '7y^2\\cdot(x+2y)^2', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 

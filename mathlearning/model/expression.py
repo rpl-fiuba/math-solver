@@ -216,6 +216,23 @@ def parse_inner_inequalities(inner_expression_without_outmost_brackets, separato
     return final_expression
 
 
+def contains_exp_results(formula):
+    return (formula.__contains__("=") and formula.__contains__("\\vee")) or \
+           (formula.__contains__("Eq") and formula.__contains__("|"))
+
+
+def parse_latex_exp_results(formula):
+    if formula.__contains__("Eq") and formula.__contains__("|"):
+        return formula
+    list_eq = formula.split("\\vee")
+    result = []
+    x = symbols("x")
+    for i in list_eq:
+        result.append(Eq(x, eval(i.strip().split("=")[1])))
+
+    return str(sympy.Or(*result))
+
+
 def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
         if is_intersection_of_intervals(formula):
@@ -224,6 +241,8 @@ def make_sympy_expr(formula, is_latex):
             return parse_latex_interval(clean_latex(formula))
         elif contains_set_symbol(formula):
             return parse_latex_set(clean_latex(formula))
+        elif contains_exp_results(formula):
+            return parse_latex_exp_results(formula)
         else:
             clean_formula = clean_latex(formula)
             if is_inequality(clean_formula):

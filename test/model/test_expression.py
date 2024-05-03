@@ -452,3 +452,8 @@ class TestExpression(unittest.TestCase):
                              sympy.And(parse_latex('-2\\leq|x-1|'), parse_latex('|x-1|<7'))
                          ), parse_latex('x>0')
                          ))
+
+    def test_resolve_exponential(self):
+        exp = Expression("x=-1 \\vee x=-3")
+        x = sympy.symbols('x')
+        self.assertEqual(exp, Expression(sympy.Eq(x, -1) | sympy.Eq(x, -3)))

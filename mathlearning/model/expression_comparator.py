@@ -101,7 +101,20 @@ class ExpressionComparator:
         if both_are_equation:
             return original_expression.equation_exp_ln(str(original_expression)) == new_expression.equation_exp_ln(str(new_expression))
         elif neither_is_equation:
-            return original_expression.is_equivalent_to(new_expression)
+            original_expression = str(original_expression).replace("|", "\\vee")
+            new_expression = str(new_expression).replace("|", "\\vee")
+            if str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
+                return False
+            elif str(new_expression).__contains__("\\vee") and not str(original_expression).__contains__("\\vee"):
+                return False
+            elif not str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
+                return original_expression == new_expression
+            else:
+                results_original = str(original_expression).strip().split("\\vee")
+                results_new = str(new_expression).split("\\vee")
+                if len(results_original) == len(results_new) and \
+                        set(results_original).issubset(results_new):
+                    return True
         else:
             return False
 

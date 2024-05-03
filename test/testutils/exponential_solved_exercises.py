@@ -11,12 +11,21 @@ class ExponentialExercises:
             {'expression': '\\ln\\left((x+3)*(x+1) + 1\\right) = 0', 'variables': []},
             {'expression': 'x^2+4x+4=1', 'variables': []},
             {'expression': '(x+3)*(x+1)=0', 'variables': []},
-            {'expression': 'x=-1 \\vee x=-3', 'variables': []}
+            {'expression': 'x=-3 \\vee x=-1', 'variables': []}
+        ]
+
+        invalid_steps = [
+            {'expression': '\\ln\\left(x^2 + 4x + 4\\right) = 1', 'variables': []},
+            {'expression': '\\ln\\left(x^2 + 4x + 3\\right) = 0', 'variables': []},
+            {'expression': 'x^2 + 4x + 4 = 0', 'variables': []},
+            {'expression': 'x^2 + 4x = 1', 'variables': []},
+            {'expression': 'x=-1 \\vee x=0', 'variables': []},
+            {'expression': 'x=-1', 'variables': []}
         ]
 
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def exp_expression() -> SolvedExercise:
@@ -27,9 +36,15 @@ class ExponentialExercises:
             {'expression': 'x=-2', 'variables': []}
         ]
 
+        invalid_steps = [
+            {'expression': '\\exp\\left(x^2 + 4x + 4\\right) = 0', 'variables': []},
+            {'expression': 'x^2 + 4x = 1', 'variables': []},
+            {'expression': 'x=-1 \\vee x=0', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
     def ln_with_square() -> SolvedExercise:
@@ -41,8 +56,15 @@ class ExponentialExercises:
             {'expression': 'x = 0', 'variables': []},
         ]
 
+        invalid_steps = [
+            {'expression': '\\ln\\left(x^2 + 1\\right) = 1', 'variables': []},
+            {'expression': 'x^2 = 1', 'variables': []},
+            {'expression': 'x=-1 \\vee x=0', 'variables': []},
+            {'expression': 'x=-1', 'variables': []}
+        ]
+
         non_result_steps = steps[:len(steps) - 1]
 
-        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps)
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
 
