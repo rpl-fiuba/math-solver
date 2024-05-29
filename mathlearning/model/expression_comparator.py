@@ -90,10 +90,10 @@ class ExpressionComparator:
 
     @staticmethod
     def is_equivalent_to_for_exp(original_expression: Expression, new_expression: Expression) -> bool:
-        original_is_equation = (str(original_expression).__contains__("+") and str(original_expression).__contains__("*") and \
+        original_is_equation = ((str(original_expression).__contains__("+") or str(original_expression).__contains__("-")) and str(original_expression).__contains__("*") and \
                                 str(original_expression).__contains__("Eq"))\
                                 or (str(original_expression).__contains__("**") and str(original_expression).__contains__("Eq"))
-        new_is_equation = (str(new_expression).__contains__("+") and str(new_expression).__contains__("*") and str(new_expression).__contains__("Eq")) \
+        new_is_equation = ((str(new_expression).__contains__("+") or str(new_expression).__contains__("-")) and str(new_expression).__contains__("*") and str(new_expression).__contains__("Eq")) \
                           or (str(new_expression).__contains__("**") and str(new_expression).__contains__("Eq"))
 
         both_are_equation = original_is_equation and new_is_equation
@@ -109,7 +109,28 @@ class ExpressionComparator:
             elif str(new_expression).__contains__("\\vee") and not str(original_expression).__contains__("\\vee"):
                 return False
             elif not str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
-                return original_expression == new_expression
+                original = Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])).sympy_expr.args
+                new = Expression(sympy.sympify(str(new_expression).split(",")[1][:-1])).sympy_expr.args
+                if len(original) == len(new) and len(new) == 0:
+                    return Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])) == Expression(sympy.sympify(str(new_expression).split(",")[1][:-1]))
+                if len(original) == len(new):
+                    equal = True
+                    for i in original:
+                        if str(i).__contains__("E"):
+                            if i in new:
+                                continue
+                            else:
+                                equal = False
+                                break
+                        else:
+                            if float(i) in new:
+                                continue
+                            else:
+                                equal = False
+                                break
+                    return equal
+                else:
+                    return False
             else:
                 results_original = []
                 results_new = []

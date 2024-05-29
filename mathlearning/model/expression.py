@@ -218,7 +218,8 @@ def parse_inner_inequalities(inner_expression_without_outmost_brackets, separato
 
 def contains_exp_results(formula):
     return (formula.__contains__("=") and formula.__contains__("\\vee")) or \
-           (formula.__contains__("Eq") and formula.__contains__("|"))
+           (formula.__contains__("Eq") and formula.__contains__("|")) or \
+           (formula.__contains__("E") and formula.__contains__("+"))
 
 
 def parse_latex_exp_results(formula):
@@ -228,7 +229,10 @@ def parse_latex_exp_results(formula):
     result = []
     x = symbols("x")
     for i in list_eq:
-        result.append(Eq(x, eval(i.strip().replace('\\','').split("=")[1])))
+        if i.__contains__("="):
+            result.append(Eq(x, eval(i.strip().replace('\\','').split("=")[1])))
+        elif i.__contains__("Eq"):
+            result.append(eval(i.strip().replace('\\','')))
 
     result_str = ''
     for j in result:
@@ -266,7 +270,8 @@ def make_sympy_expr(formula, is_latex):
         evaluate = False
         if formula.__contains__("Eq"):
             evaluate = True
-            if formula.__contains__("+") and not formula.__contains__("*"):
+            if formula.__contains__("+") and not formula.__contains__("*") and \
+                    not str(formula.split(",")[0]).__contains__('E'):
                 acc = ''
                 for i in formula.split("+"):
                     acc = acc + f'parse_expr(\'{str(i).strip()}\', evaluate={evaluate}) & '
@@ -460,8 +465,16 @@ class Expression:
         # [x1, x2]
         final_sol = []
         for i in soluciones:
-            final_sol.append(symbols(f'x={i}'))
-        final = str(final_sol).replace("[", "").replace("]", "").replace(",", " \\vee")
+            if isinstance(i, sympy.Add):
+                final_sol.append(f'x={i}')
+            else:
+                final_sol.append(symbols(f'x={i}'))
+        final = str(list(set(final_sol))).replace("[", "").replace("]", "").replace(",", " \\vee")
+        try:
+            if isinstance(eval(final), str):
+                final = eval(final)
+        except:
+            return final
         return final
 
     def is_direct_comparsion(self, condition):

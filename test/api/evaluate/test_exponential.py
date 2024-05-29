@@ -12,7 +12,7 @@ class APITests(APITestCase):
         },
         {
             'problem_input': {'expression': '\\ln\\left(x^2 + 4x + 4\\right) = 0', 'variables': []},
-            'problem_output': 'x=-3 \\vee x=-1'
+            'problem_output': 'x=-1 \\vee x=-3'
         }
     ]
 
