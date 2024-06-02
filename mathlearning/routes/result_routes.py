@@ -55,6 +55,7 @@ def calculate_solution_tree(request: Request):
 @api_view(['POST'])
 def resolve(request: Request):
     if request.method == 'POST':
+        logger.info('Received the following request: {}'.format(request.body))
         body = json.loads(request.body)
         problem_type = ProblemType(body["type"])
         expression_unparsed = body['current_expression']['expression']
