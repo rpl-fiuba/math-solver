@@ -26,7 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['math-solver', '127.0.0.1', 'localhost', 'math-solver.herokuapp.com', '10.124.0.26', 'learning.net.ar', '10.76.0.13', '10.76.1.20']
 
-ALLOWED_CIDR_NETS = ['10.124.0.0/14']
+ALLOWED_CIDR_NETS = ['10.124.0.0/14', '10.76.0.0/14']
 
 # Application definition
 
