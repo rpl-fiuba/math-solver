@@ -63,12 +63,15 @@ class SolutionTreeNode:
         # TODO: fix going backwards bug
         return self.contains(new_expression, problem_type)
 
+    def new_expression_is_valid_with_domain(self, previous_step, new_expression, problem_type: ProblemType, domain):
+        return self.contains_with_domain(new_expression, problem_type, domain)
+
     def validate_new_expression(self, new_expression, previous_step, problem_type: ProblemType):
         hints = []
         is_valid = self.new_expression_is_valid(previous_step, new_expression, problem_type)
 
         if not is_valid:
-            if problem_type == ProblemType.INEQUALITY or problem_type == ProblemType.EXPONENTIAL:
+            if problem_type == ProblemType.INEQUALITY or problem_type == ProblemType.EXPONENTIAL or problem_type == ProblemType.INTERSECTION:
                 hints = []
             else:
                 hints = self.get_hints(previous_step)
@@ -79,7 +82,7 @@ class SolutionTreeNode:
             else:
                 return 'resolved', hints
 
-        if problem_type == ProblemType.INEQUALITY or problem_type == ProblemType.EXPONENTIAL:
+        if problem_type == ProblemType.INEQUALITY or problem_type == ProblemType.EXPONENTIAL or problem_type == ProblemType.INTERSECTION:
             hints = []
         else:
             hints = self.get_hints(new_expression)
@@ -112,6 +115,27 @@ class SolutionTreeNode:
             current = to_check.pop()
             if current.expression.to_string() not in already_checked:
                 if ExpressionComparator.is_equivalent_to(problem_type, current.expression, expression) and \
+                        current.expression.compare_variables(expression.variables):
+                    return True
+
+                if problem_type in [ProblemType.INTEGRAL, ProblemType.DERIVATIVE]:
+                    current_replaced = current.expression.replace_variables()
+                    expression_replaced = expression.replace_variables()
+                    if ExpressionComparator.is_equivalent_to(problem_type, current_replaced, expression_replaced):
+                        return True
+
+                for branch in current.branches:
+                    to_check.append(branch)
+            already_checked.add(current.expression.to_string())
+        return False
+
+    def contains_with_domain(self, expression, problem_type, domain):
+        to_check = [self]
+        already_checked = set()
+        while len(to_check) > 0:
+            current = to_check.pop()
+            if current.expression.to_string() not in already_checked:
+                if ExpressionComparator.is_equivalent_to_with_domain(problem_type, current.expression, expression, domain) and \
                         current.expression.compare_variables(expression.variables):
                     return True
 

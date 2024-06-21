@@ -457,3 +457,18 @@ class TestExpression(unittest.TestCase):
         exp = Expression("x=-1 \\vee x=-3")
         x = sympy.symbols('x')
         self.assertEqual(exp.sympy_expr, 'Eq(x, -1) | Eq(x, -3)')
+
+    def test_parsing_for_intersection(self):
+        expression_1 = 'x - 3 = 2 + x \\wedge [x<0 \\wedge x>-3]'
+        self.assertEqual(Expression(expression_1).sympy_expr,
+                         sympy.And(
+                             Expression('x - 3 = 2 + x').sympy_expr,
+                             sympy.And(parse_latex('x<0'), parse_latex('x>-3')))
+                         )
+
+        expression_1 = 'x - 3 = 2 + x \\wedge [x<0 \\vee x>-3]'
+        self.assertEqual(Expression(expression_1).sympy_expr,
+                         sympy.And(
+                             Expression('x - 3 = 2 + x').sympy_expr,
+                             sympy.Or(parse_latex('x<0'), parse_latex('x>-3')))
+                         )

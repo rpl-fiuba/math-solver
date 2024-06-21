@@ -10,3 +10,4 @@ class ProblemType(Enum):
     IMAGE = 'image'
     TRIGONOMETRY = 'trigonometry'
     EXPONENTIAL = 'exponential'
+    INTERSECTION = 'intersection'

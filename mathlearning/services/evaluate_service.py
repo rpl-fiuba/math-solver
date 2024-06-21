@@ -44,6 +44,10 @@ class EvaluateService:
             elif problem_type == ProblemType.EXPONENTIAL.value:
                 exponential = expression.sympy_expr
                 return latex(Expression(exponential).equation_exp_ln(str(expression)))
+            elif problem_type == ProblemType.INTERSECTION.value:
+                exponential = expression.sympy_expr
+                return latex(Expression(exponential).intersection_resolve(str(expression)))
+
 
             integral = Integral(expression.sympy_expr, x)
             return latex(integral.doit())

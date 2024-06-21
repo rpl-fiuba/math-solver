@@ -7,6 +7,13 @@ from mathlearning.model.problem_type import ProblemType
 class ExpressionComparator:
 
     @staticmethod
+    def is_equivalent_to_with_domain(problem_type: ProblemType, original_expression: Expression, new_expression: Expression, domain) -> bool:
+        if problem_type == ProblemType.INTERSECTION:
+            return ExpressionComparator.is_equivalent_to_intersection_with_domain(original_expression, new_expression, domain)
+        else:
+            return original_expression.is_equivalent_to(new_expression)
+
+    @staticmethod
     def is_equivalent_to(problem_type: ProblemType, original_expression: Expression, new_expression: Expression) -> bool:
         if problem_type == ProblemType.DOMAIN:
             return ExpressionComparator.__equivalent_for_domain__(original_expression, new_expression)
@@ -18,6 +25,8 @@ class ExpressionComparator:
             return round(original_expression.sympy_expr, 3) == round(new_expression.sympy_expr, 3)
         elif problem_type == ProblemType.EXPONENTIAL:
             return ExpressionComparator.is_equivalent_to_for_exp(original_expression, new_expression)
+        elif problem_type == ProblemType.INTERSECTION:
+            return ExpressionComparator.is_equivalent_to_intersection_with_domain(original_expression, new_expression)
         else:
             return original_expression.is_equivalent_to(new_expression)
 
@@ -33,6 +42,15 @@ class ExpressionComparator:
             return not new_expression.is_intersection_of_domains and original_expression.is_equivalent_to(new_expression)
         elif problem_type == ProblemType.EXPONENTIAL:
             return ExpressionComparator.is_equivalent_to_for_exp(original_expression,new_expression)
+        elif problem_type == ProblemType.INTERSECTION:
+            return ExpressionComparator.is_equivalent_to_intersection_with_domain(original_expression,new_expression)
+        else:
+            return original_expression.is_equivalent_to(new_expression)
+
+    @staticmethod
+    def is_a_result_of_with_domain(problem_type: ProblemType, original_expression: Expression, new_expression: Expression, domain) -> bool:
+        if problem_type == ProblemType.INTERSECTION:
+            return ExpressionComparator.is_equivalent_to_intersection_with_domain(original_expression, new_expression, domain)
         else:
             return original_expression.is_equivalent_to(new_expression)
 
@@ -92,9 +110,13 @@ class ExpressionComparator:
     def is_equivalent_to_for_exp(original_expression: Expression, new_expression: Expression) -> bool:
         original_is_equation = ((str(original_expression).__contains__("+") or str(original_expression).__contains__("-")) and str(original_expression).__contains__("*") and \
                                 str(original_expression).__contains__("Eq"))\
-                                or (str(original_expression).__contains__("**") and str(original_expression).__contains__("Eq"))
+                                or (str(original_expression).__contains__("**") and str(original_expression).__contains__("Eq")) \
+                                or ((str(original_expression).__contains__("Eq") and not str(original_expression).__contains__("|") and not str(original_expression).__contains__("exp")) and \
+                                (str(original_expression).split(",")[0].__contains__("x") and str(original_expression).split(",")[1].__contains__("x")))
         new_is_equation = ((str(new_expression).__contains__("+") or str(new_expression).__contains__("-")) and str(new_expression).__contains__("*") and str(new_expression).__contains__("Eq")) \
-                          or (str(new_expression).__contains__("**") and str(new_expression).__contains__("Eq"))
+                          or (str(new_expression).__contains__("**") and str(new_expression).__contains__("Eq")) \
+                          or ((str(new_expression).__contains__("Eq") and not str(new_expression).__contains__("|") and not str(new_expression).__contains__("exp")) and \
+                              (str(new_expression).split(",")[0].__contains__("x") and str(new_expression).split(",")[1].__contains__("x")))
 
         both_are_equation = original_is_equation and new_is_equation
         neither_is_equation = not original_is_equation and not new_is_equation
@@ -139,6 +161,73 @@ class ExpressionComparator:
                     results_original.append(i.strip())
                 for j in str(new_expression).split("\\vee"):
                     results_new.append(j.strip())
+
+                if len(results_original) == len(results_new) and \
+                        set(results_original).issubset(results_new):
+                    return True
+        else:
+            return False
+
+
+    @staticmethod
+    def is_equivalent_to_intersection_with_domain(original_expression: Expression, new_expression: Expression) -> bool:
+        original_is_equation = ((str(original_expression).__contains__("+") or str(original_expression).__contains__("-")) and str(original_expression).__contains__("*") and \
+                                str(original_expression).__contains__("Eq")) \
+                               or (str(original_expression).__contains__("**") and str(original_expression).__contains__("Eq")) \
+                               or ((str(original_expression).__contains__("Eq") and not str(original_expression).__contains__("|") and not str(original_expression).__contains__("exp")) and \
+                                   (str(original_expression).split(",")[0].__contains__("x") and str(original_expression).split(",")[1].__contains__("x")))
+        new_is_equation = ((str(new_expression).__contains__("+") or str(new_expression).__contains__("-")) and str(new_expression).__contains__("*") and str(new_expression).__contains__("Eq")) \
+                          or (str(new_expression).__contains__("**") and str(new_expression).__contains__("Eq")) \
+                          or ((str(new_expression).__contains__("Eq") and not str(new_expression).__contains__("|") and not str(new_expression).__contains__("exp")) and \
+                              (str(new_expression).split(",")[0].__contains__("x") and str(new_expression).split(",")[1].__contains__("x")))
+
+        both_are_equation = original_is_equation and new_is_equation
+        neither_is_equation = not original_is_equation and not new_is_equation
+
+        if both_are_equation:
+            original_in_domain = original_expression.equation_exp_ln(str(original_expression))
+            new_in_domain = new_expression.equation_exp_ln(str(new_expression))
+            return original_in_domain == new_in_domain
+        elif neither_is_equation:
+            original_expression = str(original_expression).replace("|", "\\vee")
+            new_expression = str(new_expression).replace("|", "\\vee")
+            if str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
+                return False
+            elif str(new_expression).__contains__("\\vee") and not str(original_expression).__contains__("\\vee"):
+                return False
+            elif not str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
+                original = Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])).sympy_expr.args
+                new = Expression(sympy.sympify(str(new_expression).split(",")[1][:-1])).sympy_expr.args
+                if len(original) == len(new) and len(new) == 0:
+                    return Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])) == Expression(sympy.sympify(str(new_expression).split(",")[1][:-1]))
+                if len(original) == len(new):
+                    equal = True
+                    for i in original:
+                        if str(i).__contains__("E"):
+                            if i in new:
+                                continue
+                            else:
+                                equal = False
+                                break
+                        else:
+                            if float(i) in new:
+                                continue
+                            else:
+                                equal = False
+                                break
+                    return equal
+                else:
+                    return False
+            else:
+                results_original = []
+                results_new = []
+
+                for i in str(original_expression).strip().split("\\vee"):
+                    number_i = i.split(',')[1].strip().replace(')','')
+                    results_original.append(str(round(float(number_i),2)))
+                for j in str(new_expression).split("\\vee"):
+                    number_j = j.split(',')[1].strip().replace(')','')
+                    results_new.append(str(round(float(number_j),2)))
 
                 if len(results_original) == len(results_new) and \
                         set(results_original).issubset(results_new):

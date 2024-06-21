@@ -16,7 +16,7 @@ from sympy.simplify import simplify
 from sympy import factor
 import re
 from sympy import symbols, solve_univariate_inequality, exp, sympify, oo, Interval, Union, Intersection, solve, ln, Eq, \
-    log, E
+    log, E, sqrt, Abs
 from sympy.abc import x
 
 from mathlearning.utils.list.list_size_transformer import ListSizeTransformer
@@ -217,14 +217,24 @@ def parse_inner_inequalities(inner_expression_without_outmost_brackets, separato
 
 
 def contains_exp_results(formula):
-    return (formula.__contains__("=") and formula.__contains__("\\vee")) or \
+    return (formula.__contains__("=") and formula.__contains__("\\vee") and not \
+        (formula.__contains__("<") or formula.__contains__(">"))) or \
            (formula.__contains__("Eq") and formula.__contains__("|")) or \
            (formula.__contains__("E") and formula.__contains__("+"))
+
+
+def contains_intersection_results_with_condition(formula):
+    return formula.__contains__("=") and \
+           formula.__contains__("\\wedge") and \
+           (formula.__contains__("<") or formula.__contains__(">"))
+           # is_inequality(clean_latex(formula.split("\\wedge")[1].strip()))
 
 
 def parse_latex_exp_results(formula):
     if formula.__contains__("Eq") and formula.__contains__("|"):
         return formula
+    if formula.__contains__("\'"):
+        formula = formula.replace("\'","")
     list_eq = formula.split("\\vee")
     result = []
     x = symbols("x")
@@ -242,6 +252,10 @@ def parse_latex_exp_results(formula):
     return result_final
 
 
+def parse_latex_intersection_results_with_condition(formula):
+    return parse_inequality(formula)
+
+
 def make_sympy_expr(formula, is_latex):
     if isinstance(formula, str) and is_latex:
         if is_intersection_of_intervals(formula):
@@ -252,6 +266,8 @@ def make_sympy_expr(formula, is_latex):
             return parse_latex_set(clean_latex(formula))
         elif contains_exp_results(formula):
             return parse_latex_exp_results(formula)
+        elif contains_intersection_results_with_condition(formula):
+            return parse_latex_intersection_results_with_condition(formula)
         else:
             clean_formula = clean_latex(formula)
             if is_inequality(clean_formula):
@@ -456,11 +472,37 @@ class Expression:
         copy = self.get_copy()
         return Expression(factor(copy.sympy_expr))
 
+    def result_in_domain(self, result):
+        results = []
+        for i in result.split("\\vee"):
+            posible_value = i.split("=")[1].strip()
+            if self.sympy_expr.contains(sympify(posible_value)):
+                if isinstance(sympify(posible_value), sympy.Add):
+                    results.append(f'x={posible_value}')
+                else:
+                    results.append(symbols(f'x={posible_value}'))
+        final = str(list(set(results))).replace("[", "").replace("]", "").replace(",", " \\vee")
+        try:
+            if isinstance(eval(final), str):
+                final = eval(final)
+        except:
+            return final
+        return final
+
     def is_equal_to(self, expression):
         return sympify(self) == sympify(expression)
 
     def equation_exp_ln(self, ecuacion_str):
-        x = symbols('x')
+        x = symbols('x', real=True)
+        condition = sympy.Reals
+        if isinstance(self.sympy_expr, sympy.And):
+            condition_and = []
+            for inner_condition in self.sympy_expr.args:
+                if isinstance(inner_condition, Eq):
+                    ecuacion_str = str(inner_condition)
+                else:
+                    condition_and.append(inner_condition)
+            condition = Expression(sympy.And(*condition_and)).solve_inequality()
         soluciones = solve(eval(ecuacion_str), x)
         # [x1, x2]
         final_sol = []
@@ -474,8 +516,17 @@ class Expression:
             if isinstance(eval(final), str):
                 final = eval(final)
         except:
+            if condition != sympy.Reals:
+                return Expression(condition).result_in_domain(final)
+            else:
+                return final
+        if condition != sympy.Reals:
+            return Expression(condition).result_in_domain(final)
+        else:
             return final
-        return final
+
+    def intersection_resolve(self, ecuacion_str):
+        return self.equation_exp_ln(ecuacion_str)
 
     def is_direct_comparsion(self, condition):
         return isinstance(condition, sympy.LessThan) or isinstance(condition, sympy.StrictLessThan) or isinstance(
@@ -586,6 +637,11 @@ class Expression:
 
     def get_domain(self) -> Interval:
         return continuous_domain(self.sympy_expr, x, S.Reals)
+
+    def get_domain_for_eq(self) -> Interval:
+        function_eq = self.sympy_expr.args[0] - self.sympy_expr.args[1]
+        #imageset(Lambda(x, self.get_inner_function().sympy_expr), S.Reals)
+        return continuous_domain(function_eq, x, S.Reals)
 
     def has_same_image_as(self, expression: 'Expression') -> bool:
         self_image = Expression(imageset(Lambda(x, self.sympy_expr), S.Reals))

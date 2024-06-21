@@ -3,6 +3,7 @@ import json
 from rest_framework import status
 
 from mathlearning.model.expression import Expression
+from mathlearning.model.expression_comparator import ExpressionComparator
 from mathlearning.model.problem_type import ProblemType
 from test.testutils.solved_exercise import SolvedExercise
 
@@ -19,6 +20,24 @@ def run_entire_test_list(self, test_list, exercise_type):
         body = json.loads(response.content)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(body['result']['expression'], exercise['problem_output'])
+
+
+def run_entire_test_list_with_equivalent(self, test_list, exercise_type):
+    for exercise in test_list:
+        data = {
+            'problem_input': exercise['problem_input'],
+            'type': exercise_type
+        }
+
+        response = self.client.post(path='/validations/evaluate', data=data, format='json')
+
+        body = json.loads(response.content)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        if body['result']['expression'].__contains__("\\vee"):
+            self.assertEquals(ExpressionComparator.is_equivalent_to_for_exp(Expression(body['result']['expression']),\
+                                                                        Expression(exercise['problem_output'])), True)
+        else:
+            self.assertEquals(Expression(body['result']['expression']).is_equivalent_to(Expression(exercise['problem_output'])), True)
 
 
 def solve_exercise_with_solution_tree(self, kind: ProblemType, exercise: SolvedExercise):
