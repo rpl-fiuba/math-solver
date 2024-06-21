@@ -203,6 +203,10 @@ def parse_inner_inequalities(inner_expression_without_outmost_brackets, separato
                 right_parsed = parse_latex(left_and_right_inequalities[1])
                 sub_expression_parsed = sympy.And(left_parsed, right_parsed)
             else:
+                if sub_expression.__contains__('\\ge') and not sub_expression.__contains__('\\geq'):
+                    sub_expression = sub_expression.replace('\\ge','\\geq')
+                if sub_expression.__contains__('\\le') and not sub_expression.__contains__('\\leq'):
+                    sub_expression = sub_expression.replace('\\le','\\leq')
                 sub_expression_parsed = parse_latex(sub_expression)
         if final_expression is None:
             final_expression = sub_expression_parsed
@@ -218,15 +222,16 @@ def parse_inner_inequalities(inner_expression_without_outmost_brackets, separato
 
 def contains_exp_results(formula):
     return (formula.__contains__("=") and formula.__contains__("\\vee") and not \
-        (formula.__contains__("<") or formula.__contains__(">"))) or \
+        (formula.__contains__("<") or formula.__contains__(">") or formula.__contains__("["))) or \
            (formula.__contains__("Eq") and formula.__contains__("|")) or \
            (formula.__contains__("E") and formula.__contains__("+"))
 
 
 def contains_intersection_results_with_condition(formula):
-    return formula.__contains__("=") and \
+    return (formula.__contains__("=") and \
            formula.__contains__("\\wedge") and \
-           (formula.__contains__("<") or formula.__contains__(">"))
+           (formula.__contains__("<") or formula.__contains__(">"))) or \
+           (formula.__contains__("[") and formula.__contains__("\\vee") and formula.__contains__("="))
            # is_inequality(clean_latex(formula.split("\\wedge")[1].strip()))
 
 
@@ -503,6 +508,37 @@ class Expression:
                 else:
                     condition_and.append(inner_condition)
             condition = Expression(sympy.And(*condition_and)).solve_inequality()
+        # ((x < 2) & Eq(0.5*x + x - 2, 0)) | ((x >= 2) & Eq(-x + 0.5*x + 2, 0))
+        if isinstance(self.sympy_expr, sympy.Or):
+            solutions = []
+            for inner_condition in self.sympy_expr.args:
+                # ((x < 2) & Eq(0.5*x + x - 2, 0))
+                if isinstance(inner_condition, sympy.And):
+                    condition_and = []
+                    for inner_condition_2 in inner_condition.args:
+                        if isinstance(inner_condition_2, Eq):
+                            ecuacion_str = str(inner_condition_2)
+                        else:
+                            condition_and.append(inner_condition_2)
+                    condition = Expression(sympy.And(*condition_and)).solve_inequality()
+                    maybe_solution = self.solve_expression_intersection_or_exponential(ecuacion_str, condition, x)
+                    if maybe_solution != '':
+                        solutions.append(maybe_solution)
+                if isinstance(inner_condition, Eq):
+                    maybe_solution = self.solve_expression_intersection_or_exponential(str(inner_condition), condition, x)
+                    if maybe_solution != '':
+                        solutions.append(maybe_solution)
+            final = ''
+            for i in solutions:
+                final = final + i + "$"
+            final = final[:-1]
+            final = final.replace('$', ' \\vee ')
+
+            return final
+
+        return self.solve_expression_intersection_or_exponential(ecuacion_str, condition, x)
+
+    def solve_expression_intersection_or_exponential(self, ecuacion_str, condition, x):
         soluciones = solve(eval(ecuacion_str), x)
         # [x1, x2]
         final_sol = []

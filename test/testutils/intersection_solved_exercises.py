@@ -101,12 +101,20 @@ class IntersectionExercises:
         steps = [
             {'expression': '0.5*x = \\left|x-2\\right|', 'variables': []},
             {'expression': '0.5*x - \\left|x-2\\right| = 0', 'variables': []},
-            #{'expression': '[[0.5*x - x + 2 = 0 \\wedge x \\ge 2] \\vee [0.5*x + x - 2 = 0 \\wedge x < 2]]', 'variables': []},
+            {'expression': '[[0.5*x - x + 2 = 0 \\wedge x \\ge 2] \\vee [0.5*x + x - 2 = 0 \\wedge x < 2]]', 'variables': []},
+            {'expression': '[[- 0.5x + 2 = 0 \\wedge x \\ge 2] \\vee [1.5x - 2 = 0 \\wedge x < 2]]', 'variables': []},
+            {'expression': '[[- 0.5x = -2 \\wedge x \\ge 2] \\vee [1.5x = 2 \\wedge x < 2]]', 'variables': []},
+            {'expression': '[[0.5x = 2 \\wedge x \\ge 2] \\vee [x = 4/3 \\wedge x < 2]]', 'variables': []},
+            {'expression': '[[x = 4 \\wedge x \\ge 2] \\vee [x = 4/3 \\wedge x < 2]]', 'variables': []},
+            {'expression': '[[x = 4] \\vee [x = 4/3 \\wedge x < 2]]', 'variables': []},
+            #{'expression': '[x = 4] \\vee [x = 4/3]', 'variables': []},
             {'expression': 'x=4 \\vee x=4/3', 'variables': []},
         ]
 
         invalid_steps = [
-
+            {'expression': '[[0.5*x - x + 2 = 0 \\wedge x \\le 2] \\vee [0.5*x + x - 2 = 0 \\wedge x < 2]]', 'variables': []},
+            {'expression': '[[x = 4] \\vee [x = 4/3 \\wedge x > 2]]', 'variables': []},
+            {'expression': 'x=4', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]

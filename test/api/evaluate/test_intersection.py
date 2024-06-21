@@ -30,10 +30,14 @@ class APITests(APITestCase):
              'problem_input': {'expression': '\\sqrt{x} = x', 'variables': []},
              'problem_output': 'x=0 \\vee x=1'
          },
-         # {
-         #     'problem_input': {'expression': '\\left|x+1\\right| - 1 = x', 'variables': []},
-         #     'problem_output': 'x\\ge1'
-         # } TODO: soportar que una solución sea una inecuación en el caso de Abs()
+         {
+             'problem_input': {'expression': '0.5*x = \\left|x-2\\right|', 'variables': []},
+             'problem_output': 'x=1.33333333333333 \\vee x=4.00000000000000'
+         },
+         {
+             'problem_input': {'expression': '-x = \\sqrt{x}', 'variables': []},
+             'problem_output': 'x=0'
+         }
     ]
 
     def test_evaluate_expressions(self):

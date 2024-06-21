@@ -171,15 +171,18 @@ class ExpressionComparator:
 
     @staticmethod
     def is_equivalent_to_intersection_with_domain(original_expression: Expression, new_expression: Expression) -> bool:
-        original_is_equation = ((str(original_expression).__contains__("+") or str(original_expression).__contains__("-")) and str(original_expression).__contains__("*") and \
-                                str(original_expression).__contains__("Eq")) \
-                               or (str(original_expression).__contains__("**") and str(original_expression).__contains__("Eq")) \
-                               or ((str(original_expression).__contains__("Eq") and not str(original_expression).__contains__("|") and not str(original_expression).__contains__("exp")) and \
-                                   (str(original_expression).split(",")[0].__contains__("x") and str(original_expression).split(",")[1].__contains__("x")))
-        new_is_equation = ((str(new_expression).__contains__("+") or str(new_expression).__contains__("-")) and str(new_expression).__contains__("*") and str(new_expression).__contains__("Eq")) \
-                          or (str(new_expression).__contains__("**") and str(new_expression).__contains__("Eq")) \
-                          or ((str(new_expression).__contains__("Eq") and not str(new_expression).__contains__("|") and not str(new_expression).__contains__("exp")) and \
-                              (str(new_expression).split(",")[0].__contains__("x") and str(new_expression).split(",")[1].__contains__("x")))
+        original_is_equation = (str(original_expression).__contains__("[") and str(original_expression).__contains__("|")) or \
+                               (str(original_expression).__contains__("|") and str(original_expression).__contains__("&")) or \
+                               (str(original_expression).__contains__("<") or str(original_expression).__contains__(">")) or \
+                               (str(original_expression).__contains__("*") or str(original_expression).__contains__("Abs") or \
+                                str(original_expression).__contains__("sqrt"))
+
+        new_is_equation = (str(new_expression).__contains__("[") and str(new_expression).__contains__("|")) or \
+                               (str(new_expression).__contains__("|") and str(new_expression).__contains__("&")) or \
+                               (str(new_expression).__contains__("<") or str(new_expression).__contains__(">")) or \
+                               (str(new_expression).__contains__("*") or str(new_expression).__contains__("Abs") or \
+                                str(new_expression).__contains__("sqrt"))
+
 
         both_are_equation = original_is_equation and new_is_equation
         neither_is_equation = not original_is_equation and not new_is_equation
@@ -187,7 +190,24 @@ class ExpressionComparator:
         if both_are_equation:
             original_in_domain = original_expression.equation_exp_ln(str(original_expression))
             new_in_domain = new_expression.equation_exp_ln(str(new_expression))
-            return original_in_domain == new_in_domain
+            # TODO: que esto no sea un igual sino que se fije cada lado del vee en caso de haberlo
+            if original_in_domain.__contains__("\\vee") and new_in_domain.__contains__("\\vee") and not\
+                    (new_in_domain.__contains__("Eq") or original_in_domain.__contains__("Eq")):
+                results_original = []
+                results_new = []
+
+                for i in str(original_in_domain).strip().split("\\vee"):
+                    number_i = i.split('=')[1].strip()
+                    results_original.append(str(round(float(number_i),2)))
+                for j in str(new_in_domain).split("\\vee"):
+                    number_j = j.split('=')[1].strip()
+                    results_new.append(str(round(float(number_j),2)))
+
+                if len(results_original) == len(results_new) and \
+                        set(results_original).issubset(results_new):
+                    return True
+            else:
+                return original_in_domain == new_in_domain
         elif neither_is_equation:
             original_expression = str(original_expression).replace("|", "\\vee")
             new_expression = str(new_expression).replace("|", "\\vee")
@@ -224,10 +244,10 @@ class ExpressionComparator:
 
                 for i in str(original_expression).strip().split("\\vee"):
                     number_i = i.split(',')[1].strip().replace(')','')
-                    results_original.append(str(round(float(number_i),2)))
+                    results_original.append(str(round(float(eval(number_i)),2)))
                 for j in str(new_expression).split("\\vee"):
                     number_j = j.split(',')[1].strip().replace(')','')
-                    results_new.append(str(round(float(number_j),2)))
+                    results_new.append(str(round(float(eval(number_j)),2)))
 
                 if len(results_original) == len(results_new) and \
                         set(results_original).issubset(results_new):
