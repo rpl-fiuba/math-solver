@@ -198,10 +198,10 @@ class ExpressionComparator:
 
                 for i in str(original_in_domain).strip().split("\\vee"):
                     number_i = i.split('=')[1].strip()
-                    results_original.append(str(round(float(number_i),2)))
+                    results_original.append(str(round(float(eval(number_i)),2)))
                 for j in str(new_in_domain).split("\\vee"):
                     number_j = j.split('=')[1].strip()
-                    results_new.append(str(round(float(number_j),2)))
+                    results_new.append(str(round(float(eval(number_j)),2)))
 
                 if len(results_original) == len(results_new) and \
                         set(results_original).issubset(results_new):

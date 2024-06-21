@@ -121,5 +121,68 @@ class IntersectionExercises:
 
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
+    @staticmethod
+    def rational_expression() -> SolvedExercise:
+        name = "(x+5)/(x-2) = 5/(x+2) + 28/(x^2-4)"
+        steps = [
+            {'expression': '\\frac{x+5}{x-2} = \\frac{5}{x+2} + \\frac{28}{x^2-4}', 'variables': []},
+            {'expression': '\\frac{x+5}{x-2} = \\frac{5}{x+2} + \\frac{28}{(x+2)*(x-2)}', 'variables': []},
+            {'expression': '\\frac{x+5}{x-2} = \\frac{5(x-2)}{(x+2)*(x-2)} + \\frac{28}{(x+2)*(x-2)}', 'variables': []},
+            {'expression': '\\frac{(x+5)*(x+2)}{(x-2)*(x+2)} = \\frac{5(x-2)}{(x+2)*(x-2)} + \\frac{28}{(x+2)*(x-2)}', 'variables': []},
+            {'expression': '\\frac{(x+5)*(x+2)}{(x-2)*(x+2)} - \\frac{5(x-2)}{(x+2)*(x-2)} - \\frac{28}{(x+2)*(x-2)} = 0', 'variables': []},
+            {'expression': '\\frac{(x+5)*(x+2) - 5(x-2) - 28}{(x-2)*(x+2)} = 0', 'variables': []},
+            {'expression': '\\frac{x^2+7x+10 - 5(x-2) - 28}{(x-2)*(x+2)} = 0', 'variables': []},
+            {'expression': '\\frac{x^2+7x+10 - 5x + 10 - 28}{(x-2)*(x+2)} = 0', 'variables': []},
+            {'expression': '\\frac{x^2 + 2x - 8}{(x-2)*(x+2)} = 0', 'variables': []},
+            {'expression': '\\frac{(x-2)*(x+4)}{(x-2)*(x+2)} = 0', 'variables': []},
+            {'expression': '[\\frac{(x+4)}{(x+2)} = 0 \\wedge x < -2] \\vee [\\frac{(x+4)}{(x+2)} = 0 \\wedge 2 > x > -2] \\vee [\\frac{(x+4)}{(x+2)} = 0 \\wedge x > 2]', 'variables': []},
+            {'expression': '\\frac{(x+4)}{(x+2)} = 0 \\wedge x < -2', 'variables': []},
+            {'expression': '[x=-4] \\vee [\\frac{(x+4)}{(x+2)} = 0 \\wedge x > 2]', 'variables': []},
+            {'expression': 'x=-4', 'variables': []},
+        ]
+
+        invalid_steps = [
+            {'expression': '\\frac{(x+4)}{(x+2)} = 0 \\wedge x > -2', 'variables': []},
+            {'expression': '\\frac{(x+4)}{(x+2)} = 0', 'variables': []},
+            {'expression': 'x=-2', 'variables': []}
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def rational_expression_with_sqrt() -> SolvedExercise:
+        name = "(2x*sqrt(x-1) - x^2/(2*sqrt(x-1)))/(x-1) = 0"
+        steps = [
+            {'expression': '\\frac{2x*\\sqrt{x-1} - \\frac{x^2}{2*\\sqrt{x-1}}}{x-1} = 0', 'variables': []},
+            {'expression': '\\frac{2x*\\sqrt{x-1}*\\sqrt{x-1} - \\frac{x^2*\\sqrt{x-1}}{2*\\sqrt{x-1}}}{(x-1)*\\sqrt{x-1}} = 0', 'variables': []},
+            {'expression': '\\frac{2x*(x-1) - \\frac{x^2}{2}}{(x-1)*\\sqrt{x-1}} = 0', 'variables': []},
+            {'expression': '\\frac{2x*(x-1) - 1/2*x^2}{(x-1)*\\sqrt{x-1}} = 0', 'variables': []},
+            {'expression': '\\frac{2x^2 - 2x - 0.5*x^2}{(x-1)*\\sqrt{x-1}} = 0', 'variables': []},
+            {'expression': '\\frac{1.5*x^2 - 2x}{(x-1)*\\sqrt{x-1}} = 0', 'variables': []},
+            {'expression': '\\frac{3*x^2 - 4x}{2*(x-1)*\\sqrt{x-1}} = 0', 'variables': []},
+            {'expression': '[3*x^2 - 4x = 0 \\wedge x < 1] \\vee [x*(3x - 4) = 0 \\wedge x > 1]', 'variables': []},
+            {'expression': '[3*x^2 - 4x = 0 \\wedge x < 1] \\vee [[x = 0 \\wedge x > 1] \\vee [3x - 4 = 0 \\wedge x > 1]]', 'variables': []},
+            {'expression': '[3*x^2 - 4x = 0 \\wedge x < 1] \\vee [3x - 4 = 0 \\wedge x > 1]', 'variables': []},
+            {'expression': '[[x = 0 \\wedge x < 1] \\vee [3x - 4 = 0 \\wedge x < 1]] \\vee [3x - 4 = 0 \\wedge x > 1]', 'variables': []},
+            {'expression': '[x = 0 \\wedge x < 1] \\vee [3x - 4 = 0 \\wedge x > 1]', 'variables': []},
+            {'expression': '[x = 0] \\vee [3x = 4 \\wedge x > 1]', 'variables': []},
+            {'expression': '[x = 0] \\vee [x = 4/3 \\wedge x > 1]', 'variables': []},
+            {'expression': 'x=0 \\vee x=4/3', 'variables': []}
+        ]
+
+        invalid_steps = [
+            {'expression': '[3*x^2 - 4x = 0 \\wedge x < 0] \\vee [x*(3x - 4) = 0 \\wedge x > 1]', 'variables': []},
+            {'expression': '[3*x^2 - 4x = 0 \\wedge x < 1] \\vee [x*(3x - 4) = 0 \\wedge x > 4/3]', 'variables': []},
+            {'expression': 'x=4/3', 'variables': []},
+            {'expression': 'x=0', 'variables': []},
+            {'expression': 'x=0 \\vee x=1', 'variables': []}
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
 
 
