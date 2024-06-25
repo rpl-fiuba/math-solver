@@ -245,6 +245,8 @@ def parse_latex_exp_results(formula):
     x = symbols("x")
     for i in list_eq:
         if i.__contains__("="):
+            if i.__contains__('frac'):
+                i = 'x=' + str(parse_latex(i.split("=")[1])).strip()
             result.append(Eq(x, eval(i.strip().replace('\\','').split("=")[1])))
         elif i.__contains__("Eq"):
             result.append(eval(i.strip().replace('\\','')))

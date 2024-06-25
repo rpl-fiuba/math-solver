@@ -125,8 +125,7 @@ class IntersectionExercises:
             {'expression': '[[0.5x = 2 \\wedge x \\ge 2] \\vee [x = 4/3 \\wedge x < 2]]', 'variables': []},
             {'expression': '[[x = 4 \\wedge x \\ge 2] \\vee [x = 4/3 \\wedge x < 2]]', 'variables': []},
             {'expression': '[[x = 4] \\vee [x = 4/3 \\wedge x < 2]]', 'variables': []},
-            #{'expression': '[x = 4] \\vee [x = 4/3]', 'variables': []},
-            {'expression': 'x=4 \\vee x=4/3', 'variables': []},
+            {'expression': 'x=4 \\vee x=\\frac{4}{3}', 'variables': []},
         ]
 
         invalid_steps = [
