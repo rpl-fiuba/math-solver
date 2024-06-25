@@ -201,5 +201,20 @@ class IntersectionExercises:
 
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
+    @staticmethod
+    def expression_with_inf_solutions() -> SolvedExercise:
+        name = "x = \\left|x\\right|"
+        steps = [
+            {'expression': 'x = \\left|x\\right|', 'variables': []},
+            {'expression': '\\left[0, \\infty\\right)', 'variables': []},
+        ]
+
+        invalid_steps = [
+            {'expression': '\\left(0, \\infty\\right)', 'variables': []},
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
 

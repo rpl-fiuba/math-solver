@@ -190,7 +190,11 @@ class ExpressionComparator:
         if both_are_equation:
             original_in_domain = original_expression.equation_exp_ln(str(original_expression))
             new_in_domain = new_expression.equation_exp_ln(str(new_expression))
-            # TODO: que esto no sea un igual sino que se fije cada lado del vee en caso de haberlo
+            if isinstance(original_in_domain, sympy.Interval) and isinstance(new_in_domain, sympy.Interval):
+                return original_in_domain == new_in_domain
+            elif (isinstance(original_in_domain, sympy.Interval) and not isinstance(new_in_domain, sympy.Interval)) or \
+                    (not isinstance(original_in_domain, sympy.Interval) and isinstance(new_in_domain, sympy.Interval)):
+                return False
             if original_in_domain.__contains__("\\vee") and new_in_domain.__contains__("\\vee") and not\
                     (new_in_domain.__contains__("Eq") or original_in_domain.__contains__("Eq")):
                 results_original = []
@@ -209,6 +213,11 @@ class ExpressionComparator:
             else:
                 return original_in_domain == new_in_domain
         elif neither_is_equation:
+            if isinstance(original_expression.sympy_expr, sympy.Interval) and isinstance(new_expression.sympy_expr, sympy.Interval):
+                return original_expression == new_expression
+            elif (isinstance(original_expression.sympy_expr, sympy.Interval) and not isinstance(new_expression.sympy_expr, sympy.Interval)) or \
+                    (not isinstance(original_expression.sympy_expr, sympy.Interval) and isinstance(new_expression.sympy_expr, sympy.Interval)):
+                return False
             original_expression = str(original_expression).replace("|", "\\vee")
             new_expression = str(new_expression).replace("|", "\\vee")
             if str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):

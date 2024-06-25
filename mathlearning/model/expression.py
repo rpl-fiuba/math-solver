@@ -549,7 +549,12 @@ class Expression:
         return final
 
     def solve_expression_intersection_or_exponential(self, ecuacion_str, condition, x):
-        soluciones = solve(eval(ecuacion_str), x)
+        try:
+            soluciones = solve(eval(ecuacion_str), x)
+        except NotImplementedError:
+            x = symbols('x')
+            soluciones = sympy.solveset(self.sympy_expr, x, domain=Interval(-oo, oo))
+            return Intersection(*[soluciones, condition])
         # [x1, x2]
         final_sol = []
         for i in soluciones:

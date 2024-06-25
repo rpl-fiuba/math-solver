@@ -34,3 +34,7 @@ class SolutionTreeAPITest(APITestCase):
     def test_sqrt_expression_with_constant(self):
         solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.sqrt_expression_with_constant())
 
+    def test_expression_with_inf_solutions(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.expression_with_inf_solutions())
+
+
