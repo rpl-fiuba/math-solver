@@ -502,6 +502,9 @@ class Expression:
     def equation_exp_ln(self, ecuacion_str):
         x = symbols('x', real=True)
         condition = sympy.Reals
+        if ecuacion_str == 'False':
+            return '\\varnothing'
+
         if isinstance(self.sympy_expr, sympy.And):
             condition_and = []
             for inner_condition in self.sympy_expr.args:
@@ -562,7 +565,7 @@ class Expression:
                 final_sol.append(f'x={i}')
             else:
                 final_sol.append(symbols(f'x={i}'))
-        final = str(list(set(final_sol))).replace("[", "").replace("]", "").replace(",", " \\vee")
+        final = str(list(set(final_sol))).replace("[", "").replace("]", "").replace(",", " \\vee").replace('\'','')
         try:
             if isinstance(eval(final), str):
                 final = eval(final)

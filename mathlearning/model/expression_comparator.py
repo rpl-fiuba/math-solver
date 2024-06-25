@@ -171,17 +171,21 @@ class ExpressionComparator:
 
     @staticmethod
     def is_equivalent_to_intersection_with_domain(original_expression: Expression, new_expression: Expression) -> bool:
-        original_is_equation = (str(original_expression).__contains__("[") and str(original_expression).__contains__("|")) or \
+        original_is_equation = (str(original_expression) == 'False') or ((str(original_expression).__contains__("[") and str(original_expression).__contains__("|")) or \
                                (str(original_expression).__contains__("|") and str(original_expression).__contains__("&")) or \
                                (str(original_expression).__contains__("<") or str(original_expression).__contains__(">")) or \
                                (str(original_expression).__contains__("*") or str(original_expression).__contains__("Abs") or \
-                                str(original_expression).__contains__("sqrt"))
+                                (str(original_expression).__contains__("sqrt") and \
+                                 (str(original_expression).__contains__('Eq') and \
+                                  (str(original_expression).count('Eq') != str(original_expression).count('x'))))))
 
-        new_is_equation = (str(new_expression).__contains__("[") and str(new_expression).__contains__("|")) or \
+        new_is_equation = (str(new_expression) == 'False') or ((str(new_expression).__contains__("[") and str(new_expression).__contains__("|")) or \
                                (str(new_expression).__contains__("|") and str(new_expression).__contains__("&")) or \
                                (str(new_expression).__contains__("<") or str(new_expression).__contains__(">")) or \
                                (str(new_expression).__contains__("*") or str(new_expression).__contains__("Abs") or \
-                                str(new_expression).__contains__("sqrt"))
+                                str(new_expression).__contains__("sqrt") and \
+                                (str(new_expression).__contains__('Eq') and \
+                                 (str(new_expression).count('Eq') != str(new_expression).count('x')))))
 
 
         both_are_equation = original_is_equation and new_is_equation
@@ -201,11 +205,19 @@ class ExpressionComparator:
                 results_new = []
 
                 for i in str(original_in_domain).strip().split("\\vee"):
-                    number_i = i.split('=')[1].strip()
-                    results_original.append(str(round(float(eval(number_i)),2)))
+                    if 'sqrt' not in i:
+                        number_i = i.split('=')[1].strip()
+                        results_original.append(str(round(float(eval(number_i)),2)))
+                    else:
+                        number_i = i.split('=')[1].strip()
+                        results_original.append(Expression(number_i).sympy_expr.evalf())
                 for j in str(new_in_domain).split("\\vee"):
-                    number_j = j.split('=')[1].strip()
-                    results_new.append(str(round(float(eval(number_j)),2)))
+                    if 'sqrt' not in j:
+                        number_j = j.split('=')[1].strip()
+                        results_new.append(str(round(float(eval(number_j)),2)))
+                    else:
+                        number_j = j.split('=')[1].strip()
+                        results_new.append(Expression(number_j).sympy_expr.evalf())
 
                 if len(results_original) == len(results_new) and \
                         set(results_original).issubset(results_new):
@@ -225,11 +237,11 @@ class ExpressionComparator:
             elif str(new_expression).__contains__("\\vee") and not str(original_expression).__contains__("\\vee"):
                 return False
             elif not str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
-                if original_expression.__contains__('varnothing'):
+                if 'varnothing' in original_expression:
                     original = original_expression
                 else:
                     original = Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])).sympy_expr.args
-                if new_expression.__contains__('varnothing'):
+                if 'varnothing' in new_expression:
                     new = new_expression
                 else:
                     new = Expression(sympy.sympify(str(new_expression).split(",")[1][:-1])).sympy_expr.args
@@ -263,11 +275,20 @@ class ExpressionComparator:
                 results_new = []
 
                 for i in str(original_expression).strip().split("\\vee"):
-                    number_i = i.split(',')[1].strip().replace(')','')
-                    results_original.append(str(round(float(eval(number_i)),2)))
+                    if 'sqrt' not in i:
+                        number_i = i.split(',')[1].strip().replace(')','')
+                        results_original.append(str(round(float(eval(number_i)),2)))
+                    else:
+                        number_i = i.split(',')[1].strip()[:-1]
+                        results_original.append(Expression(number_i).sympy_expr.evalf())
                 for j in str(new_expression).split("\\vee"):
-                    number_j = j.split(',')[1].strip().replace(')','')
-                    results_new.append(str(round(float(eval(number_j)),2)))
+                    if 'sqrt' not in j:
+                        number_j = j.split(',')[1].strip().replace(')','')
+                        results_new.append(str(round(float(eval(number_j)),2)))
+                    else:
+                        number_j = j.split(',')[1].strip()[:-1]
+                        results_new.append(Expression(number_j).sympy_expr.evalf())
+
 
                 if len(results_original) == len(results_new) and \
                         set(results_original).issubset(results_new):

@@ -217,4 +217,34 @@ class IntersectionExercises:
 
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
+    @staticmethod
+    def expression_with_sqrt_answer() -> SolvedExercise:
+        name = "(x-1)^2 = x"
+        steps = [
+            {'expression': '(x-1)^2 = x', 'variables': []},
+            {'expression': 'x^2 - 2x + 1 = x', 'variables': []},
+            {'expression': 'x^2 - 3x + 1 = 0', 'variables': []},
+            {'expression': 'x=\\frac{3+\\sqrt{5}}{2}\\vee x=\\frac{3-\\sqrt{5}}{2}', 'variables': []},
+        ]
 
+        invalid_steps = [
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def sqrt_expression_solution_varnothing() -> SolvedExercise:
+        name = "x = x-2"
+        steps = [
+            {'expression': 'x = x-2', 'variables': []},
+            {'expression': '\\varnothing', 'variables': []},
+        ]
+
+        invalid_steps = [
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
