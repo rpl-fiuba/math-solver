@@ -216,11 +216,17 @@ class ExpressionComparator:
             elif str(new_expression).__contains__("\\vee") and not str(original_expression).__contains__("\\vee"):
                 return False
             elif not str(original_expression).__contains__("\\vee") and not str(new_expression).__contains__("\\vee"):
-                original = Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])).sympy_expr.args
-                new = Expression(sympy.sympify(str(new_expression).split(",")[1][:-1])).sympy_expr.args
+                if original_expression.__contains__('varnothing'):
+                    original = original_expression
+                else:
+                    original = Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])).sympy_expr.args
+                if new_expression.__contains__('varnothing'):
+                    new = new_expression
+                else:
+                    new = Expression(sympy.sympify(str(new_expression).split(",")[1][:-1])).sympy_expr.args
                 if len(original) == len(new) and len(new) == 0:
                     return Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])) == Expression(sympy.sympify(str(new_expression).split(",")[1][:-1]))
-                if len(original) == len(new):
+                if len(original) == len(new) and ('varnothing' not in original) and ('varnothing' not in new):
                     equal = True
                     for i in original:
                         if str(i).__contains__("E"):
@@ -236,6 +242,11 @@ class ExpressionComparator:
                                 equal = False
                                 break
                     return equal
+                elif original.__contains__('varnothing') and new.__contains__('varnothing'):
+                    return True
+                elif (('varnothing' not in original) and new.__contains__('varnothing')) or \
+                        (original.__contains__('varnothing') and ('varnothing' not in new)):
+                    return False
                 else:
                     return False
             else:

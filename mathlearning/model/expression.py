@@ -534,9 +534,17 @@ class Expression:
             final = final[:-1]
             final = final.replace('$', ' \\vee ')
 
+            if final == '':
+                final = '\\varnothing'
+
             return final
 
-        return self.solve_expression_intersection_or_exponential(ecuacion_str, condition, x)
+        if self.solve_expression_intersection_or_exponential(ecuacion_str, condition, x) == '':
+            final = '\\varnothing'
+        else:
+            final = self.solve_expression_intersection_or_exponential(ecuacion_str, condition, x)
+
+        return final
 
     def solve_expression_intersection_or_exponential(self, ecuacion_str, condition, x):
         soluciones = solve(eval(ecuacion_str), x)

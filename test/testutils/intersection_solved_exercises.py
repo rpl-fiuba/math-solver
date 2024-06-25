@@ -46,6 +46,24 @@ class IntersectionExercises:
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
+    def sqrt_expression_with_constant() -> SolvedExercise:
+        name = "sqrt{x} = 2x+1"
+        steps = [
+            {'expression': '\\sqrt{x} = 2x+1', 'variables': []},
+            {'expression': 'x = (2x+1)^2', 'variables': []},
+            {'expression': '0 = (2x+1)^2 - x', 'variables': []},
+            {'expression': '4x^2 + x + 1 = 0', 'variables': []},
+            {'expression': '\\varnothing', 'variables': []},
+        ]
+
+        invalid_steps = [
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
     def sqrt_expression_hard() -> SolvedExercise:
         name = "\\sqrt{\\left(3x-8\\right)} = 4 - \\sqrt{x}"
         steps = [
