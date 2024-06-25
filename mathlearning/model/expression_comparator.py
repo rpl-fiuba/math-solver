@@ -35,7 +35,7 @@ class ExpressionComparator:
         if problem_type == ProblemType.FACTORISABLE:
             return original_expression.is_equivalent_to(new_expression) and original_expression.matches_args_with(new_expression)
         elif problem_type == ProblemType.TRIGONOMETRY:
-            return round(original_expression.sympy_expr, 3) == round(new_expression.sympy_expr, 3)
+            return round(original_expression.sympy_expr, 2) == round(new_expression.sympy_expr, 2)
         elif problem_type == ProblemType.INEQUALITY:
             return ExpressionComparator.is_equivalent_to_for_inequality(original_expression,new_expression)
         elif problem_type == ProblemType.DOMAIN:
