@@ -171,21 +171,23 @@ class ExpressionComparator:
 
     @staticmethod
     def is_equivalent_to_intersection_with_domain(original_expression: Expression, new_expression: Expression) -> bool:
-        original_is_equation = (str(original_expression) == 'False') or ((str(original_expression).__contains__("[") and str(original_expression).__contains__("|")) or \
+        original_is_equation = (str(original_expression) == 'False') or \
+                               ((str(original_expression).__contains__('Eq')) and ((str(original_expression).__contains__("[") and str(original_expression).__contains__("|")) or \
                                (str(original_expression).__contains__("|") and str(original_expression).__contains__("&")) or \
                                (str(original_expression).__contains__("<") or str(original_expression).__contains__(">")) or \
                                (str(original_expression).__contains__("*") or str(original_expression).__contains__("Abs") or \
                                 (str(original_expression).__contains__("sqrt") and \
                                  (str(original_expression).__contains__('Eq') and \
-                                  (str(original_expression).count('Eq') != str(original_expression).count('x'))))))
+                                  (str(original_expression).count('Eq') != str(original_expression).count('x')))))))
 
-        new_is_equation = (str(new_expression) == 'False') or ((str(new_expression).__contains__("[") and str(new_expression).__contains__("|")) or \
+        new_is_equation = (str(new_expression) == 'False') or \
+                          ((str(new_expression).__contains__('Eq')) and ((str(new_expression).__contains__("[") and str(new_expression).__contains__("|")) or \
                                (str(new_expression).__contains__("|") and str(new_expression).__contains__("&")) or \
                                (str(new_expression).__contains__("<") or str(new_expression).__contains__(">")) or \
                                (str(new_expression).__contains__("*") or str(new_expression).__contains__("Abs") or \
                                 str(new_expression).__contains__("sqrt") and \
                                 (str(new_expression).__contains__('Eq') and \
-                                 (str(new_expression).count('Eq') != str(new_expression).count('x')))))
+                                 (str(new_expression).count('Eq') != str(new_expression).count('x'))))))
 
 
         both_are_equation = original_is_equation and new_is_equation

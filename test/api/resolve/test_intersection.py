@@ -42,3 +42,15 @@ class SolutionTreeAPITest(APITestCase):
 
     def test_expression_with_sqrt_answer(self):
         solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.expression_with_sqrt_answer())
+
+    def test_ln_expression(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.ln_expression())
+
+    def test_exp_expression(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.exp_expression())
+
+    def test_ln_with_square(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.ln_with_square())
+
+    def test_ln_with_lineal_expression(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.ln_with_lineal_expression())
