@@ -246,7 +246,7 @@ def parse_latex_exp_results(formula):
     for i in list_eq:
         if i.__contains__("="):
             if i.__contains__('frac'):
-                i = 'x=' + str(parse_latex(i.split("=")[1])).strip()
+                i = 'x=' + str(parse_latex(clean_latex(i.split("=")[1]))).strip()
             result.append(Eq(x, eval(i.strip().replace('\\','').split("=")[1])))
         elif i.__contains__("Eq"):
             result.append(eval(i.strip().replace('\\','')))
@@ -557,7 +557,12 @@ class Expression:
         except NotImplementedError:
             x = symbols('x')
             soluciones = sympy.solveset(self.sympy_expr, x, domain=Interval(-oo, oo))
-            return Intersection(*[soluciones, condition])
+            if isinstance(soluciones, sympy.ConditionSet):
+                soluciones = sympy.nsolve(self.sympy_expr, x, (0,1))
+                if not isinstance(soluciones, list):
+                    soluciones = [soluciones]
+            else:
+                return Intersection(*[soluciones, condition])
         # [x1, x2]
         final_sol = []
         for i in soluciones:

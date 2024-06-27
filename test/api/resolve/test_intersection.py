@@ -54,3 +54,18 @@ class SolutionTreeAPITest(APITestCase):
 
     def test_ln_with_lineal_expression(self):
         solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.ln_with_lineal_expression())
+
+    def test_ln_with_ln(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.ln_with_ln())
+
+    def test_ln_with_exp(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.ln_with_exp())
+
+    def test_exp_with_exp(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.exp_with_exp())
+
+    def test_exp_with_x(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.exp_with_x())
+
+    def test_lineal_frac(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.lineal_frac())

@@ -324,7 +324,7 @@ class IntersectionExercises:
             {'expression': '\\ln\\left(2x + 5\\right) = 1', 'variables': []},
             {'expression': '2x + 5 = \\exp(1)', 'variables': []},
             {'expression': '2x = \\exp(1) - 5', 'variables': []},
-            {'expression': 'x = \\exp(1)/2 - 5/2', 'variables': []}
+            {'expression': 'x = \\frac{\\exp(1)}{2}-\\frac{5}{2}', 'variables': []}
         ]
 
         invalid_steps = [
@@ -332,6 +332,95 @@ class IntersectionExercises:
             {'expression': '2x + 5 = \\exp(0)', 'variables': []},
             {'expression': '2x = \\exp(1)', 'variables': []},
             {'expression': 'x = \\exp(1)/2 - 5', 'variables': []}
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def ln_with_ln() -> SolvedExercise:
+        name = "ln(x^2-2x+1)=ln(x-1)"
+        steps = [
+            {'expression': '\\ln(x^2-2x+1) = \\ln(x-1)', 'variables': []},
+            {'expression': '\\exp(\\ln(x^2-2x+1)) = \\exp(\\ln(x-1)) \\wedge x>1', 'variables': []},
+            {'expression': 'x^2-2x+1 = x-1 \\wedge x>1', 'variables': []},
+            {'expression': 'x^2-3x+2 = 0 \\wedge x>1', 'variables': []},
+            {'expression': '[x = 2 \\wedge x>1] \\vee [x = 1 \\wedge x>1]', 'variables': []},
+            {'expression': '[x = 2] \\vee [x = 1 \\wedge x>1]', 'variables': []},
+            {'expression': 'x = 2', 'variables': []}
+        ]
+
+        invalid_steps = [
+            {'expression': '\\exp(\\ln(x^2-2x+1)) = \\exp(\\ln(x-1))', 'variables': []},
+            {'expression': 'x^2-2x+1 = x-1', 'variables': []},
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def ln_with_exp() -> SolvedExercise:
+        name = "ln(x^2+1)=exp(x)"
+        steps = [
+            {'expression': '\\ln(x^2+1) = e^x', 'variables': []},
+            {'expression': 'x = -0.768221459771013', 'variables': []}
+        ]
+
+        invalid_steps = [
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def exp_with_exp() -> SolvedExercise:
+        name = "exp(x^2)=exp(x)"
+        steps = [
+            {'expression': 'e^{x^2} = e^x', 'variables': []},
+            {'expression': '\\ln(e^{x^2}) = \\ln(e^x)', 'variables': []},
+            {'expression': 'x^2 = x', 'variables': []},
+            {'expression': 'x^2 - x = 0', 'variables': []},
+            {'expression': 'x*(x-1) = 0', 'variables': []},
+            {'expression': 'x = 0 \\vee x=1', 'variables': []}
+        ]
+
+        invalid_steps = [
+            {'expression': '\\ln(e^{x^2}) = e^x', 'variables': []},
+            {'expression': 'x = 0', 'variables': []}
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def exp_with_x() -> SolvedExercise:
+        name = "exp(x)=x"
+        steps = [
+            {'expression': 'e^{x} = x', 'variables': []},
+            {'expression': '\\varnothing', 'variables': []},
+        ]
+
+        invalid_steps = [
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def lineal_frac() -> SolvedExercise:
+        name = "3x^2 -5x = 2"
+        steps = [
+            {'expression': '3x^2 -5x = -2', 'variables': []},
+            #{'expression': 'x=1 \\vee x=\\frac{2}{3} \\ ', 'variables': []},
+            {'expression': 'x=1\\vee x=\\frac{2}{3}\\ ', 'variables': []},
+        ]
+
+        invalid_steps = [
         ]
 
         non_result_steps = steps[:len(steps) - 1]
