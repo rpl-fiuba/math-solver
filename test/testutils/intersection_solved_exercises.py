@@ -217,7 +217,7 @@ class IntersectionExercises:
         name = "x = \\left|x\\right|"
         steps = [
             {'expression': 'x = \\left|x\\right|', 'variables': []},
-            {'expression': '[x = x \\wedge x \\ge 0] \\vee [x = -x \\wedge x < 0]', 'variables': []},
+            {'expression': '[x = x \\wedge x \\ge 0]\\ \\vee\\ [x = -x \\wedge x < 0]', 'variables': []},
             {'expression': '[x - x = 0 \\wedge x \\ge 0] \\vee [x + x = 0 \\wedge x < 0]', 'variables': []},
             {'expression': '[x \\ge 0] \\vee [2x = 0 \\wedge x < 0]', 'variables': []},
             {'expression': '[x \\ge 0] \\vee [x = 0 \\wedge x < 0]', 'variables': []},
