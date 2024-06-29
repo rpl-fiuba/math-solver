@@ -504,6 +504,8 @@ class Expression:
         condition = sympy.Reals
         if ecuacion_str == 'False':
             return '\\varnothing'
+        if ecuacion_str == 'True':
+            return sympy.Reals
 
         if isinstance(self.sympy_expr, sympy.And):
             condition_and = []
@@ -529,18 +531,38 @@ class Expression:
                     maybe_solution = self.solve_expression_intersection_or_exponential(ecuacion_str, condition, x)
                     if maybe_solution != '':
                         solutions.append(maybe_solution)
-                if isinstance(inner_condition, Eq):
+                elif isinstance(inner_condition, Eq):
                     maybe_solution = self.solve_expression_intersection_or_exponential(str(inner_condition), condition, x)
                     if maybe_solution != '':
                         solutions.append(maybe_solution)
+                else:
+                    if str(inner_condition).__contains__('<') or str(inner_condition).__contains__('>') or \
+                        str(inner_condition).__contains__('\\ge') or str(inner_condition).__contains__('\\le'):
+                        maybe_solution = Expression(str(inner_condition).replace('>=','\\ge').replace('<=','\\le')).solve_inequality()
+                        solutions.append(maybe_solution)
             final = ''
+            final_interval = sympy.EmptySet
             for i in solutions:
-                final = final + i + "$"
-            final = final[:-1]
-            final = final.replace('$', ' \\vee ')
+                if not isinstance(i, sympy.Interval):
+                    final = final + i + "$"
+                else:
+                    final_interval = sympy.Union(*[final_interval,i])
 
-            if final == '':
+            if final == '' and final_interval == sympy.EmptySet:
                 final = '\\varnothing'
+            elif final == '' and final_interval != sympy.EmptySet:
+                final = final_interval
+            else:
+                if final != '' and final_interval != sympy.EmptySet:
+                    final = final[:-1]
+                    final = final.replace('$', ' \\vee ')
+                    f_to_interval = sympy.EmptySet
+                    for f in final.split('\\vee'):
+                        f_to_interval = sympy.Union(*[Interval(eval(f.split('=')[1].strip()), eval(f.split('=')[1].strip())), f_to_interval])
+                    final = f_to_interval
+                else:
+                    final = final[:-1]
+                    final = final.replace('$', ' \\vee ')
 
             return final
 

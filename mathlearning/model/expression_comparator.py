@@ -168,30 +168,46 @@ class ExpressionComparator:
         else:
             return False
 
+    @staticmethod
+    def is_an_answer_for_intersection(some_expression: Expression):
+        if 'varnothing' in str(some_expression):
+            return True
+        elif str(some_expression).__contains__('&'):
+            return False
+        elif str(some_expression).__contains__('|') and '[' not in str(some_expression):
+            return True
+        elif isinstance(some_expression.sympy_expr, sympy.Eq):
+            args_eq = some_expression.sympy_expr.args
+            left = str(args_eq[0]).replace('exp','e')
+            right = str(args_eq[1]).replace('exp','e')
+            if left.__contains__('x') and right.__contains__('x'):
+                return False
+            elif (left.__contains__('x') and 'x' not in right) and \
+                    (left.strip() == 'x'):
+                return True
+            elif (right.__contains__('x') and 'x' not in left) and \
+                    (right.strip() == 'x'):
+                return True
+            else:
+                return False
+        elif isinstance(some_expression.sympy_expr, sympy.Interval):
+            return True
+        else:
+            return False
+
 
     @staticmethod
     def is_equivalent_to_intersection_with_domain(original_expression: Expression, new_expression: Expression) -> bool:
-        original_is_equation = (str(original_expression) == 'False') or \
-                               ((str(original_expression).__contains__('Eq')) and ((str(original_expression).__contains__("[") and str(original_expression).__contains__("|")) or \
-                               (str(original_expression).__contains__("|") and str(original_expression).__contains__("&")) or \
-                               (str(original_expression).__contains__("<") or str(original_expression).__contains__(">")) or \
-                               (str(original_expression).__contains__("*") or str(original_expression).__contains__("Abs") or \
-                                (str(original_expression).__contains__("sqrt") and \
-                                 (str(original_expression).__contains__('Eq') and \
-                                  (str(original_expression).count('Eq') != str(original_expression).count('x')))))))
+        both_are_equation = not ExpressionComparator.is_an_answer_for_intersection(original_expression) and \
+                            not ExpressionComparator.is_an_answer_for_intersection(new_expression)
+        neither_is_equation = ExpressionComparator.is_an_answer_for_intersection(original_expression) and \
+                              ExpressionComparator.is_an_answer_for_intersection(new_expression)
 
-        new_is_equation = (str(new_expression) == 'False') or \
-                          ((str(new_expression).__contains__('Eq')) and ((str(new_expression).__contains__("[") and str(new_expression).__contains__("|")) or \
-                               (str(new_expression).__contains__("|") and str(new_expression).__contains__("&")) or \
-                               (str(new_expression).__contains__("<") or str(new_expression).__contains__(">")) or \
-                               (str(new_expression).__contains__("*") or str(new_expression).__contains__("Abs") or \
-                                str(new_expression).__contains__("sqrt") and \
-                                (str(new_expression).__contains__('Eq') and \
-                                 (str(new_expression).count('Eq') != str(new_expression).count('x'))))))
-
-
-        both_are_equation = original_is_equation and new_is_equation
-        neither_is_equation = not original_is_equation and not new_is_equation
+        # si algo es una ecuacion y no es ni varnothing ni un intervalo ni Eq, está mal
+        if ('Eq' not in str(original_expression) and 'varnothing' not in str(original_expression) and 'Interval' not in str(original_expression)) \
+                or \
+           ('Eq' not in str(new_expression) and 'varnothing' not in str(new_expression) and 'Interval' not in str(new_expression)):
+            return False
 
         if both_are_equation:
             original_in_domain = original_expression.equation_exp_ln(str(original_expression))

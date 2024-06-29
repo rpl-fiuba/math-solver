@@ -10,12 +10,15 @@ class IntersectionExercises:
             {'expression': '2x - 1 = 5x + 4', 'variables': []},
             {'expression': '2x - 5x = 4 + 1', 'variables': []},
             {'expression': '-3x = 5', 'variables': []},
-            {'expression': 'x = -5/3', 'variables': []}
+            {'expression': '-3x - 5 = 0', 'variables': []},
+            {'expression': 'x=\\frac{-5}{3}', 'variables': []}
         ]
 
         invalid_steps = [
             {'expression': '2x + 5x = 4 + 1', 'variables': []},
             {'expression': '3x = 4 + 1', 'variables': []},
+            {'expression': 'x = 5/3', 'variables': []},
+            {'expression': 'x = -5/3 \\vee x=0', 'variables': []}
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -29,6 +32,7 @@ class IntersectionExercises:
             {'expression': '\\sqrt{x} = x', 'variables': []},
             {'expression': 'x = x^2', 'variables': []},
             {'expression': '0 = x^2 - x', 'variables': []},
+            {'expression': 'x^2 - x = 0', 'variables': []},
             {'expression': 'x*(x - 1) = 0', 'variables': []},
             {'expression': 'x=0 \\vee x=1', 'variables': []},
         ]
@@ -36,6 +40,7 @@ class IntersectionExercises:
         invalid_steps = [
             {'expression': '\\sqrt{x} = \\sqrt{x}', 'variables': []},
             {'expression': 'x=0', 'variables': []},
+            {'expression': 'x^2 - x -1 = 0', 'variables': []},
             {'expression': 'x=0 \\vee x=-1', 'variables': []},
             {'expression': 'x*(x - 1) = 2', 'variables': []},
             #TODO: {'expression': '0 = x*(x^2 - x)', 'variables': []},
@@ -57,6 +62,9 @@ class IntersectionExercises:
         ]
 
         invalid_steps = [
+            {'expression': '\\sqrt{x} = 2x', 'variables': []},
+            {'expression': 'x=0', 'variables': []},
+            {'expression': '4x^2 + x + 1 = 3', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -86,6 +94,7 @@ class IntersectionExercises:
 
         invalid_steps = [
             {'expression': '(-x/4 + 3)^2 = x \\wedge x \\le 0', 'variables': []},
+            {'expression': '(-x/4 + 3)^2 = x', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -107,6 +116,9 @@ class IntersectionExercises:
         invalid_steps = [
             {'expression': 'x=0 \\vee x=1', 'variables': []},
             {'expression': 'x*(x - 1) = 0 \\wedge x\\ge0', 'variables': []},
+            {'expression': '(-x)^2 = x', 'variables': []},
+            {'expression': '(-x)^2 - x = 0', 'variables': []},
+            {'expression': 'x*(-x + 1) = 0', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -160,7 +172,6 @@ class IntersectionExercises:
 
         invalid_steps = [
             {'expression': '\\frac{(x+4)}{(x+2)} = 0 \\wedge x > -2', 'variables': []},
-            {'expression': '\\frac{(x+4)}{(x+2)} = 0', 'variables': []},
             {'expression': 'x=-2', 'variables': []}
         ]
 
@@ -206,11 +217,16 @@ class IntersectionExercises:
         name = "x = \\left|x\\right|"
         steps = [
             {'expression': 'x = \\left|x\\right|', 'variables': []},
+            {'expression': '[x = x \\wedge x \\ge 0] \\vee [x = -x \\wedge x < 0]', 'variables': []},
+            {'expression': '[x - x = 0 \\wedge x \\ge 0] \\vee [x + x = 0 \\wedge x < 0]', 'variables': []},
+            {'expression': '[x \\ge 0] \\vee [2x = 0 \\wedge x < 0]', 'variables': []},
+            {'expression': '[x \\ge 0] \\vee [x = 0 \\wedge x < 0]', 'variables': []},
             {'expression': '\\left[0, \\infty\\right)', 'variables': []},
         ]
 
         invalid_steps = [
             {'expression': '\\left(0, \\infty\\right)', 'variables': []},
+            {'expression': '[x + x = 0 \\wedge x \\ge 0] \\vee [x + x = 0 \\wedge x < 0]', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -229,6 +245,7 @@ class IntersectionExercises:
 
         invalid_steps = [
             {'expression': 'x=\\frac{3+\\sqrt{5}}{2}', 'variables': []},
+            {'expression': 'x^2 - 3x + 5 = 0', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -354,6 +371,7 @@ class IntersectionExercises:
         invalid_steps = [
             {'expression': '\\exp(\\ln(x^2-2x+1)) = \\exp(\\ln(x-1))', 'variables': []},
             {'expression': 'x^2-2x+1 = x-1', 'variables': []},
+            {'expression': 'x = 1 \\wedge x>1', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -369,6 +387,7 @@ class IntersectionExercises:
         ]
 
         invalid_steps = [
+            {'expression': 'x = -1', 'variables': []}
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -401,10 +420,12 @@ class IntersectionExercises:
         name = "exp(x)=x"
         steps = [
             {'expression': 'e^{x} = x', 'variables': []},
+            {'expression': 'e^{x} - x = 0', 'variables': []},
             {'expression': '\\varnothing', 'variables': []},
         ]
 
         invalid_steps = [
+            {'expression': 'x=0', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -416,11 +437,13 @@ class IntersectionExercises:
         name = "3x^2 -5x = 2"
         steps = [
             {'expression': '3x^2 -5x = -2', 'variables': []},
-            #{'expression': 'x=1 \\vee x=\\frac{2}{3} \\ ', 'variables': []},
+            {'expression': '3x^2 -5x +2 = 0', 'variables': []},
             {'expression': 'x=1\\vee x=\\frac{2}{3}\\ ', 'variables': []},
         ]
 
         invalid_steps = [
+            {'expression': 'x=1', 'variables': []},
+            {'expression': 'x=\\frac{2}{3}\\ ', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
