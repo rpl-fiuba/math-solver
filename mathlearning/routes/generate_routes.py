@@ -7,6 +7,7 @@ from django.urls import path
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from sympy import latex
 import json
 
 generate_service = GenerateService()
@@ -18,9 +19,9 @@ def generate_problem(request: Request):
     if request.method == 'POST':
         logger.info('Received the following request: {}'.format(request.body))
         body = json.loads(request.body)
-        generated_problem_expression = generate_service.generate_problem_input(ProblemType(body["type"]))
-        logger.info('Returning the following response: {}'.format(generated_problem_expression))
-        response_data = {'problemInput': generated_problem_expression}
+        generated_problem_expression = generate_service.generate_problem_input(ProblemType(body["type"])).sympy_expr
+        logger.info('Returning the following response: {} | In Latex {}'.format(generated_problem_expression, latex(generated_problem_expression)))
+        response_data = {'problemInput': latex(generated_problem_expression)}
         return Response(response_data, status=status.HTTP_200_OK, content_type='application/json')
 
 

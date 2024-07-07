@@ -4,6 +4,7 @@ from mathlearning.model.theorem import Theorem
 from mathlearning.utils.logger import Logger
 from mathlearning.model.expression import Expression
 from typing import List
+import sympy
 
 logger = Logger.getLogger()
 
@@ -73,6 +74,8 @@ class SolutionTreeNode:
         if not is_valid:
             if problem_type == ProblemType.INEQUALITY or problem_type == ProblemType.EXPONENTIAL or problem_type == ProblemType.INTERSECTION:
                 hints = []
+            elif problem_type == ProblemType.FACTORISABLE:
+                hints = self.get_hints_for_specific_problem_type(previous_step, problem_type)
             else:
                 hints = self.get_hints(previous_step)
             return 'invalid', hints
@@ -97,6 +100,59 @@ class SolutionTreeNode:
                 hints.add(children.theorem_applied_name)
 
         return list(hints)
+
+    def get_hints_for_specific_problem_type(self, last_valid_step, problem_type):
+        last_valid_step_expression = last_valid_step.sympy_expr
+        if problem_type == ProblemType.FACTORISABLE:
+            nums, denoms = self.get_terms(last_valid_step_expression)
+            full_num = 1
+            full_denom = 1
+            for num in nums:
+                full_num = sympy.Mul(full_num * num)
+            for denom in denoms:
+                full_denom = sympy.Mul(full_denom * denom)
+            roots_num = sympy.solveset(full_num)
+            roots_denom = sympy.solveset(full_denom)
+            shared_roots = [root for root in roots_num if root in roots_denom]
+            if len(shared_roots) > 0:
+                return ['Intentá factorizar el numerador y el denominador por x=' + str(shared_roots[0]) + ' para simplificar la expresión.']
+            else:
+                return []
+        else:
+            return []
+
+    def get_terms(self, mul_expression):
+        nums = []
+        denoms = []
+        if self.mul_has_denom_as_pow(mul_expression):
+            nums.append(mul_expression.args[0])
+            denoms.append(mul_expression.args[1].args[0])
+        elif isinstance(mul_expression, sympy.Pow) and mul_expression.args[1] == -1:
+            denoms.append(mul_expression.args[0])
+        elif isinstance(mul_expression, sympy.Pow) and mul_expression.args[1] != -1:
+            nums.append(mul_expression)
+        elif isinstance(mul_expression, sympy.Add) or all(isinstance(arg, sympy.Integer) or isinstance(arg, sympy.Symbol) or self.is_non_negative_pow(arg) for arg in mul_expression.args):
+            nums.append(mul_expression)
+        else:
+            for inner_mul in mul_expression.args:
+                (aux_nums, aux_denoms) = self.get_terms(inner_mul)
+                nums += aux_nums
+                denoms += aux_denoms
+        return (nums, denoms)
+# self.get_terms(Expression("((x+1)/(2x))*((x+1)/(x+2))*(x+1)").sympy_expr)
+
+    def mul_has_denom_as_pow(self, mul_expression):
+        return len(mul_expression.args) >= 2 and isinstance(mul_expression.args[1], sympy.Pow) and mul_expression.args[1].args[1] == -1
+
+    def is_non_negative_pow(self, mul_expression):
+        return len(mul_expression.args) >= 2 and isinstance(mul_expression.args[1], sympy.Pow) and mul_expression.args[1].args[1] > 0
+
+
+    def has_binomial_square(self, last_valid_step):
+        terms_to_analyze = []
+        last_valid_step.sympy_expr
+
+
 
     def get_sub_trees_with_root(self, current_expression):
         if self.expression.is_equivalent_to(current_expression):

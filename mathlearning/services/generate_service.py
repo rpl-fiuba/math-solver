@@ -70,7 +70,7 @@ class GenerateService:
             elif variant == '2_rooted_denominator':
                 roots = list(solveset(sympy_expr, x, S.Reals))
                 degree = sympy.degree(sympy_expr, gen=x)
-                max_amount_of_roots_to_add = max(0, min(degree - 1, len(roots)))
+                max_amount_of_roots_to_add = max(1, min(degree - 1, len(roots)))
                 amount_of_roots_to_add = random.randint(1, max_amount_of_roots_to_add)
                 rooted_denom = 1
                 for i in range(amount_of_roots_to_add):

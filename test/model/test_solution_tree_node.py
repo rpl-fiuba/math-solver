@@ -4,6 +4,8 @@ import unittest
 
 from mathlearning.mappers.solution_tree_mapper import SolutionTreeMapper
 from mathlearning.model.expression import Expression
+from mathlearning.model.problem_type import ProblemType
+from mathlearning.model.solution_tree_node import SolutionTreeNode
 from test.testutils.derivative_solved_exercises import DerivativeExercises
 
 tree_byte_arr = ''  # TODO
@@ -11,47 +13,102 @@ exercise = DerivativeExercises.derivative_e_plus_sin()
 #tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))
 
 
-@unittest.skip("Migrating tests")
 class TestSolutionTree(unittest.TestCase):
 
-    def test_is_a_result(self):
-        tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))
-        self.assertTrue(tree.is_a_result(Expression(exercise.result['expression'], exercise.result['variables'])))
+    def test_get_terms_single_fraction(self):
+        node = SolutionTreeNode(Expression("x+1"),
+                         'none',
+                         [])
 
-    def test_is_a_result_steps_are_not_results(self):
-        steps = exercise.get_results_as_expressions()
-        non_result_steps = exercise.get_results_as_expressions()[:len(steps) - 1]
-        for non_result in non_result_steps:
-            step_is_result = tree.is_a_result(non_result)
-            self.assertFalse(step_is_result)
-            if step_is_result:
-                print('Non result step returned is result True: ' + non_result.to_string())
+        (nums, denoms) = node.get_terms(Expression("(x+1)/(x+2)").sympy_expr)
+        self.assertEquals(nums, [Expression("x+1").sympy_expr])
+        self.assertEquals(denoms, [Expression("x+2").sympy_expr])
 
-    def test_is_a_result_pre_simplification_steps_are_results(self):
-        result = Expression("x**2*cos(x) + x*(2*sin(x)) + (x + 1)*exp(x)", is_latex=False)
-        self.assertTrue(tree.is_a_result(result))
+    def test_get_terms_only_numerator(self):
+        node = SolutionTreeNode(Expression("x+1"),
+                                'none',
+                                [])
+        (nums, denoms) = node.get_terms(Expression("x+1").sympy_expr)
+        self.assertEquals(nums, [Expression("x+1").sympy_expr])
+        self.assertEquals(denoms, [])
 
-    def test_get_subtree_with_root(self):
-        pass
+    def test_get_terms_only_denominator(self):
+        node = SolutionTreeNode(Expression("x+1"),
+                                'none',
+                                [])
+        (nums, denoms) = node.get_terms(Expression("1/(x+7)").sympy_expr)
+        self.assertEquals(nums, [])
+        self.assertEquals(denoms, [Expression("x+7").sympy_expr])
 
-    def test_contains(self):
-        all_steps_contained = True
-        for i in range(0, len(exercise.steps)):
-            step = exercise.steps[i]
-            expression = Expression(step['expression'], step['variables'])
-            all_steps_contained = all_steps_contained and tree.contains(expression)
-            if not all_steps_contained:
-                print('failed: ' + expression.to_string())
-        self.assertTrue(all_steps_contained)
 
-    def test_get_hints_result_step_should_not_return_hints(self):
-        resultStep = Expression("x**2*cos(x) + x*(2*sin(x)) + (x + 1)*exp(x)", is_latex=False)
-        hints = tree.get_hints(resultStep)
-        self.assertEquals(hints, [])
 
-    def test_get_hints_initial_step_should_return_hints(self):
-        initialStep = Expression("Derivative(x*exp(x), x) + Derivative(x**2*sin(x), x)", is_latex=False)
-        hints = tree.get_hints(initialStep)
-        hints = list(set(map(lambda h: h.name, hints)))
-        self.assertTrue('derivada del producto' in hints)
-        self.assertTrue('resolver derivadas' in hints)
+    def test_get_terms_multiple_fractions(self):
+        node = SolutionTreeNode(Expression("x+1"),
+                                    'none',
+                                    [])
+
+        (nums, denoms) = node.get_terms(Expression("((x+1)/(2x))*((x+1)^2/(x+2))*(x+5)").sympy_expr)
+        self.assertEquals(nums, [Expression("x+1").sympy_expr, Expression("(x+1)^2").sympy_expr, Expression("x+5").sympy_expr])
+        self.assertEquals(denoms, [Expression("2x").sympy_expr, Expression("x+2").sympy_expr])
+
+    def test_get_terms_fractions_with_pows(self):
+        node = SolutionTreeNode(Expression("x+1"),
+                                'none',
+                                [])
+
+        (nums, denoms) = node.get_terms(Expression("(1/(7*x^3))*(x+1)^2").sympy_expr)
+        self.assertEquals(nums, [Expression("(x+1)^2").sympy_expr])
+        self.assertEquals(denoms, [Expression("7*x^3").sympy_expr])
+
+
+
+    def test_get_hints_for_specific_problem_type(self):
+        expression = Expression("((x+2)/(2x)) * ((x+1)^2/(x+2)) * (x+5)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Intentá factorizar el numerador y el denominador por x=-2 para simplificar la expresión.'] )
+
+    # def test_is_a_result(self):
+    #     tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))
+    #     self.assertTrue(tree.is_a_result(Expression(exercise.result['expression'], exercise.result['variables'])))
+    #
+    # def test_is_a_result_steps_are_not_results(self):
+    #     steps = exercise.get_results_as_expressions()
+    #     non_result_steps = exercise.get_results_as_expressions()[:len(steps) - 1]
+    #     for non_result in non_result_steps:
+    #         step_is_result = tree.is_a_result(non_result)
+    #         self.assertFalse(step_is_result)
+    #         if step_is_result:
+    #             print('Non result step returned is result True: ' + non_result.to_string())
+    #
+    # def test_is_a_result_pre_simplification_steps_are_results(self):
+    #     result = Expression("x**2*cos(x) + x*(2*sin(x)) + (x + 1)*exp(x)", is_latex=False)
+    #     self.assertTrue(tree.is_a_result(result))
+    #
+    # def test_get_subtree_with_root(self):
+    #     pass
+    #
+    # def test_contains(self):
+    #     all_steps_contained = True
+    #     for i in range(0, len(exercise.steps)):
+    #         step = exercise.steps[i]
+    #         expression = Expression(step['expression'], step['variables'])
+    #         all_steps_contained = all_steps_contained and tree.contains(expression)
+    #         if not all_steps_contained:
+    #             print('failed: ' + expression.to_string())
+    #     self.assertTrue(all_steps_contained)
+    #
+    # def test_get_hints_result_step_should_not_return_hints(self):
+    #     resultStep = Expression("x**2*cos(x) + x*(2*sin(x)) + (x + 1)*exp(x)", is_latex=False)
+    #     hints = tree.get_hints(resultStep)
+    #     self.assertEquals(hints, [])
+    #
+    # def test_get_hints_initial_step_should_return_hints(self):
+    #     initialStep = Expression("Derivative(x*exp(x), x) + Derivative(x**2*sin(x), x)", is_latex=False)
+    #     hints = tree.get_hints(initialStep)
+    #     hints = list(set(map(lambda h: h.name, hints)))
+    #     self.assertTrue('derivada del producto' in hints)
+    #     self.assertTrue('resolver derivadas' in hints)
