@@ -18,6 +18,8 @@ from django.urls import path
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+
+from mathlearning.routes.generate_routes import generate_paths
 from mathlearning.routes.result_routes import result_paths
 from mathlearning.routes.validation_routes import validation_paths
 from mathlearning.routes.comparison_routes import comparison_paths
@@ -26,4 +28,4 @@ urlpatterns = [
     path('admin', admin.site.urls)
 ]
 
-urlpatterns += result_paths + validation_paths + comparison_paths
+urlpatterns += result_paths + validation_paths + comparison_paths + generate_paths
