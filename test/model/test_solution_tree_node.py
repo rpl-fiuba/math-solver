@@ -40,8 +40,6 @@ class TestSolutionTree(unittest.TestCase):
         self.assertEquals(nums, [])
         self.assertEquals(denoms, [Expression("x+7").sympy_expr])
 
-
-
     def test_get_terms_multiple_fractions(self):
         node = SolutionTreeNode(Expression("x+1"),
                                     'none',
@@ -60,9 +58,7 @@ class TestSolutionTree(unittest.TestCase):
         self.assertEquals(nums, [Expression("(x+1)^2").sympy_expr])
         self.assertEquals(denoms, [Expression("7*x^3").sympy_expr])
 
-
-
-    def test_get_hints_for_specific_problem_type(self):
+    def test_get_hints_for_specific_problem_type_shared_root(self):
         expression = Expression("((x+2)/(2x)) * ((x+1)^2/(x+2)) * (x+5)")
         node = SolutionTreeNode(expression,
                                 'none',
@@ -70,6 +66,26 @@ class TestSolutionTree(unittest.TestCase):
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['Intentá factorizar el numerador y el denominador por x=-2 para simplificar la expresión.'] )
+
+    def test_get_hints_for_specific_problem_type_binomial_squared(self):
+        expression = Expression("((x^2+2x+1)/(3x)) * (x+5)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Intentá factorizar el cuadrado del binomio en un numerador'] )
+
+    def test_get_hints_for_specific_problem_type_binomial_squared_denominator(self):
+        expression = Expression("((x+1)/(x^2+4x+4)) * (x+5)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Intentá factorizar el cuadrado del binomio en un denominador'] )
+
+
 
     # def test_is_a_result(self):
     #     tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))

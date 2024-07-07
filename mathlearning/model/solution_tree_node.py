@@ -5,6 +5,7 @@ from mathlearning.utils.logger import Logger
 from mathlearning.model.expression import Expression
 from typing import List
 import sympy
+from sympy.abc import x
 
 logger = Logger.getLogger()
 
@@ -105,20 +106,26 @@ class SolutionTreeNode:
         last_valid_step_expression = last_valid_step.sympy_expr
         if problem_type == ProblemType.FACTORISABLE:
             nums, denoms = self.get_terms(last_valid_step_expression)
-            shared_root_hints = self.build_shared_root_hints(nums, denoms)
-            if len(shared_root_hints) > 0:
-                return shared_root_hints
+            squared_binomial_hints = self.build_squared_binomial_hints(nums, denoms)
+            if len(squared_binomial_hints) > 0:
+                return squared_binomial_hints
             else:
-                return self.build_squared_binomial_hints(nums, denoms)
+                shared_root_hints = self.build_shared_root_hints(nums, denoms)
+                if len(shared_root_hints) > 0:
+                    return shared_root_hints
+        return []
 
     def build_squared_binomial_hints(self, nums, denoms):
-        terms = []
-        terms += nums
-        terms += denoms
-
-
-
-
+        for term in nums:
+            if not isinstance(term, sympy.Pow) and sympy.degree(sympy.simplify(term), gen=x) == 2:
+                roots = sympy.roots(sympy.simplify(term), gen=x)
+                if len(roots) == 1:
+                    return ['Intentá factorizar el cuadrado del binomio en un numerador']
+        for term in denoms:
+            if not isinstance(term, sympy.Pow) and sympy.degree(sympy.simplify(term), gen=x) == 2:
+                roots = sympy.roots(sympy.simplify(term), gen=x)
+                if len(roots) == 1:
+                    return ['Intentá factorizar el cuadrado del binomio en un denominador']
         return []
 
 
