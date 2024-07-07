@@ -147,7 +147,7 @@ class SolutionTreeNode:
             return add_terms
 
     def has_zeroed_root(self, term):
-        roots = sympy.roots(sympy.simplify(term), gen=x)
+        roots = list(sympy.solveset(sympy.simplify(term), x))
         if 0 in roots:
             return True
         return False
