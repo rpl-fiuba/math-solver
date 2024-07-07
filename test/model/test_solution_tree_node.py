@@ -10,15 +10,17 @@ from test.testutils.derivative_solved_exercises import DerivativeExercises
 
 tree_byte_arr = ''  # TODO
 exercise = DerivativeExercises.derivative_e_plus_sin()
-#tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))
+
+
+# tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))
 
 
 class TestSolutionTree(unittest.TestCase):
 
     def test_get_terms_single_fraction(self):
         node = SolutionTreeNode(Expression("x+1"),
-                         'none',
-                         [])
+                                'none',
+                                [])
 
         (nums, denoms) = node.get_terms(Expression("(x+1)/(x+2)").sympy_expr)
         self.assertEquals(nums, [Expression("x+1").sympy_expr])
@@ -42,11 +44,12 @@ class TestSolutionTree(unittest.TestCase):
 
     def test_get_terms_multiple_fractions(self):
         node = SolutionTreeNode(Expression("x+1"),
-                                    'none',
-                                    [])
+                                'none',
+                                [])
 
         (nums, denoms) = node.get_terms(Expression("((x+1)/(2x))*((x+1)^2/(x+2))*(x+5)").sympy_expr)
-        self.assertEquals(nums, [Expression("x+1").sympy_expr, Expression("(x+1)^2").sympy_expr, Expression("x+5").sympy_expr])
+        self.assertEquals(nums, [Expression("x+1").sympy_expr, Expression("(x+1)^2").sympy_expr,
+                                 Expression("x+5").sympy_expr])
         self.assertEquals(denoms, [Expression("2x").sympy_expr, Expression("x+2").sympy_expr])
 
     def test_get_terms_fractions_with_pows(self):
@@ -65,7 +68,7 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Factorizar el numerador y el denominador por x=-2 para simplificar la expresión.'] )
+        self.assertEquals(hints, ['Factorizar el numerador y el denominador por x=-2 para simplificar la expresión.'])
 
     def test_get_hints_for_specific_problem_type_binomial_squared(self):
         expression = Expression("((x^2+2x+1)/(3x)) * (x+5)")
@@ -74,7 +77,7 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Factorizar el cuadrado del binomio en un numerador'] )
+        self.assertEquals(hints, ['Factorizar el cuadrado del binomio en un numerador'])
 
     def test_get_hints_for_specific_problem_type_binomial_squared_on_zero_should_not_return_any_hint(self):
         expression = Expression("((x^2)/(x+2)) * (x+5)")
@@ -84,7 +87,6 @@ class TestSolutionTree(unittest.TestCase):
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 0)
 
-
     def test_get_hints_for_specific_problem_type_binomial_squared_denominator(self):
         expression = Expression("((x+1)/(x^2+4x+4)) * (x+5)")
         node = SolutionTreeNode(expression,
@@ -92,7 +94,36 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Factorizar el cuadrado del binomio en un denominador'] )
+        self.assertEquals(hints, ['Factorizar el cuadrado del binomio en un denominador'])
+
+
+    def test_get_hints_for_specific_problem_type_quadratic_difference(self):
+        expression = Expression("((x^2-4)/(x+2)) * (x+5)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Factorizar la diferencia de cuadrados en un numerador'])
+
+
+    def test_get_hints_for_specific_problem_type_quadratic_difference_denominator(self):
+        expression = Expression("(1/(x^2-4)) * (x+2)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Factorizar la diferencia de cuadrados en un denominador'])
+
+    def test_get_hints_for_specific_problem_type_after_quadratic_difference(self):
+        expression = Expression("1/((x-3)*(x+3)) * (x+3)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Factorizar el numerador y el denominador por x=-3 para simplificar la expresión.'])
 
 
 

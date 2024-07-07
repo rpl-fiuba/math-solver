@@ -493,7 +493,7 @@ class Expression:
         return final
 
     def is_equal_to(self, expression):
-        return sympify(self) == sympify(expression)
+        return self.matches_args_with(expression)
 
     def equation_exp_ln(self, ecuacion_str):
         x = symbols('x', real=True)
@@ -726,8 +726,8 @@ class Expression:
         return self_image.is_equivalent_to(other_expression_image)
 
     def matches_args_with(self, expression):
-        return (len(sympify(self).args) == len(sympify(expression).args)) and \
-            set(sympify(self).args).issubset(sympify(expression).args)
+        return (len(sympify(self, evaluate=False).args) == len(sympify(expression, evaluate=False).args)) and \
+            set(sympify(self, evaluate=False).args).issubset(sympify(expression, evaluate=False).args)
 
     def contains_user_defined_funct(self) -> bool:
         if self.is_user_defined_func():

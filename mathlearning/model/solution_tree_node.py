@@ -81,7 +81,7 @@ class SolutionTreeNode:
                 hints = self.get_hints(previous_step)
             return 'invalid', hints
         if self.is_a_result(new_expression, problem_type):
-            if self.expression.is_equal_to(new_expression):
+            if problem_type == ProblemType.FACTORISABLE and self.expression.is_equal_to(new_expression):
                 return 'valid', hints
             else:
                 return 'resolved', hints
@@ -106,13 +106,19 @@ class SolutionTreeNode:
         last_valid_step_expression = last_valid_step.sympy_expr
         if problem_type == ProblemType.FACTORISABLE:
             nums, denoms = self.get_terms(last_valid_step_expression)
+
             squared_binomial_hints = self.build_squared_binomial_hints(nums, denoms)
             if len(squared_binomial_hints) > 0:
                 return squared_binomial_hints
-            else:
-                shared_root_hints = self.build_shared_root_hints(nums, denoms)
-                if len(shared_root_hints) > 0:
-                    return shared_root_hints
+
+            quadratic_difference_hints = self.build_quadratic_difference_hints(nums, denoms)
+            if len(quadratic_difference_hints) > 0:
+                return quadratic_difference_hints
+
+            shared_root_hints = self.build_shared_root_hints(nums, denoms)
+            if len(shared_root_hints) > 0:
+                return shared_root_hints
+
         return []
 
     def build_squared_binomial_hints(self, nums, denoms):
@@ -128,6 +134,22 @@ class SolutionTreeNode:
                     return ['Factorizar el cuadrado del binomio en un denominador']
         return []
 
+    def build_quadratic_difference_hints(self, nums, denoms):
+        for term in nums:
+            if self.is_quadratic_difference(term) or any(self.is_quadratic_difference(arg) for arg in term.args):
+                return ['Factorizar la diferencia de cuadrados en un numerador']
+        for term in denoms:
+            if self.is_quadratic_difference(term) or any(self.is_quadratic_difference(arg) for arg in term.args):
+                return ['Factorizar la diferencia de cuadrados en un denominador']
+        return []
+
+    def is_quadratic_difference(self, term):
+        degree = sympy.degree(sympy.simplify(term), gen=x)
+        if not isinstance(term, sympy.Pow) and isinstance(term, sympy.Add) and degree > 0 and degree % 2 == 0:
+            roots = list(sympy.roots(sympy.simplify(term), gen=x).keys())
+            if len(roots) == 2 and roots[0] == -roots[1]:
+                return True
+        return False
 
     def build_shared_root_hints(self, nums, denoms):
         full_num = 1
@@ -162,7 +184,6 @@ class SolutionTreeNode:
                 nums += aux_nums
                 denoms += aux_denoms
         return (nums, denoms)
-# self.get_terms(Expression("((x+1)/(2x))*((x+1)/(x+2))*(x+1)").sympy_expr)
 
     def mul_has_denom_as_pow(self, mul_expression):
         return len(mul_expression.args) >= 2 and isinstance(mul_expression.args[1], sympy.Pow) and mul_expression.args[1].args[1] == -1
