@@ -120,12 +120,12 @@ class SolutionTreeNode:
             if not isinstance(term, sympy.Pow) and sympy.degree(sympy.simplify(term), gen=x) == 2:
                 roots = sympy.roots(sympy.simplify(term), gen=x)
                 if len(roots) == 1:
-                    return ['Intentá factorizar el cuadrado del binomio en un numerador']
+                    return ['Factorizar el cuadrado del binomio en un numerador']
         for term in denoms:
             if not isinstance(term, sympy.Pow) and sympy.degree(sympy.simplify(term), gen=x) == 2:
                 roots = sympy.roots(sympy.simplify(term), gen=x)
                 if len(roots) == 1:
-                    return ['Intentá factorizar el cuadrado del binomio en un denominador']
+                    return ['Factorizar el cuadrado del binomio en un denominador']
         return []
 
 
@@ -140,7 +140,7 @@ class SolutionTreeNode:
         roots_denom = sympy.solveset(full_denom, symbol=sympy.Symbol('x'))
         shared_roots = [root for root in roots_num if root in roots_denom]
         if len(shared_roots) > 0:
-            return ['Intentá factorizar el numerador y el denominador por x=' + str(
+            return ['Factorizar el numerador y el denominador por x=' + str(
                 shared_roots[0]) + ' para simplificar la expresión.']
         return []
 

@@ -65,7 +65,7 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Intentá factorizar el numerador y el denominador por x=-2 para simplificar la expresión.'] )
+        self.assertEquals(hints, ['Factorizar el numerador y el denominador por x=-2 para simplificar la expresión.'] )
 
     def test_get_hints_for_specific_problem_type_binomial_squared(self):
         expression = Expression("((x^2+2x+1)/(3x)) * (x+5)")
@@ -74,7 +74,7 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Intentá factorizar el cuadrado del binomio en un numerador'] )
+        self.assertEquals(hints, ['Factorizar el cuadrado del binomio en un numerador'] )
 
     def test_get_hints_for_specific_problem_type_binomial_squared_denominator(self):
         expression = Expression("((x+1)/(x^2+4x+4)) * (x+5)")
@@ -83,7 +83,7 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Intentá factorizar el cuadrado del binomio en un denominador'] )
+        self.assertEquals(hints, ['Factorizar el cuadrado del binomio en un denominador'] )
 
 
 
