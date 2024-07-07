@@ -105,21 +105,37 @@ class SolutionTreeNode:
         last_valid_step_expression = last_valid_step.sympy_expr
         if problem_type == ProblemType.FACTORISABLE:
             nums, denoms = self.get_terms(last_valid_step_expression)
-            full_num = 1
-            full_denom = 1
-            for num in nums:
-                full_num = sympy.Mul(full_num * num)
-            for denom in denoms:
-                full_denom = sympy.Mul(full_denom * denom)
-            roots_num = sympy.solveset(full_num)
-            roots_denom = sympy.solveset(full_denom)
-            shared_roots = [root for root in roots_num if root in roots_denom]
-            if len(shared_roots) > 0:
-                return ['Intentá factorizar el numerador y el denominador por x=' + str(shared_roots[0]) + ' para simplificar la expresión.']
+            shared_root_hints = self.build_shared_root_hints(nums, denoms)
+            if len(shared_root_hints) > 0:
+                return shared_root_hints
             else:
-                return []
-        else:
-            return []
+                return self.build_squared_binomial_hints(nums, denoms)
+
+    def build_squared_binomial_hints(self, nums, denoms):
+        terms = []
+        terms += nums
+        terms += denoms
+
+
+
+
+        return []
+
+
+    def build_shared_root_hints(self, nums, denoms):
+        full_num = 1
+        full_denom = 1
+        for num in nums:
+            full_num = sympy.Mul(full_num * num)
+        for denom in denoms:
+            full_denom = sympy.Mul(full_denom * denom)
+        roots_num = sympy.solveset(full_num, symbol=sympy.Symbol('x'))
+        roots_denom = sympy.solveset(full_denom, symbol=sympy.Symbol('x'))
+        shared_roots = [root for root in roots_num if root in roots_denom]
+        if len(shared_roots) > 0:
+            return ['Intentá factorizar el numerador y el denominador por x=' + str(
+                shared_roots[0]) + ' para simplificar la expresión.']
+        return []
 
     def get_terms(self, mul_expression):
         nums = []
