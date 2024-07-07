@@ -68,7 +68,7 @@ def solve_exercise_with_solution_tree(self, kind: ProblemType, exercise: SolvedE
         response = self.client.post(path='/resolve', data=resolve_data, format='json')
         result = json.loads(response.content)
         if result['exerciseStatus'] == 'resolved':
-            print(Expression(current_step).to_string())
+            print(str(current_step))
         if result['exerciseStatus'] == 'invalid':
             print(str(current_step))
         self.assertEquals(response.status_code, status.HTTP_200_OK)

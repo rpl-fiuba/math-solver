@@ -76,6 +76,15 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['Factorizar el cuadrado del binomio en un numerador'] )
 
+    def test_get_hints_for_specific_problem_type_binomial_squared_on_zero_should_not_return_any_hint(self):
+        expression = Expression("((x^2)/(x+2)) * (x+5)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 0)
+
+
     def test_get_hints_for_specific_problem_type_binomial_squared_denominator(self):
         expression = Expression("((x+1)/(x^2+4x+4)) * (x+5)")
         node = SolutionTreeNode(expression,
