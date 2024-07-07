@@ -107,6 +107,10 @@ class SolutionTreeNode:
         if problem_type == ProblemType.FACTORISABLE:
             nums, denoms = self.get_terms(last_valid_step_expression)
 
+            common_factor_hints = self.build_common_factor_hints(nums, denoms)
+            if len(common_factor_hints) > 0:
+                return common_factor_hints
+
             squared_binomial_hints = self.build_squared_binomial_hints(nums, denoms)
             if len(squared_binomial_hints) > 0:
                 return squared_binomial_hints
@@ -120,6 +124,33 @@ class SolutionTreeNode:
                 return shared_root_hints
 
         return []
+
+    def build_common_factor_hints(self, nums, denoms):
+        for term in nums:
+            add_terms_in_term = self.get_add_terms(term)
+            if len(add_terms_in_term) >= 1 and any(self.has_zeroed_root(add_term) for add_term in add_terms_in_term):
+                return ['Sacar factor comun de x en un numerador']
+        for term in denoms:
+            add_terms_in_term = self.get_add_terms(term)
+            if len(add_terms_in_term) >= 1 and any(self.has_zeroed_root(add_term) for add_term in add_terms_in_term):
+                return ['Sacar factor comun de x en un denominador']
+        return []
+
+    def get_add_terms(self, expression):
+        if isinstance(expression, sympy.Add):
+            return [expression]
+        else:
+            add_terms = []
+            if expression.args is not None and len(expression.args):
+                for arg in expression.args:
+                    add_terms = add_terms + self.get_add_terms(arg)
+            return add_terms
+
+    def has_zeroed_root(self, term):
+        roots = sympy.roots(sympy.simplify(term), gen=x)
+        if 0 in roots:
+            return True
+        return False
 
     def build_squared_binomial_hints(self, nums, denoms):
         for term in nums:

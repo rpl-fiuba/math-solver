@@ -127,6 +127,73 @@ class TestSolutionTree(unittest.TestCase):
 
 
 
+    def test_get_hints_for_specific_problem_type_common_factor(self):
+        expression = Expression("(1/(x^4-9x^2)) * (x+3)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Sacar factor comun de x en un denominador'])
+
+    def test_get_hints_for_specific_problem_type_semi_common_factor(self):
+        expression = Expression("((x*(x^3-9x))/(x+2)) * (x+3)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Sacar factor comun de x en un numerador'])
+
+
+    def test_get_hints_for_specific_problem_type_common_factor_without_fraction(self):
+        expression = Expression("x^2+2x")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Sacar factor comun de x en un numerador'])
+
+
+    def test_get_hints_for_specific_problem_type_common_factor_without_fraction_nor_action(self):
+        expression = Expression("x*(x+2)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 0)
+
+
+    def test_get_hints_for_specific_problem_type_after_common_factor_get_squared_difference(self):
+        expression = Expression("((x^2*(x^2-9))/(x+2)) * (x+3)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Factorizar la diferencia de cuadrados en un numerador'])
+
+    def test_get_hints_for_specific_problem_type_common_factor_shared_root(self):
+        expression = Expression("((x+2)/(x^2*(x-3)*(x+3))) * (x+3)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Factorizar el numerador y el denominador por x=-3 para simplificar la expresión.'])
+
+
+    def test_get_hints_for_specific_problem_type_no_action(self):
+        expression = Expression("((x+2)/(x^2*(x-3))) * (x+3)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
+        self.assertTrue(len(hints) == 0)
+
+
+
     # def test_is_a_result(self):
     #     tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))
     #     self.assertTrue(tree.is_a_result(Expression(exercise.result['expression'], exercise.result['variables'])))
