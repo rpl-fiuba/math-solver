@@ -124,7 +124,7 @@ class SolutionTreeNode:
         if self.expression_has_square(last_valid_step_expression):
             if problem_type in [ProblemType.EXPONENTIAL, ProblemType.INTERSECTION, ProblemType.INEQUALITY]:
                 if self.want_to_transform_sqrt_to_pow(last_valid_step_expression):
-                    return ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0']
+                    return ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse: \n 1. f(x) >= 0 \n 2. raiz(f(x)) >= 0']
             if problem_type == ProblemType.IMAGE:
                 return ['Si tenés raíz cuadrada de f(x), siempre obtendrás valores mayores o iguales a 0']
             if problem_type == ProblemType.DOMAIN:

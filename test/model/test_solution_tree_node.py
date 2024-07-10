@@ -199,7 +199,7 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0'])
+        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse: \n 1. f(x) >= 0 \n 2. raiz(f(x)) >= 0'])
 
     def test_get_hints_for_square_expression_inequality(self):
         expression = Expression("\\sqrt{x}<5x+2")
@@ -208,7 +208,7 @@ class TestSolutionTree(unittest.TestCase):
                                 [])
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INEQUALITY)
         self.assertTrue(len(hints) == 1)
-        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0'])
+        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse: \n 1. f(x) >= 0 \n 2. raiz(f(x)) >= 0'])
 
     def test_get_hints_for_square_expression_domain(self):
         expression = Expression("\\sqrt{x+5}")
