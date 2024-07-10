@@ -192,6 +192,68 @@ class TestSolutionTree(unittest.TestCase):
         hints = node.get_hints_for_specific_problem_type(expression, ProblemType.FACTORISABLE)
         self.assertTrue(len(hints) == 0)
 
+    def test_get_hints_for_square_expression_intersection(self):
+        expression = Expression("\\sqrt{x}=5x+2")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0'])
+
+    def test_get_hints_for_square_expression_inequality(self):
+        expression = Expression("\\sqrt{x}<5x+2")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INEQUALITY)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0'])
+
+    def test_get_hints_for_square_expression_domain(self):
+        expression = Expression("\\sqrt{x+5}")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.DOMAIN)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0'])
+
+    def test_get_hints_for_square_expression_image(self):
+        expression = Expression("\\sqrt{x+5}")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.IMAGE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), siempre obtendrás valores mayores o iguales a 0'])
+
+    def test_get_hints_for_abs_expression_image(self):
+        expression = Expression("\\left|x+5\\right|")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.IMAGE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Si tenés |f(x)|, siempre obtendrás valores mayores o iguales a 0'])
+
+    def test_get_hints_for_abs_expression_intersection(self):
+        expression = Expression("\\left|x+5\\right| = 2x+1")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Si tenés |f(x)|, debes partir el ejercicio teniendo en cuenta dos casos: \n 1. f(x) >= 0 \n 2. f(x) < 0'])
+
+    def test_get_hints_for_abs_expression_inequality(self):
+        expression = Expression("\\left|x+5\\right| > 2x+1")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INEQUALITY)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Si tenés |f(x)|, debes partir el ejercicio teniendo en cuenta dos casos: \n 1. f(x) >= 0 \n 2. f(x) < 0'])
 
 
     # def test_is_a_result(self):

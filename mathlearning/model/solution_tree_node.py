@@ -123,7 +123,82 @@ class SolutionTreeNode:
             if len(shared_root_hints) > 0:
                 return shared_root_hints
 
+        if self.expression_has_square(last_valid_step_expression):
+            if problem_type in [ProblemType.EXPONENTIAL, ProblemType.INTERSECTION, ProblemType.INEQUALITY]:
+                if self.want_to_transform_sqrt_to_pow(last_valid_step_expression):
+                    return ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0']
+            if problem_type == ProblemType.IMAGE:
+                return ['Si tenés raíz cuadrada de f(x), siempre obtendrás valores mayores o iguales a 0']
+            if problem_type == ProblemType.DOMAIN:
+                return ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse f(x)>=0']
+
+        if self.expression_has_abs(last_valid_step_expression):
+            if problem_type == ProblemType.IMAGE:
+                return ['Si tenés |f(x)|, siempre obtendrás valores mayores o iguales a 0']
+            if problem_type in [ProblemType.INTERSECTION, ProblemType.INEQUALITY, ProblemType.EXPONENTIAL]:
+                return ['Si tenés |f(x)|, debes partir el ejercicio teniendo en cuenta dos casos: \n 1. f(x) >= 0 \n 2. f(x) < 0']
+
+        if self.expression_has_log(last_valid_step_expression):
+            if problem_type == ProblemType.DOMAIN:
+                return ['']
+            if problem_type == ProblemType.IMAGE:
+                return ['']
+            if problem_type in [ProblemType.INTERSECTION, ProblemType.INEQUALITY, ProblemType.EXPONENTIAL]:
+                return ['']
+
         return []
+
+    def expression_has_log(self, expression):
+        return str(expression).__contains__("log") or str(expression).__contains__("ln")
+
+    def expression_has_exp(self, expression):
+        return str(expression).__contains__("exp")
+
+    def expression_has_abs(self, expression):
+        return str(expression).__contains__("Abs") or str(expression).__contains__("|")
+
+    def expression_has_square(self, expression):
+        return str(expression).__contains__("sqrt")
+
+    def has_x_in_both_sizes(self, expression):
+        if isinstance(expression, sympy.Eq):
+            termns = expression.args
+        else:
+            if str(expression).__contains__('<'):
+                termns = str(expression).replace('=', '').split('<')
+            else:
+                termns = str(expression).replace('=', '').split('>')
+
+        has_x_left = str(termns[0]).__contains__('x') and not str(termns[0]).__contains__('exp')
+        has_x_right = str(termns[1]).__contains__('x') and not str(termns[1]).__contains__('exp')
+
+        return has_x_right and has_x_left
+
+    def has_sqrt_alone(self, expression):
+        if isinstance(expression, sympy.Eq):
+            termns = expression.args
+        else:
+            if str(expression).__contains__('<'):
+                termns = str(expression).replace('=', '').split('<')
+            else:
+                termns = str(expression).replace('=', '').split('>')
+            termns_aux = []
+            for i in termns:
+                if i.__contains__('sqrt'):
+                    termns_aux.append(i.replace('sqrt(','\\sqrt{').replace(')','}'))
+                else:
+                    termns_aux.append(i)
+            termns = termns_aux
+
+        has_sqrt_alone_left = str(termns[0]).__contains__('sqrt') and isinstance(Expression(termns[0]).sympy_expr, sympy.Pow)
+        has_sqrt_alone_right = str(termns[1]).__contains__('sqrt') and isinstance(Expression(termns[1]).sympy_expr, sympy.Pow)
+
+        return has_sqrt_alone_right or has_sqrt_alone_left
+
+    def want_to_transform_sqrt_to_pow(self, expression):
+        return not (isinstance(expression, sympy.And) or isinstance(expression, sympy.Or)) and \
+               self.has_x_in_both_sizes(expression) and \
+               self.has_sqrt_alone(expression)
 
     def build_common_factor_hints(self, nums, denoms):
         for term in nums:
