@@ -73,9 +73,7 @@ class SolutionTreeNode:
         is_valid = self.new_expression_is_valid(previous_step, new_expression, problem_type)
 
         if not is_valid:
-            if problem_type == ProblemType.INEQUALITY or problem_type == ProblemType.EXPONENTIAL or problem_type == ProblemType.INTERSECTION:
-                hints = []
-            elif problem_type == ProblemType.FACTORISABLE:
+            if problem_type != ProblemType.DOMAIN and problem_type != ProblemType.IMAGE:
                 hints = self.get_hints_for_specific_problem_type(previous_step, problem_type)
             else:
                 hints = self.get_hints(previous_step)
