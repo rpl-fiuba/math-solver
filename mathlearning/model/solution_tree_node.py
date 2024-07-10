@@ -153,7 +153,7 @@ class SolutionTreeNode:
         return str(expression).__contains__("exp")
 
     def expression_has_abs(self, expression):
-        return str(expression).__contains__("Abs") or str(expression).__contains__("|")
+        return str(expression).__contains__("Abs")
 
     def expression_has_square(self, expression):
         return str(expression).__contains__("sqrt")
