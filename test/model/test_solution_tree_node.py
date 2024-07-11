@@ -255,6 +255,25 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['Si tenés |f(x)|, debes partir el ejercicio teniendo en cuenta dos casos: \n 1. f(x) >= 0 \n 2. f(x) < 0'])
 
+    def test_get_hints_for_trigonometry(self):
+        expression = Expression("100.01")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.TRIGONOMETRY)
+        self.assertTrue(len(hints) == 2)
+        self.assertEquals(hints, ['Usá la formula de Herón conociendo los 3 lados del triángulo', 'Usá el Teorema de Pitágoras para determinar la altura del triángulo y luego calculá su área conociendo su base y altura'])
+
+    def test_get_hints_for_trigonometry_negative_area(self):
+        expression = Expression("-100.01")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.TRIGONOMETRY)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['El area no puede ser negativa'])
+
+
 
     # def test_is_a_result(self):
     #     tree = SolutionTreeMapper.parse(json.loads(tree_byte_arr))

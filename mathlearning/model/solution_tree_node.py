@@ -73,7 +73,9 @@ class SolutionTreeNode:
         is_valid = self.new_expression_is_valid(previous_step, new_expression, problem_type)
 
         if not is_valid:
-            if problem_type != ProblemType.DOMAIN and problem_type != ProblemType.IMAGE:
+            if problem_type == ProblemType.TRIGONOMETRY:
+                hints = self.get_hints_for_specific_problem_type(new_expression, problem_type)
+            elif problem_type != ProblemType.DOMAIN and problem_type != ProblemType.IMAGE:
                 hints = self.get_hints_for_specific_problem_type(previous_step, problem_type)
             else:
                 hints = self.get_hints(previous_step)
@@ -121,7 +123,10 @@ class SolutionTreeNode:
             if len(shared_root_hints) > 0:
                 return shared_root_hints
 
-        if self.expression_has_square(last_valid_step_expression):
+        elif problem_type == ProblemType.TRIGONOMETRY:
+            return self.build_trigonometry_hints(last_valid_step)
+
+        elif self.expression_has_square(last_valid_step_expression):
             if problem_type in [ProblemType.EXPONENTIAL, ProblemType.INTERSECTION, ProblemType.INEQUALITY]:
                 if self.want_to_transform_sqrt_to_pow(last_valid_step_expression):
                     return ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse: \n 1. f(x) >= 0 \n 2. raiz(f(x)) >= 0']
@@ -197,6 +202,13 @@ class SolutionTreeNode:
         return not (isinstance(expression, sympy.And) or isinstance(expression, sympy.Or)) and \
                self.has_x_in_both_sizes(expression) and \
                self.has_sqrt_alone(expression)
+        return []
+
+    def build_trigonometry_hints(self, last_valid_step):
+        if last_valid_step.sympy_expr < 0:
+            return ['El area no puede ser negativa']
+        else:
+            return ['La formula de Herón conociendo los 3 lados del triángulo', 'El Teorema de Pitágoras para determinar la altura del triángulo y luego calcular el área conociendo la base y altura']
 
     def build_common_factor_hints(self, nums, denoms):
         for term in nums:
