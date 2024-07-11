@@ -201,6 +201,15 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse: \n 1. f(x) >= 0 \n 2. raiz(f(x)) >= 0'])
 
+    def test_get_hints_for_square_expression_intersection_with_pow(self):
+        expression = Expression("(x-\\sqrt{x})^2=5x+2")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 0)
+        self.assertEquals(hints, [])
+
     def test_get_hints_for_square_expression_inequality(self):
         expression = Expression("\\sqrt{x}<5x+2")
         node = SolutionTreeNode(expression,

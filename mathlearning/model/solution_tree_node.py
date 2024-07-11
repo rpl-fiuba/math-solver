@@ -130,6 +130,8 @@ class SolutionTreeNode:
             if problem_type in [ProblemType.EXPONENTIAL, ProblemType.INTERSECTION, ProblemType.INEQUALITY]:
                 if self.want_to_transform_sqrt_to_pow(last_valid_step_expression):
                     return ['Si tenés raíz cuadrada de f(x), recordá que debe cumplirse: \n 1. f(x) >= 0 \n 2. raiz(f(x)) >= 0']
+                else:
+                    return []
             if problem_type == ProblemType.IMAGE:
                 return ['Si tenés raíz cuadrada de f(x), siempre obtendrás valores mayores o iguales a 0']
             if problem_type == ProblemType.DOMAIN:
@@ -193,8 +195,8 @@ class SolutionTreeNode:
                     termns_aux.append(i)
             termns = termns_aux
 
-        has_sqrt_alone_left = str(termns[0]).__contains__('sqrt') and isinstance(Expression(termns[0]).sympy_expr, sympy.Pow)
-        has_sqrt_alone_right = str(termns[1]).__contains__('sqrt') and isinstance(Expression(termns[1]).sympy_expr, sympy.Pow)
+        has_sqrt_alone_left = str(termns[0]).__contains__('sqrt') and isinstance(Expression(termns[0]).sympy_expr, sympy.Pow) and not isinstance(Expression(termns[0]).sympy_expr.args[1], sympy.Integer)
+        has_sqrt_alone_right = str(termns[1]).__contains__('sqrt') and isinstance(Expression(termns[1]).sympy_expr, sympy.Pow) and not isinstance(Expression(termns[1]).sympy_expr.args[1], sympy.Integer)
 
         return has_sqrt_alone_right or has_sqrt_alone_left
 
