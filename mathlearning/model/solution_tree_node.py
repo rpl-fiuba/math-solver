@@ -126,6 +126,9 @@ class SolutionTreeNode:
         elif problem_type == ProblemType.TRIGONOMETRY:
             return self.build_trigonometry_hints(last_valid_step)
 
+        elif self.is_rational(last_valid_step) and problem_type == ProblemType.DOMAIN:
+            return ['El denominador no puede ser igual a 0']
+
         elif self.expression_has_square(last_valid_step_expression):
             if problem_type in [ProblemType.EXPONENTIAL, ProblemType.INTERSECTION, ProblemType.INEQUALITY]:
                 if self.want_to_transform_sqrt_to_pow(last_valid_step_expression):
@@ -179,6 +182,14 @@ class SolutionTreeNode:
                 return []
 
         return []
+
+    def is_rational(self, expression):
+        if expression.is_domain():
+            function_in_dom = Expression(str(expression).replace('Dom(','')[:-1]).sympy_expr
+        else:
+            function_in_dom = expression.sympy_expr
+        return (isinstance(function_in_dom, sympy.Mul) and isinstance(function_in_dom.args[1], sympy.Pow) and function_in_dom.args[1].args[1] < 0) or \
+               (isinstance(function_in_dom, sympy.Pow) and function_in_dom.args[1] < 0)
 
     def have_ln_in_both_sides(self, expression):
         termns = expression.args

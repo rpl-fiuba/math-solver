@@ -417,6 +417,42 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['Logaritmo y exponencial de la misma base se anulan'])
 
+    def test_rational_expression_for_domain(self):
+        expression = Expression("Dom(1/x)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.DOMAIN)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['El denominador no puede ser igual a 0'])
+
+    def test_rational_expression_for_domain_without_Dom(self):
+        expression = Expression("1/x")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.DOMAIN)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['El denominador no puede ser igual a 0'])
+
+    def test_rational_expression_for_domain_without_Dom_2(self):
+        expression = Expression("1/(x+5)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.DOMAIN)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['El denominador no puede ser igual a 0'])
+
+    def test_frac_expression_for_domain_without_Dom(self):
+        expression = Expression("\\frac{x}{x+5}")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.DOMAIN)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['El denominador no puede ser igual a 0'])
+
 
 
     # def test_is_a_result(self):
