@@ -274,7 +274,7 @@ def make_sympy_expr(formula, is_latex):
         else:
             clean_formula = clean_latex(formula)
             if is_inequality(clean_formula):
-                return parse_inequality(clean_formula)
+                sympy_expr = parse_inequality(clean_formula)
             else:
                 if str(clean_formula).__contains__("Eq") and str(clean_formula).__contains__("*") and \
                         (not str(clean_formula).__contains__("leq") or not str(clean_formula).__contains__("geq")):

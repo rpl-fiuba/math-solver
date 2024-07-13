@@ -154,6 +154,11 @@ class SolutionTreeNode:
                         return ['Aplicar la función exponencial en ambos lados de la inecuación']
                     else:
                         return ['Aplicar la función exponencial en ambos lados de la ecuación']
+                if self.have_ln_in_both_sides(last_valid_step_expression):
+                    return ['Quedarse sólo con los argumentos del logaritmo']
+                if self.have_ln_and_exp_in_the_same_side(last_valid_step_expression):
+                    return ['Logaritmo y exponencial de la misma base se anulan']
+
                 return []
 
         if self.expression_has_exp(last_valid_step_expression):
@@ -167,36 +172,56 @@ class SolutionTreeNode:
                         return ['Aplicar la función logaritmo en ambos lados de la inecuación']
                     else:
                         return ['Aplicar la función logaritmo en ambos lados de la ecuación']
+                if self.have_exp_in_both_sides(last_valid_step_expression):
+                    return ['Quedarse sólo con los argumentos de la exponencial']
+                if self.have_ln_and_exp_in_the_same_side(last_valid_step_expression):
+                    return ['Logaritmo y exponencial de la misma base se anulan']
                 return []
 
         return []
 
-    def have_ln_and_constant(self, expression):
-        if isinstance(expression, sympy.Eq):
-            args = expression.args
-        else:
-            if str(expression).__contains__('<'):
-                args = str(expression).replace('=', '').split('<')
-            else:
-                args = str(expression).replace('=', '').split('>')
+    def have_ln_in_both_sides(self, expression):
+        termns = expression.args
 
-        if (str(args[0]).__contains__('log') and isinstance(Expression(args[1]).sympy_expr, sympy.Integer)) or \
-                (str(args[1]).__contains__('log') and isinstance(Expression(args[0]).sympy_expr, sympy.Integer)):
+        has_log_left = isinstance(termns[0], sympy.log)
+        has_log_right = isinstance(termns[1], sympy.log)
+
+        return has_log_right and has_log_left
+
+    def have_exp_in_both_sides(self, expression):
+        termns = expression.args
+
+        has_exp_left = isinstance(termns[0], sympy.exp) or termns[0] == sympy.E or str(termns[0]).__contains__('e**')
+        has_exp_right = isinstance(termns[1], sympy.exp) or termns[1] == sympy.E or str(termns[1]).__contains__('e**')
+
+        return has_exp_right and has_exp_left
+
+    def have_ln_and_exp_in_the_same_side(self, expression):
+        termns = expression.args
+
+        has_log_and_exp_left = (isinstance(termns[0], sympy.log) and isinstance(termns[0].args[0], sympy.exp)) or \
+                               (isinstance(termns[0], sympy.exp) and isinstance(termns[0].args[0], sympy.log))
+        has_log_and_exp_right = (isinstance(termns[1], sympy.log) and isinstance(termns[1].args[0], sympy.exp)) or \
+                                (isinstance(termns[1], sympy.exp) and isinstance(termns[1].args[0], sympy.log))
+
+        return has_log_and_exp_left or has_log_and_exp_right
+
+    def have_ln_and_constant(self, expression):
+        args = expression.args
+
+        if ((isinstance(args[0], sympy.log) and isinstance(Expression(args[1]).sympy_expr, sympy.Integer)) or \
+            (isinstance(args[1], sympy.log) and isinstance(Expression(args[0]).sympy_expr, sympy.Integer))) and \
+            not self.have_ln_and_exp_in_the_same_side(expression):
             return True
 
         return False
 
     def have_exp_and_constant(self, expression):
-        if isinstance(expression, sympy.Eq):
-            args = expression.args
-        else:
-            if str(expression).__contains__('<'):
-                args = str(expression).replace('=', '').split('<')
-            else:
-                args = str(expression).replace('=', '').split('>')
+        args = expression.args
 
-        if (str(args[0]).__contains__('exp') and isinstance(Expression(args[1]).sympy_expr, sympy.Integer) and int(args[1]) > 0) or \
-                (str(args[1]).__contains__('exp') and isinstance(Expression(args[0]).sympy_expr, sympy.Integer) and int(args[0]) > 0):
+        if (((str(args[0]).__contains__('e**') or isinstance(args[0], sympy.exp)) and isinstance(Expression(args[1]).sympy_expr, sympy.Integer) and int(args[1]) > 0) or \
+                ((str(args[1]).__contains__('e**') or isinstance(args[1], sympy.exp)) and isinstance(Expression(args[0]).sympy_expr, sympy.Integer) and int(args[0]) > 0)) and \
+                not self.have_ln_and_exp_in_the_same_side(expression):
             return True
 
         return False
@@ -205,7 +230,7 @@ class SolutionTreeNode:
         return str(expression).__contains__("log") or str(expression).__contains__("ln")
 
     def expression_has_exp(self, expression):
-        return str(expression).__contains__("exp")
+        return str(expression).__contains__("exp") or str(expression).__contains__("e**")
 
     def expression_has_abs(self, expression):
         return str(expression).__contains__("Abs")
@@ -214,13 +239,7 @@ class SolutionTreeNode:
         return str(expression).__contains__("sqrt")
 
     def has_x_in_both_sizes(self, expression):
-        if isinstance(expression, sympy.Eq):
-            termns = expression.args
-        else:
-            if str(expression).__contains__('<'):
-                termns = str(expression).replace('=', '').split('<')
-            else:
-                termns = str(expression).replace('=', '').split('>')
+        termns = expression.args
 
         has_x_left = str(termns[0]).__contains__('x') and not str(termns[0]).__contains__('exp')
         has_x_right = str(termns[1]).__contains__('x') and not str(termns[1]).__contains__('exp')
@@ -252,7 +271,6 @@ class SolutionTreeNode:
         return not (isinstance(expression, sympy.And) or isinstance(expression, sympy.Or)) and \
                self.has_x_in_both_sizes(expression) and \
                self.has_sqrt_alone(expression)
-        return []
 
     def build_trigonometry_hints(self, last_valid_step):
         if last_valid_step.sympy_expr < 0:
