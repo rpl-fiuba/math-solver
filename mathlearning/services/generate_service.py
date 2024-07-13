@@ -69,7 +69,7 @@ class GenerateService:
         operator = random.choice([sympy.StrictLessThan, sympy.LessThan, sympy.GreaterThan, sympy.StrictGreaterThan])
         final_expression = Expression(operator(left_function, right_function), is_latex=False)
         if self.final_expression_is_absurd(final_expression):
-            return self.__generate_function_intersection_expression()
+            return self.__generate_function_inequation_expression()
         return final_expression
 
     def final_expression_is_absurd(self, final_expression):
