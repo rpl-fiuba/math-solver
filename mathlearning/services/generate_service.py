@@ -41,6 +41,8 @@ class GenerateService:
             return self.__generate_function_intersection_expression()
         elif problem_type == ProblemType.INEQUALITY:
             return self.__generate_function_inequation_expression()
+        elif problem_type == ProblemType.EXPONENTIAL:
+            return self.__generate_exponential_expression()
 
     def __generate_linear_function(self):
         values_for_x_scalar = [1, 2, 3, 4, 5]
@@ -54,6 +56,22 @@ class GenerateService:
         values_for_constant = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
         b = random.choice(values_for_constant)
         return (x + b) * (x - b)
+
+    def __wrap_in_exponential(self, term):
+        return sympy.exp(term)
+
+    def __wrap_in_logarithm(self, term):
+        return sympy.log(term, sympy.E)
+
+    def __generate_exponential_expression(self) -> Expression:
+        inner_function = self.__build_function_for_intersection(self.__get_variants_for_intersection())
+        wrap_operator = random.choice([self.__wrap_in_exponential, self.__wrap_in_logarithm])
+        left_function = wrap_operator(inner_function)
+        right_term = random.randint(1, 10) if isinstance(left_function, sympy.exp) else random.randint(-5, 5)
+        final_expression = Expression(sympy.Eq(left_function, right_term), is_latex=False)
+        if self.final_expression_is_absurd(final_expression):
+            return self.__generate_exponential_expression()
+        return final_expression
 
     def __generate_function_intersection_expression(self) -> Expression:
         left_function = self.__build_function_for_intersection(self.__get_variants_for_intersection())
@@ -93,7 +111,7 @@ class GenerateService:
                 rooted_denom = 1
                 for i in range(amount_of_roots_to_add):
                     rooted_denom = sympy.Mul(rooted_denom * (x - random.choice(roots)), evaluate=False)
-                sympy_expr = Expression("({})/({})".format(sympy_expr, rooted_denom),is_latex=False).sympy_expr
+                sympy_expr = Expression("({})/({})".format(sympy_expr, rooted_denom), is_latex=False).sympy_expr
         return Expression(sympy_expr)
 
     def __get_variants_for_factorisable_polynomial_expression(self) -> List[str]:

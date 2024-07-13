@@ -51,3 +51,20 @@ class TestGenerateService(unittest.TestCase):
         right_side = generated_expression.sympy_expr.args[1]
         self.assertTrue(str(left_side).__contains__("x"))
         self.assertTrue(str(right_side).__contains__("x"))
+
+
+    def test_exponential_has_x_on_left_side_only(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.EXPONENTIAL)
+        left_side = generated_expression.sympy_expr.args[0]
+        right_side = generated_expression.sympy_expr.args[1]
+        self.assertTrue(str(left_side).__contains__("x"))
+        self.assertFalse(str(right_side).__contains__("x"))
+
+
+    def test_exponential_matches_right_side_based_on_operator(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.EXPONENTIAL)
+        full_expression = generated_expression.sympy_expr
+        left_side = generated_expression.sympy_expr.args[0]
+        right_side = generated_expression.sympy_expr.args[1]
+        self.assertTrue(isinstance(full_expression, sympy.Eq))
+        self.assertTrue((isinstance(left_side, sympy.exp) and right_side > 0) or (isinstance(left_side, sympy.log) and right_side in sympy.Interval(-5,5)))
