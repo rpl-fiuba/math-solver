@@ -6,7 +6,6 @@ from mathlearning.services.generate_service import GenerateService
 
 
 class TestGenerateService(unittest.TestCase):
-
     generate_service = GenerateService()
 
     def test_factorisable_expression_has_numerator_and_denominator(self):
@@ -27,3 +26,13 @@ class TestGenerateService(unittest.TestCase):
         self.assertTrue(sympy.degree(generated_numerator) > sympy.degree(factorized_expression_numerator))
         self.assertTrue(sympy.degree(generated_denominator) > sympy.degree(factorized_expression_denominator))
 
+    def test_intersection_expression_is_an_equal(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.INTERSECTION)
+        self.assertTrue(isinstance(generated_expression.sympy_expr, sympy.Eq))
+
+    def test_intersection_has_x_on_both_sides(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.INTERSECTION)
+        left_side = generated_expression.sympy_expr.args[0]
+        right_side = generated_expression.sympy_expr.args[1]
+        self.assertTrue(str(left_side).__contains__("x"))
+        self.assertTrue(str(right_side).__contains__("x"))
