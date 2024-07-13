@@ -75,10 +75,8 @@ class SolutionTreeNode:
         if not is_valid:
             if problem_type == ProblemType.TRIGONOMETRY:
                 hints = self.get_hints_for_specific_problem_type(new_expression, problem_type)
-            elif problem_type != ProblemType.IMAGE:
-                hints = self.get_hints_for_specific_problem_type(previous_step, problem_type)
             else:
-                hints = self.get_hints(previous_step)
+                hints = self.get_hints_for_specific_problem_type(previous_step, problem_type)
             return 'invalid', hints
         if self.is_a_result(new_expression, problem_type):
             if problem_type == ProblemType.FACTORISABLE and self.expression.is_equal_to(new_expression):
@@ -126,7 +124,7 @@ class SolutionTreeNode:
         elif problem_type == ProblemType.TRIGONOMETRY:
             return self.build_trigonometry_hints(last_valid_step)
 
-        elif self.is_rational(last_valid_step) and problem_type == ProblemType.DOMAIN:
+        elif problem_type == ProblemType.DOMAIN and self.is_rational(last_valid_step):
             return ['El denominador no puede ser igual a 0']
 
         elif self.expression_has_square(last_valid_step_expression):
@@ -181,7 +179,14 @@ class SolutionTreeNode:
                     return ['Logaritmo y exponencial de la misma base se anulan']
                 return []
 
+        if problem_type == ProblemType.IMAGE and self.expression_always_positive(last_valid_step_expression):
+            return ['La función nunca es negativa']
+
         return []
+
+    def expression_always_positive(self, expression):
+        function_in_img = sympy.solveset(sympy.simplify(expression.args[0] >= 0), x, domain=sympy.Reals)
+        return function_in_img == sympy.Reals
 
     def is_rational(self, expression):
         if expression.is_domain():

@@ -453,6 +453,15 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['El denominador no puede ser igual a 0'])
 
+    def test_image_for_expression_positive(self):
+        expression = Expression("Img(x^2)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.IMAGE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['La función nunca es negativa'])
+
 
 
     # def test_is_a_result(self):
