@@ -43,6 +43,9 @@ class GenerateService:
             return self.__generate_function_inequation_expression()
         elif problem_type == ProblemType.EXPONENTIAL:
             return self.__generate_exponential_expression()
+        elif problem_type == ProblemType.DOMAIN:
+            return self.__generate_domain_expression()
+
 
     def __generate_linear_function(self):
         values_for_x_scalar = [1, 2, 3, 4, 5]
@@ -71,6 +74,13 @@ class GenerateService:
         final_expression = Expression(sympy.Eq(left_function, right_term), is_latex=False)
         if self.final_expression_is_absurd(final_expression):
             return self.__generate_exponential_expression()
+        return final_expression
+
+    def __generate_domain_expression(self) -> Expression:
+        pick_variants_for_denom = lambda: random.sample(['0_second_grade', '1_square_root'], random.randint(1, 2))
+        numerator = self.__build_function_for_intersection(pick_variants_for_denom())
+        denominator = self.__build_function_for_intersection(pick_variants_for_denom())
+        final_expression = Expression("({})/({})".format(numerator, denominator), is_latex=False)
         return final_expression
 
     def __generate_function_intersection_expression(self) -> Expression:
@@ -123,7 +133,6 @@ class GenerateService:
         return picked_variants
 
     def __build_function_for_intersection(self, variants):
-        variants = self.__get_variants_for_intersection()
         expression = self.__generate_linear_function()
         for variant in variants:
             if variant == '2_module':

@@ -68,3 +68,26 @@ class TestGenerateService(unittest.TestCase):
         right_side = generated_expression.sympy_expr.args[1]
         self.assertTrue(isinstance(full_expression, sympy.Eq))
         self.assertTrue((isinstance(left_side, sympy.exp) and right_side > 0) or (isinstance(left_side, sympy.log) and right_side in sympy.Interval(-5,5)))
+
+    def test_exponential_has_x_on_left_side_only(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.EXPONENTIAL)
+        left_side = generated_expression.sympy_expr.args[0]
+        right_side = generated_expression.sympy_expr.args[1]
+        self.assertTrue(str(left_side).__contains__("x"))
+        self.assertFalse(str(right_side).__contains__("x"))
+
+
+    def test_domain_is_not_a_comparison(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.DOMAIN)
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.Eq))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.StrictLessThan))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.LessThan))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.GreaterThan))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.StrictGreaterThan))
+
+    def test_domain_has_denominator(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.DOMAIN)
+        generated_numerator = sympy.numer(generated_expression.sympy_expr)
+        generated_denominator = sympy.denom(generated_expression.sympy_expr)
+        self.assertTrue(str(generated_numerator).__contains__("x"))
+        self.assertTrue(str(generated_denominator).__contains__("x"))
