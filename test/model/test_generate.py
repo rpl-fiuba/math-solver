@@ -91,3 +91,19 @@ class TestGenerateService(unittest.TestCase):
         generated_denominator = sympy.denom(generated_expression.sympy_expr)
         self.assertTrue(str(generated_numerator).__contains__("x"))
         self.assertTrue(str(generated_denominator).__contains__("x"))
+
+
+    def test_image_is_not_a_comparison(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.IMAGE)
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.Eq))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.StrictLessThan))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.LessThan))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.GreaterThan))
+        self.assertFalse(isinstance(generated_expression.sympy_expr, sympy.StrictGreaterThan))
+
+    def test_image_does_not_have_denominator(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.IMAGE)
+        generated_numerator = sympy.numer(generated_expression.sympy_expr)
+        generated_denominator = sympy.denom(generated_expression.sympy_expr)
+        self.assertTrue(str(generated_numerator).__contains__("x"))
+        self.assertEquals(generated_denominator, 1)

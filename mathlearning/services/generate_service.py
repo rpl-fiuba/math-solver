@@ -45,6 +45,8 @@ class GenerateService:
             return self.__generate_exponential_expression()
         elif problem_type == ProblemType.DOMAIN:
             return self.__generate_domain_expression()
+        elif problem_type == ProblemType.IMAGE:
+            return self.__generate_image_expression()
 
 
     def __generate_linear_function(self):
@@ -81,6 +83,11 @@ class GenerateService:
         numerator = self.__build_function_for_intersection(pick_variants_for_denom())
         denominator = self.__build_function_for_intersection(pick_variants_for_denom())
         final_expression = Expression("({})/({})".format(numerator, denominator), is_latex=False)
+        return final_expression
+
+    def __generate_image_expression(self) -> Expression:
+        pick_variants_for_image = lambda: random.sample(['0_second_grade', '1_square_root', '2_module'], random.randint(0, 2))
+        final_expression = Expression(self.__build_function_for_intersection(pick_variants_for_image()), is_latex=False)
         return final_expression
 
     def __generate_function_intersection_expression(self) -> Expression:
