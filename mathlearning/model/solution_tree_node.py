@@ -154,10 +154,10 @@ class SolutionTreeNode:
                         return ['Aplicar la función exponencial en ambos lados de la inecuación']
                     else:
                         return ['Aplicar la función exponencial en ambos lados de la ecuación']
-                if self.have_ln_in_both_sides(last_valid_step_expression):
-                    return ['Quedarse sólo con los argumentos del logaritmo']
                 if self.have_ln_and_exp_in_the_same_side(last_valid_step_expression):
                     return ['Logaritmo y exponencial de la misma base se anulan']
+                if self.have_ln_in_both_sides(last_valid_step_expression):
+                    return ['Quedarse sólo con los argumentos del logaritmo']
 
                 return []
 

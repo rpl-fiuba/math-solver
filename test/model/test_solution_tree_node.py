@@ -372,6 +372,15 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['Quedarse sólo con los argumentos del logaritmo'])
 
+    def test_get_hints_for_log_in_both_sides_with_ln_of_exp_for_intersection(self):
+        expression = Expression("\\ln(e^{x}) = \\ln(x)")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Logaritmo y exponencial de la misma base se anulan'])
+
     def test_get_hints_for_exp_in_both_sides_for_intersection(self):
         expression = Expression("e^{x+5} = e^{1}")
         node = SolutionTreeNode(expression,
