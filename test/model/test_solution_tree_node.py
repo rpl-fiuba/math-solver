@@ -462,6 +462,15 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['La función nunca es negativa'])
 
+    def test_image_for_expression_positive_exp(self):
+        expression = Expression("Img(e^{x})")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.IMAGE)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['La función nunca es negativa'])
+
 
 
     # def test_is_a_result(self):

@@ -127,6 +127,9 @@ class SolutionTreeNode:
         elif problem_type == ProblemType.DOMAIN and self.is_rational(last_valid_step):
             return ['El denominador no puede ser igual a 0']
 
+        elif problem_type == ProblemType.IMAGE and self.expression_always_positive(last_valid_step_expression):
+            return ['La función nunca es negativa']
+
         elif self.expression_has_square(last_valid_step_expression):
             if problem_type in [ProblemType.EXPONENTIAL, ProblemType.INTERSECTION, ProblemType.INEQUALITY]:
                 if self.want_to_transform_sqrt_to_pow(last_valid_step_expression):
@@ -178,9 +181,6 @@ class SolutionTreeNode:
                 if self.have_ln_and_exp_in_the_same_side(last_valid_step_expression):
                     return ['Logaritmo y exponencial de la misma base se anulan']
                 return []
-
-        if problem_type == ProblemType.IMAGE and self.expression_always_positive(last_valid_step_expression):
-            return ['La función nunca es negativa']
 
         return []
 
