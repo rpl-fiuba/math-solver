@@ -282,6 +282,77 @@ class TestSolutionTree(unittest.TestCase):
         self.assertTrue(len(hints) == 1)
         self.assertEquals(hints, ['El area no puede ser negativa'])
 
+    def test_get_hints_for_log_expression_intersection(self):
+        expression = Expression("\\ln\\left(x+5\\right) = 1")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Aplicar la función exponencial en ambos lados de la ecuación'])
+
+    def test_dont_get_hints_for_log_expression_inequality(self):
+        expression = Expression("\\ln\\left(x+5\\right) > x+5")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INEQUALITY)
+        self.assertTrue(len(hints) == 0)
+        self.assertEquals(hints, [])
+
+    def test_get_hints_for_log_expression_inequality(self):
+        expression = Expression("\\ln\\left(x+5\\right) \\le 1")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INEQUALITY)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Aplicar la función exponencial en ambos lados de la inecuación'])
+
+    def test_dont_get_hints_for_log_expression_intersection(self):
+        expression = Expression("\\ln\\left(x+5\\right) = x+5")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 0)
+        self.assertEquals(hints, [])
+
+    def test_get_hints_for_exp_expression_intersection(self):
+        expression = Expression("\\exp\\left(x+5\\right) = 1")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Aplicar la función logaritmo en ambos lados de la ecuación'])
+
+    def test_dont_get_hints_for_exp_expression_inequality(self):
+        expression = Expression("\\exp\\left(x+5\\right) > x+5")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INEQUALITY)
+        self.assertTrue(len(hints) == 0)
+        self.assertEquals(hints, [])
+
+    def test_get_hints_for_exp_expression_inequality(self):
+        expression = Expression("\\exp\\left(x+5\\right) \\le 1")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INEQUALITY)
+        self.assertTrue(len(hints) == 1)
+        self.assertEquals(hints, ['Aplicar la función logaritmo en ambos lados de la inecuación'])
+
+    def test_dont_get_hints_for_exp_expression_intersection(self):
+        expression = Expression("\\exp\\left(x+5\\right) = x+5")
+        node = SolutionTreeNode(expression,
+                                'none',
+                                [])
+        hints = node.get_hints_for_specific_problem_type(expression, ProblemType.INTERSECTION)
+        self.assertTrue(len(hints) == 0)
+        self.assertEquals(hints, [])
 
 
     # def test_is_a_result(self):

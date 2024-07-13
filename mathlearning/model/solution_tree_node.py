@@ -75,7 +75,7 @@ class SolutionTreeNode:
         if not is_valid:
             if problem_type == ProblemType.TRIGONOMETRY:
                 hints = self.get_hints_for_specific_problem_type(new_expression, problem_type)
-            elif problem_type != ProblemType.DOMAIN and problem_type != ProblemType.IMAGE:
+            elif problem_type != ProblemType.IMAGE:
                 hints = self.get_hints_for_specific_problem_type(previous_step, problem_type)
             else:
                 hints = self.get_hints(previous_step)
@@ -145,13 +145,61 @@ class SolutionTreeNode:
 
         if self.expression_has_log(last_valid_step_expression):
             if problem_type == ProblemType.DOMAIN:
-                return ['']
+                return ['Si tenés log(f(x)), se debe cumplir que f(x)>0']
             if problem_type == ProblemType.IMAGE:
-                return ['']
+                return []
             if problem_type in [ProblemType.INTERSECTION, ProblemType.INEQUALITY, ProblemType.EXPONENTIAL]:
-                return ['']
+                if self.have_ln_and_constant(last_valid_step_expression):
+                    if problem_type == ProblemType.INEQUALITY:
+                        return ['Aplicar la función exponencial en ambos lados de la inecuación']
+                    else:
+                        return ['Aplicar la función exponencial en ambos lados de la ecuación']
+                return []
+
+        if self.expression_has_exp(last_valid_step_expression):
+            if problem_type == ProblemType.DOMAIN:
+                return []
+            if problem_type == ProblemType.IMAGE:
+                return []
+            if problem_type in [ProblemType.INTERSECTION, ProblemType.INEQUALITY, ProblemType.EXPONENTIAL]:
+                if self.have_exp_and_constant(last_valid_step_expression):
+                    if problem_type == ProblemType.INEQUALITY:
+                        return ['Aplicar la función logaritmo en ambos lados de la inecuación']
+                    else:
+                        return ['Aplicar la función logaritmo en ambos lados de la ecuación']
+                return []
 
         return []
+
+    def have_ln_and_constant(self, expression):
+        if isinstance(expression, sympy.Eq):
+            args = expression.args
+        else:
+            if str(expression).__contains__('<'):
+                args = str(expression).replace('=', '').split('<')
+            else:
+                args = str(expression).replace('=', '').split('>')
+
+        if (str(args[0]).__contains__('log') and isinstance(Expression(args[1]).sympy_expr, sympy.Integer)) or \
+                (str(args[1]).__contains__('log') and isinstance(Expression(args[0]).sympy_expr, sympy.Integer)):
+            return True
+
+        return False
+
+    def have_exp_and_constant(self, expression):
+        if isinstance(expression, sympy.Eq):
+            args = expression.args
+        else:
+            if str(expression).__contains__('<'):
+                args = str(expression).replace('=', '').split('<')
+            else:
+                args = str(expression).replace('=', '').split('>')
+
+        if (str(args[0]).__contains__('exp') and isinstance(Expression(args[1]).sympy_expr, sympy.Integer) and int(args[1]) > 0) or \
+                (str(args[1]).__contains__('exp') and isinstance(Expression(args[0]).sympy_expr, sympy.Integer) and int(args[0]) > 0):
+            return True
+
+        return False
 
     def expression_has_log(self, expression):
         return str(expression).__contains__("log") or str(expression).__contains__("ln")
