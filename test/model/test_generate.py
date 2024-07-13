@@ -36,3 +36,18 @@ class TestGenerateService(unittest.TestCase):
         right_side = generated_expression.sympy_expr.args[1]
         self.assertTrue(str(left_side).__contains__("x"))
         self.assertTrue(str(right_side).__contains__("x"))
+
+    def test_inequality_has_right_operator(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.INEQUALITY)
+        has_right_operator = isinstance(generated_expression.sympy_expr, sympy.StrictLessThan) or \
+                             isinstance(generated_expression.sympy_expr, sympy.LessThan) or \
+                             isinstance(generated_expression.sympy_expr, sympy.GreaterThan) or \
+                             isinstance(generated_expression.sympy_expr, sympy.StrictGreaterThan)
+        self.assertTrue(has_right_operator)
+
+    def test_inequality_has_x_on_both_sides(self):
+        generated_expression = self.generate_service.generate_problem_input(ProblemType.INEQUALITY)
+        left_side = generated_expression.sympy_expr.args[0]
+        right_side = generated_expression.sympy_expr.args[1]
+        self.assertTrue(str(left_side).__contains__("x"))
+        self.assertTrue(str(right_side).__contains__("x"))
