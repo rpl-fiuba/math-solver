@@ -255,6 +255,8 @@ class SolutionTreeNode:
         return str(expression).__contains__("sqrt")
 
     def has_x_in_both_sizes(self, expression):
+        if isinstance(expression, str):
+            expression = Expression(sympy.sympify(expression)).sympy_expr
         termns = expression.args
 
         has_x_left = str(termns[0]).__contains__('x') and not str(termns[0]).__contains__('exp')

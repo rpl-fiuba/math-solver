@@ -2,6 +2,7 @@ import sympy
 
 from mathlearning.model.expression import Expression, make_sympy_expr
 from mathlearning.model.problem_type import ProblemType
+from sympy.parsing.latex import parse_latex
 
 
 class ExpressionComparator:
@@ -176,7 +177,10 @@ class ExpressionComparator:
             return False
         elif str(some_expression).__contains__('|') and '[' not in str(some_expression):
             return True
-        elif isinstance(some_expression.sympy_expr, sympy.Eq):
+        elif isinstance(some_expression.sympy_expr, sympy.Eq) or \
+                (isinstance(some_expression.sympy_expr, str) and some_expression.sympy_expr.strip().startswith('Eq')):
+            if isinstance(some_expression.sympy_expr, str) and some_expression.sympy_expr.strip().startswith('Eq'):
+                some_expression = Expression(sympy.sympify(some_expression.sympy_expr))
             args_eq = some_expression.sympy_expr.args
             left = str(args_eq[0]).replace('exp','e')
             right = str(args_eq[1]).replace('exp','e')
@@ -210,6 +214,13 @@ class ExpressionComparator:
             return False
 
         if both_are_equation:
+            if str(original_expression).__contains__('e**'):
+                original_expression = sympy.parse_expr(str(original_expression)).subs(sympy.simplify(sympy.parse_expr("e")), sympy.parse_expr("exp(1)"))
+                original_expression = Expression(original_expression.xreplace({parse_latex("\\ln(x)"): sympy.parse_expr('log(x,E)')}))
+            if str(new_expression).__contains__('e**'):
+                new_expression = sympy.parse_expr(str(new_expression)).subs(sympy.simplify(sympy.parse_expr("e")), sympy.parse_expr("exp(1)"))
+                new_expression = Expression(new_expression.xreplace({parse_latex("\\ln(x)"): sympy.parse_expr('log(x,E)')}))
+
             original_in_domain = original_expression.equation_exp_ln(str(original_expression))
             new_in_domain = new_expression.equation_exp_ln(str(new_expression))
             if isinstance(original_in_domain, sympy.Interval) and isinstance(new_in_domain, sympy.Interval):
@@ -223,23 +234,38 @@ class ExpressionComparator:
                 results_new = []
 
                 for i in str(original_in_domain).strip().split("\\vee"):
-                    if 'sqrt' not in i:
-                        number_i = i.split('=')[1].strip()
-                        results_original.append(str(round(float(eval(number_i)),2)))
+                    if i.__contains__('='):
+                        expression = i
                     else:
-                        number_i = i.split('=')[1].strip()
-                        results_original.append(Expression(number_i).sympy_expr.evalf())
+                        sympy_expr = Expression(sympy.sympify(i)).sympy_expr
+                        sympy_expr = sympy_expr.subs(sympy.simplify(sympy.parse_expr("e")), sympy.parse_expr("exp(1)"))
+                        expression = sympy_expr.xreplace({parse_latex("\\ln(x)"): sympy.parse_expr('log(x,E)')})
+                    if isinstance(expression, sympy.Eq):
+                        results_original.append((expression.args[1]).evalf())
+                    else:
+                        number_i = sympy.parse_expr(i.split('=')[1]).evalf()
+                        results_original.append(number_i)
                 for j in str(new_in_domain).split("\\vee"):
-                    if 'sqrt' not in j:
-                        number_j = j.split('=')[1].strip()
-                        results_new.append(str(round(float(eval(number_j)),2)))
+                    if j.__contains__('='):
+                        expression = j
                     else:
-                        number_j = j.split('=')[1].strip()
-                        results_new.append(Expression(number_j).sympy_expr.evalf())
+                        sympy_expr = Expression(sympy.sympify(j)).sympy_expr
+                        sympy_expr = sympy_expr.subs(sympy.simplify(sympy.parse_expr("e")), sympy.parse_expr("exp(1)"))
+                        expression = sympy_expr.xreplace({parse_latex("\\ln(x)"): sympy.parse_expr('log(x,E)')})
+                    if isinstance(expression, sympy.Eq):
+                        results_new.append((expression.args[1]).evalf())
+                    else:
+                        #number_j = parse_latex(j.split('=')[1].strip()).evalf()
+                        number_j = sympy.parse_expr(j.split('=')[1]).evalf()
+                        results_new.append(number_j)
 
-                if len(results_original) == len(results_new) and \
-                        set(results_original).issubset(results_new):
+                if len(results_original) == len(results_new):
+                    for num1, num2 in zip(sorted(results_original), sorted(results_new)):
+                        if abs(num1 - num2) > 1e-6:
+                            return False
                     return True
+                else:
+                    return False
             else:
                 return original_in_domain == new_in_domain
         elif neither_is_equation:
@@ -258,11 +284,19 @@ class ExpressionComparator:
                 if 'varnothing' in original_expression:
                     original = original_expression
                 else:
-                    original = Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])).sympy_expr.args
+                    #original = Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])).sympy_expr.args
+                    original = Expression(sympy.sympify(str(original_expression))).sympy_expr.args[1].evalf()
                 if 'varnothing' in new_expression:
                     new = new_expression
                 else:
-                    new = Expression(sympy.sympify(str(new_expression).split(",")[1][:-1])).sympy_expr.args
+                    #new = Expression(sympy.sympify(str(new_expression).split(",")[1][:-1])).sympy_expr.args
+                    new = Expression(sympy.sympify(str(new_expression))).sympy_expr.args[1].evalf()
+                if (isinstance(new, sympy.Float) or new is sympy.S.Zero) and (isinstance(original, sympy.Float) or original is sympy.S.Zero):
+                    return new == original
+                if (isinstance(new, sympy.Float) or new is sympy.S.Zero) and not (isinstance(original, sympy.Float) or original is sympy.S.Zero):
+                    return False
+                if not (isinstance(new, sympy.Float) or new is sympy.S.Zero) and (isinstance(original, sympy.Float) or original is sympy.S.Zero):
+                    return False
                 if len(original) == len(new) and len(new) == 0:
                     return Expression(sympy.sympify(str(original_expression).split(",")[1][:-1])) == Expression(sympy.sympify(str(new_expression).split(",")[1][:-1]))
                 if len(original) == len(new) and ('varnothing' not in original) and ('varnothing' not in new):
@@ -293,24 +327,38 @@ class ExpressionComparator:
                 results_new = []
 
                 for i in str(original_expression).strip().split("\\vee"):
-                    if 'sqrt' not in i:
-                        number_i = i.split(',')[1].strip().replace(')','')
-                        results_original.append(str(round(float(eval(number_i)),2)))
+                    if i.__contains__('='):
+                        expression = i
                     else:
-                        number_i = i.split(',')[1].strip()[:-1]
-                        results_original.append(Expression(number_i).sympy_expr.evalf())
+                        sympy_expr = Expression(sympy.sympify(i)).sympy_expr
+                        sympy_expr = sympy_expr.subs(sympy.simplify(sympy.parse_expr("e")), sympy.parse_expr("exp(1)"))
+                        expression = sympy_expr.xreplace({parse_latex("\\ln(x)"): sympy.parse_expr('log(x,E)')})
+                    if isinstance(expression, sympy.Eq):
+                        results_original.append((expression.args[1]).evalf())
+                    else:
+                        number_i = sympy.parse_expr(i.split('=')[1]).evalf()
+                        #parse_latex(i.split('=')[1].strip()).evalf()
+                        results_original.append(number_i)
                 for j in str(new_expression).split("\\vee"):
-                    if 'sqrt' not in j:
-                        number_j = j.split(',')[1].strip().replace(')','')
-                        results_new.append(str(round(float(eval(number_j)),2)))
+                    if j.__contains__('='):
+                        expression = j
                     else:
-                        number_j = j.split(',')[1].strip()[:-1]
-                        results_new.append(Expression(number_j).sympy_expr.evalf())
+                        sympy_expr = Expression(sympy.sympify(j)).sympy_expr
+                        sympy_expr = sympy_expr.subs(sympy.simplify(sympy.parse_expr("e")), sympy.parse_expr("exp(1)"))
+                        expression = sympy_expr.xreplace({parse_latex("\\ln(x)"): sympy.parse_expr('log(x,E)')})
+                    if isinstance(expression, sympy.Eq):
+                        results_new.append((expression.args[1]).evalf())
+                    else:
+                        number_j = sympy.parse_expr(j.split('=')[1]).evalf()
+                        results_new.append(number_j)
 
-
-                if len(results_original) == len(results_new) and \
-                        set(results_original).issubset(results_new):
+                if len(results_original) == len(results_new):
+                    for num1, num2 in zip(sorted(results_original), sorted(results_new)):
+                        if abs(num1 - num2) > 1e-6:
+                            return False
                     return True
+                else:
+                    return False
         else:
             return False
 

@@ -69,3 +69,9 @@ class SolutionTreeAPITest(APITestCase):
 
     def test_exp_with_x(self):
         solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.exp_with_x())
+
+    def test_ln_with_lineal_expression_2(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.ln_with_lineal_expression_2())
+
+    def test_exp_expression_with_sqrt(self):
+        solve_exercise_with_solution_tree(self, ProblemType.INTERSECTION, IntersectionExercises.exp_expression_with_sqrt())

@@ -217,11 +217,12 @@ def parse_inner_inequalities(inner_expression_without_outmost_brackets, separato
 
 
 def contains_exp_results(formula):
-    return (formula.__contains__("=") and formula.__contains__("\\vee") and not \
+    return ((formula.__contains__("=") and formula.__contains__("\\vee") and not \
         (formula.__contains__("<") or formula.__contains__(">") or formula.__contains__("["))) or \
            (formula.__contains__("Eq") and formula.__contains__("|")) or \
-           (formula.__contains__("E") and formula.__contains__("+"))
-
+           (formula.__contains__("E") and formula.__contains__("+"))) or \
+           (formula.strip().startswith("x") and formula.split("x")[1].strip().startswith("=") and \
+            'x' not in formula.split("=")[1])
 
 def contains_intersection_results_with_condition(formula):
     return (formula.__contains__("=") and \
@@ -241,9 +242,14 @@ def parse_latex_exp_results(formula):
     x = symbols("x")
     for i in list_eq:
         if i.__contains__("="):
-            if i.__contains__('frac'):
-                i = 'x=' + str(parse_latex(clean_latex(i.split("=")[1]))).strip()
-            result.append(Eq(x, eval(i.strip().replace('\\','').split("=")[1])))
+            #if i.__contains__('frac'):
+            #    i = 'x=' + str(parse_latex(clean_latex(i.split("=")[1]))).strip()
+            #Eq(x, -sqrt(5)/2 + 3/2) | Eq(x, (s*(q*(r*t(5))))/2 + 3/2)
+            try:
+                result.append(Eq(x, Expression(sympy.parse_expr(i.split('=')[1])).sympy_expr))
+            except SyntaxError:
+                result.append(Eq(x, Expression(i.split('=')[1]).sympy_expr))
+            #result.append(Eq(x, eval(i.strip().replace('\\','').split("=")[1])))
         elif i.__contains__("Eq"):
             result.append(eval(i.strip().replace('\\','')))
 

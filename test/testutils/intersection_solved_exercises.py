@@ -298,15 +298,35 @@ class IntersectionExercises:
     def exp_expression() -> SolvedExercise:
         name = "\\exp\\left(x^2 + 4x + 4\\right) = 1"
         steps = [
-            {'expression': '\\exp\\left(x^2 + 4x + 4\\right) = 1', 'variables': []},
-            {'expression': '\\exp\\left((x+3)*(x+1) + 1\\right) = 1', 'variables': []},
+            {'expression': 'e^{x^2 + 4x + 4} = 1', 'variables': []},
+            {'expression': 'e^{(x+3)*(x+1) + 1} = 1', 'variables': []},
             {'expression': 'x=-2', 'variables': []}
         ]
 
         invalid_steps = [
-            {'expression': '\\exp\\left(x^2 + 4x + 4\\right) = 0', 'variables': []},
+            {'expression': 'e^{x^2 + 4x + 4} = 0', 'variables': []},
             {'expression': 'x^2 + 4x = 1', 'variables': []},
             {'expression': 'x=-1 \\vee x=0', 'variables': []}
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+    @staticmethod
+    def exp_expression_with_sqrt() -> SolvedExercise:
+        name = "\\exp\\left(\\sqrt{5x+5}\\right) = 7"
+        steps = [
+            {'expression': '\\e^{\\sqrt{5x+5}} = 7', 'variables': []},
+            {'expression': '\\ln(\\e^{\\sqrt{5x+5}}) = \\ln(7)', 'variables': []},
+            {'expression': '\\sqrt{5x+5} = \\ln(7)', 'variables': []},
+            {'expression': '5x+5 = (\\ln(7))^2', 'variables': []},
+            {'expression': '5x = (\\ln(7))^2 -5', 'variables': []},
+            {'expression': 'x = \\frac{(\\ln(7))^2 -5}{5}', 'variables': []},
+        ]
+
+        invalid_steps = [
+            {'expression': '5x = (\\ln(7))^2 + 5', 'variables': []},
         ]
 
         non_result_steps = steps[:len(steps) - 1]
@@ -339,6 +359,7 @@ class IntersectionExercises:
         name = "ln(2x+5)=1"
         steps = [
             {'expression': '\\ln\\left(2x + 5\\right) = 1', 'variables': []},
+            {'expression': 'e^{\\ln\\left(2x + 5\\right)} = e^{1}', 'variables': []},
             {'expression': '2x + 5 = \\exp(1)', 'variables': []},
             {'expression': '2x = \\exp(1) - 5', 'variables': []},
             {'expression': 'x = \\frac{\\exp(1)}{2}-\\frac{5}{2}', 'variables': []}
@@ -356,11 +377,32 @@ class IntersectionExercises:
         return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
 
     @staticmethod
+    def ln_with_lineal_expression_2() -> SolvedExercise:
+        name = "ln(x^2+5x+2)=1"
+        steps = [
+            {'expression': '\\ln\\left(x^2+5x+2\\right) = 1', 'variables': []},
+            {'expression': 'e^{\\ln\\left(x^2+5x+2\\right)} = e^{1}', 'variables': []},
+            {'expression': 'x^2+5x+2 = e^{1}', 'variables': []},
+            {'expression': 'x^2+5x+2 - e = 0', 'variables': []},
+            {'expression': 'x=\\frac{-\\sqrt{4*e + 17}}{2} - 2.5 \\vee x=\\frac{\\sqrt{4*e + 17}}{2} - 2.5', 'variables': []},
+        ]
+
+        invalid_steps = [
+            {'expression': 'e^{\\ln\\left(x^2+5x+2\\right)} = 1', 'variables': []},
+        ]
+
+        non_result_steps = steps[:len(steps) - 1]
+
+        return SolvedExercise(name, steps, steps[len(steps) - 1], non_result_steps, invalid_steps=invalid_steps)
+
+
+
+    @staticmethod
     def ln_with_ln() -> SolvedExercise:
         name = "ln(x^2-2x+1)=ln(x-1)"
         steps = [
             {'expression': '\\ln(x^2-2x+1) = \\ln(x-1)', 'variables': []},
-            {'expression': '\\exp(\\ln(x^2-2x+1)) = \\exp(\\ln(x-1)) \\wedge x>1', 'variables': []},
+            {'expression': 'e^{\\ln(x^2-2x+1)} = e^{\\ln(x-1)} \\wedge x>1', 'variables': []},
             {'expression': 'x^2-2x+1 = x-1 \\wedge x>1', 'variables': []},
             {'expression': 'x^2-3x+2 = 0 \\wedge x>1', 'variables': []},
             {'expression': '[x = 2 \\wedge x>1] \\vee [x = 1 \\wedge x>1]', 'variables': []},
@@ -369,7 +411,7 @@ class IntersectionExercises:
         ]
 
         invalid_steps = [
-            {'expression': '\\exp(\\ln(x^2-2x+1)) = \\exp(\\ln(x-1))', 'variables': []},
+            {'expression': 'e^{\\ln(x^2-2x+1)} = e^{\\ln(x-1)}', 'variables': []},
             {'expression': 'x^2-2x+1 = x-1', 'variables': []},
             {'expression': 'x = 1 \\wedge x>1', 'variables': []},
         ]
