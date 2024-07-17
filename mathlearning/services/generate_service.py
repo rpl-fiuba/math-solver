@@ -108,7 +108,7 @@ class GenerateService:
         return final_expression
 
     def final_expression_is_absurd(self, final_expression):
-        return latex(final_expression) == 'True' or latex(final_expression) == 'False'
+        return latex(final_expression) == 'True' or latex(final_expression) == 'False' or len(solveset(final_expression, x, domain=S.Reals)) <= 0
 
     def __generate_factorisable_polynomial_expression(self) -> Expression:
         sympy_expr = 1
