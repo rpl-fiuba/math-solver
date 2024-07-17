@@ -69,7 +69,7 @@ class GenerateService:
         return sympy.log(term, sympy.E)
 
     def __generate_exponential_expression(self) -> Expression:
-        inner_function = self.__build_function_for_intersection(self.__get_variants_for_intersection())
+        inner_function = self.__build_function_for_intersection(self.__get_variants_for_exponential())
         wrap_operator = random.choice([self.__wrap_in_exponential, self.__wrap_in_logarithm])
         left_function = wrap_operator(inner_function)
         right_term = random.randint(1, 10) if isinstance(left_function, sympy.exp) else random.randint(-5, 5)
@@ -156,3 +156,11 @@ class GenerateService:
         picked_variants = random.sample(variants, amount_of_variants_to_pick)
         picked_variants.sort()
         return picked_variants
+
+    def __get_variants_for_exponential(self) -> List[str]:
+        variants = ['0_second_grade', '1_square_root']
+        amount_of_variants_to_pick = random.randint(0, len(variants))
+        picked_variants = random.sample(variants, amount_of_variants_to_pick)
+        picked_variants.sort()
+        return picked_variants
+
